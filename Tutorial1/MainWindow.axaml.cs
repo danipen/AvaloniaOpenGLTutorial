@@ -33,7 +33,7 @@ namespace Tutorial1
 
             protected override void OnOpenGlRender(GlInterface gl, int fb)
             {
-
+                gl.ClearColor(0,0,0,0);
             }
         }
     }
