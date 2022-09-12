@@ -10,6 +10,6 @@ public static class GlExtensions
     {
         int err;
         while ((err = gl.GetError()) != GL_NO_ERROR)
-            Console.WriteLine(err);
+            Console.WriteLine($"{err:X}");
     }
 }
