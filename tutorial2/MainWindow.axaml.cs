@@ -87,21 +87,19 @@ namespace Tutorial2
 
 
             string VertexShaderSource => GlExtensions.GetShader(GlVersion, false, @" 
-                out vec4 vertexColor;
+                in vec3 Position;
 
                 void main()
                 {
-                    vertexColor = vec4(1.0, 1.0, 1.0, 1.0);
+                    gl_Position = vec4(Position.x, Position.y, Position.z, 1.0);
                 }
             ");
             string VertexFragmentShaderSource => GlExtensions.GetShader(GlVersion, true, @"
                 out vec4 FragColor;
               
-                in vec4 vertexColor; // the input variable from the vertex shader (same name and same type)  
-
                 void main()
                 {
-                    FragColor = vertexColor;
+                    FragColor = vec4(1, 0, 1, 1);
                 } 
             ");
 
