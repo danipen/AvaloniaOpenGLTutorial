@@ -25,8 +25,6 @@ namespace Tutorial2
             {
                 base.OnOpenGlInit(gl, fb);
 
-                gl.ClearColor(0,0,0,0);
-
                 ConfigureShader(gl);
                 CreateVertexBuffer(gl);
                 
