@@ -7,7 +7,7 @@ using Avalonia.OpenGL.Controls;
 using static Avalonia.OpenGL.GlConsts;
 using static Common.GlConstExtensions;
 
-namespace Tutorial3
+namespace Tutorial4
 {
     public partial class MainWindow : Window
     {
@@ -98,16 +98,16 @@ namespace Tutorial3
 
                 void main()
                 {
-                    gl_Position = vec4(Position.x, Position.y, Position.z, 1.0);
+                    gl_Position = vec4(0.5 * Position.x, 0.5 * Position.y, Position.z, 1.0);
                 }
             ");
             string VertexFragmentShaderSource => GlExtensions.GetShader(GlVersion, true, @"
                 out vec4 FragColor;
-              
+
                 void main()
                 {
-                    FragColor = vec4(1, 0, 1, 1);
-                } 
+                    FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+                }
             ");
 
             int _vbo;
