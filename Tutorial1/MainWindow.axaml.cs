@@ -4,8 +4,9 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
+using Common;
 
-namespace tutorial1
+namespace Tutorial1
 {
     public partial class MainWindow : Window
     {
@@ -32,7 +33,7 @@ namespace tutorial1
 
             protected override void OnOpenGlRender(GlInterface gl, int fb)
             {
-                
+
             }
         }
     }
