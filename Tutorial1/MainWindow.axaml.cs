@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Common;
+using static Avalonia.OpenGL.GlConsts;
 
 namespace Tutorial1
 {
@@ -33,7 +34,8 @@ namespace Tutorial1
 
             protected override void OnOpenGlRender(GlInterface gl, int fb)
             {
-                gl.ClearColor(0,0,0,0);
+                gl.ClearColor(0,0,0,1);
+                gl.Clear( GL_COLOR_BUFFER_BIT);
             }
         }
     }
