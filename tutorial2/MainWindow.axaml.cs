@@ -7,7 +7,6 @@ using Avalonia.OpenGL.Controls;
 using static Avalonia.OpenGL.GlConsts;
 using static Common.GlConstExtensions;
 
-
 namespace Tutorial2
 {
     public partial class MainWindow : Window
@@ -17,7 +16,7 @@ namespace Tutorial2
             InitializeComponent();
 
             MyOpenGlControl myControl = new MyOpenGlControl();
-            this.Content = myControl;
+            Content = myControl;
         }
 
         unsafe class MyOpenGlControl : OpenGlControlBase
@@ -36,31 +35,26 @@ namespace Tutorial2
 
             void ConfigureShader(GlInterface gl)
             {
-                mShaderProgram = gl.CreateProgram();
+                _shaderProgram = gl.CreateProgram();
 
                 CreateVertexShader(gl);
                 CreateVertexFragmentShader(gl);
 
-                Console.WriteLine(gl.LinkProgramAndGetError(mShaderProgram));
+                Console.WriteLine(gl.LinkProgramAndGetError(_shaderProgram));
             }
 
             void CreateVertexFragmentShader(GlInterface gl)
             {
-                mVertexFragmentShader = gl.CreateShader(GL_FRAGMENT_SHADER);
-                Console.WriteLine(gl.CompileShaderAndGetError(mVertexFragmentShader, VertexFragmentShaderSource));
-                gl.AttachShader(mShaderProgram, mVertexFragmentShader);
+                _vertexFragmentShader = gl.CreateShader(GL_FRAGMENT_SHADER);
+                Console.WriteLine(gl.CompileShaderAndGetError(_vertexFragmentShader, VertexFragmentShaderSource));
+                gl.AttachShader(_shaderProgram, _vertexFragmentShader);
             }
 
             void CreateVertexShader(GlInterface gl)
             {
-                mVertexShader = gl.CreateShader(GL_VERTEX_SHADER);
-                Console.WriteLine(gl.CompileShaderAndGetError(mVertexShader, VertexShaderSource));
-                gl.AttachShader(mShaderProgram, mVertexShader);
-            }
-
-            protected override void OnOpenGlDeinit(GlInterface gl, int fb)
-            {
-                base.OnOpenGlDeinit(gl, fb);
+                _vertexShader = gl.CreateShader(GL_VERTEX_SHADER);
+                Console.WriteLine(gl.CompileShaderAndGetError(_vertexShader, VertexShaderSource));
+                gl.AttachShader(_shaderProgram, _vertexShader);
             }
 
             protected override void OnOpenGlRender(GlInterface gl, int fb)
@@ -70,9 +64,9 @@ namespace Tutorial2
 
                 gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
 
-                gl.UseProgram(mShaderProgram);
-                gl.BindBuffer(GL_ARRAY_BUFFER, mVBO);
-                gl.BindVertexArray(mVAO);
+                gl.UseProgram(_shaderProgram);
+                gl.BindBuffer(GL_ARRAY_BUFFER, _vbo);
+                gl.BindVertexArray(_vao);
                 gl.EnableVertexAttribArray(0);
                 gl.VertexAttribPointer(0,3, GL_FLOAT, GL_FALSE, 0,IntPtr.Zero);
 
@@ -80,19 +74,17 @@ namespace Tutorial2
                 gl.CheckError();
             }
 
-
             void CreateVertexBuffer(GlInterface gl)
             {
                 Vector3 vertex = new Vector3(0, 0, 0);
 
-                mVBO = gl.GenBuffer();
-                gl.BindBuffer(GL_ARRAY_BUFFER, mVBO);
+                _vbo = gl.GenBuffer();
+                gl.BindBuffer(GL_ARRAY_BUFFER, _vbo);
                 gl.BufferData(GL_ARRAY_BUFFER, new IntPtr(sizeof(Vector3)),
-                        new IntPtr(&vertex), GL_STATIC_DRAW);
+                new IntPtr(&vertex), GL_STATIC_DRAW);
 
-                mVAO = gl.GenVertexArray();
-                gl.BindVertexArray(mVAO);
-
+                _vao = gl.GenVertexArray();
+                gl.BindVertexArray(_vao);
 
                 gl.VertexAttribPointer(
                     0, 3, GL_FLOAT, 0, 0, IntPtr.Zero);
@@ -107,7 +99,7 @@ namespace Tutorial2
                 {
                     vertexColor = vec4(1.0, 1.0, 1.0, 1.0);
                 }
-");
+            ");
             string VertexFragmentShaderSource => GlExtensions.GetShader(GlVersion, true, @"
                 out vec4 FragColor;
               
@@ -117,13 +109,13 @@ namespace Tutorial2
                 {
                     FragColor = vertexColor;
                 } 
-");
+            ");
 
-            int mVBO;
-            int mVAO;
-            int mVertexShader;
-            int mVertexFragmentShader;
-            int mShaderProgram;
+            int _vbo;
+            int _vao;
+            int _vertexShader;
+            int _vertexFragmentShader;
+            int _shaderProgram;
         }
     }
 }
