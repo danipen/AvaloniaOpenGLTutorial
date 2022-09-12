@@ -39,6 +39,8 @@ namespace Tutorial3
                 CreateVertexFragmentShader(gl);
 
                 Console.WriteLine(gl.LinkProgramAndGetError(_shaderProgram));
+
+                gl.UseProgram(_shaderProgram);
             }
 
             void CreateVertexFragmentShader(GlInterface gl)
@@ -61,12 +63,6 @@ namespace Tutorial3
                 gl.Clear( GL_COLOR_BUFFER_BIT);
 
                 gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
-
-                gl.UseProgram(_shaderProgram);
-                gl.BindBuffer(GL_ARRAY_BUFFER, _vbo);
-                gl.BindVertexArray(_vao);
-                gl.EnableVertexAttribArray(0);
-                gl.VertexAttribPointer(0,3, GL_FLOAT, GL_FALSE, 0,IntPtr.Zero);
 
                 gl.DrawArrays(GL_POINTS, 0, new IntPtr(1));
                 gl.CheckError();
