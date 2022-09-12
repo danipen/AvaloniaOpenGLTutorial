@@ -20,8 +20,8 @@ namespace Tutorial2
             MyOpenGlControl myControl = new MyOpenGlControl();
 
             this.Content = myControl;
-            
-            
+
+
         }
 
         class MyOpenGlControl : OpenGlControlBase
@@ -29,10 +29,11 @@ namespace Tutorial2
             protected override void OnOpenGlInit(GlInterface gl, int fb)
             {
                 base.OnOpenGlInit(gl, fb);
-                
+
                 gl.ClearColor(0,0,0,0);
-                
+
                 CreateVertexBuffer(gl);
+                GlExtensions.CheckError(gl);
             }
 
             protected override void OnOpenGlDeinit(GlInterface gl, int fb)
@@ -40,19 +41,24 @@ namespace Tutorial2
                 base.OnOpenGlDeinit(gl, fb);
             }
 
-            protected override void OnOpenGlRender(GlInterface gl, int fb)
+            protected unsafe override void OnOpenGlRender(GlInterface gl, int fb)
             {
                 gl.Clear( GL_COLOR_BUFFER_BIT);
-                
+                GlExtensions.CheckError(gl);
+
                 gl.BindBuffer(GL_ARRAY_BUFFER, VBO);
-                
+                GlExtensions.CheckError(gl);
+
                 gl.EnableVertexAttribArray(0);
-                
+                GlExtensions.CheckError(gl);
+
                 gl.VertexAttribPointer(0,3, GL_FLOAT, GL_FALSE, 0,IntPtr.Zero);
-                
-                gl.DrawArrays(GL_POINTS, 0, new IntPtr(1));
-                
-                
+                GlExtensions.CheckError(gl);
+
+                var count = 1;
+                gl.DrawArrays(GL_POINTS, 0, new IntPtr(&count));
+                GlExtensions.CheckError(gl);
+
                 // glClear(GL_COLOR_BUFFER_BIT);
                 //
                 // glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -67,19 +73,23 @@ namespace Tutorial2
                 //
                 // glutSwapBuffers();
             }
-            
-            
+
+
             unsafe void CreateVertexBuffer(GlInterface gl)
             {
                 Vector3 vertex = new Vector3(0,0,0);
                 //VBO = new IntPtr(&vertex);
                 //int* VBOData = (int *)VBO.ToPointer();
 
-                void* vboData = new IntPtr(&vertex).ToPointer();
-                VBO = gl.GenBuffer(); 
+                VBO = gl.GenBuffer();
                 gl.BindBuffer(GL_ARRAY_BUFFER, VBO);
-                gl.BufferData(GL_ARRAY_BUFFER, new IntPtr(sizeof(Vector3)), new IntPtr(vboData), GL_STATIC_DRAW);
-                
+
+                int size = sizeof(Vector3);
+                gl.BufferData(GL_ARRAY_BUFFER, new IntPtr(&size), new IntPtr(&vertex), GL_STATIC_DRAW);
+
+                VAO = gl.GenVertexArray();
+                gl.BindVertexArray(VAO);
+
                 // Vector3f Vertices[1];
                 // Vertices[0] = Vector3f(0.0f, 0.0f, 0.0f);
                 //
@@ -89,6 +99,7 @@ namespace Tutorial2
             }
 
             private int VBO;
+            private int VAO;
 
         }
     }
