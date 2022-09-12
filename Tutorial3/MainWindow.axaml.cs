@@ -7,7 +7,7 @@ using Avalonia.OpenGL.Controls;
 using static Avalonia.OpenGL.GlConsts;
 using static Common.GlConstExtensions;
 
-namespace Tutorial2
+namespace Tutorial3
 {
     public partial class MainWindow : Window
     {
@@ -55,6 +55,7 @@ namespace Tutorial2
                 _vertexShader = gl.CreateShader(GL_VERTEX_SHADER);
                 Console.WriteLine(gl.CompileShaderAndGetError(_vertexShader, VertexShaderSource));
                 gl.AttachShader(_shaderProgram, _vertexShader);
+                gl.BindAttribLocationString(_shaderProgram, 0, "aPos");
             }
 
             protected override void OnOpenGlRender(GlInterface gl, int fb)
@@ -64,34 +65,43 @@ namespace Tutorial2
 
                 gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
 
-                gl.DrawArrays(GL_POINTS, 0, new IntPtr(1));
+                gl.DrawArrays(GL_TRIANGLES, 0, new IntPtr(3));
                 gl.CheckError();
             }
 
             void CreateVertexBuffer(GlInterface gl)
             {
-                Vector3 vertex = new Vector3(0, 0, 0);
+                Vector3[] vertices = new Vector3[]
+                {
+                    new Vector3(-1f, -1f, 0.0f),
+                    new Vector3(1f, -1f, 0.0f),
+                    new Vector3(0.0f, 1f, 0.0f),
+                };
 
                 _vbo = gl.GenBuffer();
                 gl.BindBuffer(GL_ARRAY_BUFFER, _vbo);
-                gl.BufferData(GL_ARRAY_BUFFER, new IntPtr(sizeof(Vector3)),
-                new IntPtr(&vertex), GL_STATIC_DRAW);
+
+                fixed(void* pVertices = vertices)
+                    gl.BufferData(GL_ARRAY_BUFFER, new IntPtr(sizeof(Vector3) * vertices.Length),
+                    new IntPtr(pVertices), GL_STATIC_DRAW);
 
                 _vao = gl.GenVertexArray();
                 gl.BindVertexArray(_vao);
 
                 gl.VertexAttribPointer(
-                    0, 3, GL_FLOAT, 0, 0, IntPtr.Zero);
+                    0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), IntPtr.Zero);
                 gl.EnableVertexAttribArray(0);
             }
 
 
             string VertexShaderSource => GlExtensions.GetShader(GlVersion, false, @" 
+                attribute vec3 aPos;
                 out vec4 vertexColor;
 
                 void main()
                 {
-                    vertexColor = vec4(1.0, 1.0, 1.0, 1.0);
+                    gl_Position = vec4(aPos, 1.0);
+                    vertexColor = vec4(1.0, 0.0, 1.0, 1.0);
                 }
             ");
             string VertexFragmentShaderSource => GlExtensions.GetShader(GlVersion, true, @"
