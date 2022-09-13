@@ -235,7 +235,8 @@ namespace Tutorial13
                 _scale += 0.005f;
 
                 gl.ClearColor(0, 0, 0, 1);
-                gl.Clear( GL_COLOR_BUFFER_BIT);
+                gl.Clear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                gl.Enable(GL_DEPTH_TEST);
 
                 gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
 
