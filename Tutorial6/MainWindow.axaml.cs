@@ -31,11 +31,11 @@ namespace Tutorial7
 
                 gl.CheckError();
             }
-            
+
             protected override void OnOpenGlDeinit(GlInterface gl, int fb)
             {
                 base.OnOpenGlDeinit(gl, fb);
-                
+
                 gl.BindBuffer(GL_ARRAY_BUFFER, 0);
                 gl.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
                 gl.BindVertexArray(0);
@@ -46,7 +46,7 @@ namespace Tutorial7
                 gl.DeleteProgram(_shaderProgram);
                 gl.DeleteShader(_fragmentShader);
                 gl.DeleteShader(_vertexShader);
-                
+
                 gl.CheckError();
             }
 
@@ -60,8 +60,8 @@ namespace Tutorial7
                 Console.WriteLine(gl.LinkProgramAndGetError(_shaderProgram));
 
                 gl.UseProgram(_shaderProgram);
-                
-                _gTranslationLoc = gl.GetUniformLocationString(_shaderProgram, "gTranslation");
+
+                _gTransformLoc = gl.GetUniformLocationString(_shaderProgram, "gTransform");
             }
 
             void CreateFragmentShader(GlInterface gl)
@@ -84,28 +84,28 @@ namespace Tutorial7
                 if ((_offset >= 1.0f) || (_offset <= -1.0f)) {
                     _offset *= -1.0f;
                 }
-                
+
                 gl.ClearColor(0, 0, 0, 1);
                 gl.Clear( GL_COLOR_BUFFER_BIT);
 
                 gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
-                
+
                 Matrix4x4 translation = Matrix4x4.CreateTranslation(
                     _offset,
                     _offset,
                     0);
-                
+
                 /* it creates new Matrix4x4(
                     1.0f, 0.0f, 0.0f, 0.0f,
                     0.0f, 1.0f, 0.0f, 0.0f,
                     0.0f, 0.0f, 1.0f, 0,
                     _offset, _offset, 0.0f, 1.0f);*/
-                
-                gl.UniformMatrix4fv(_gTranslationLoc, 1, false, &translation);
-                
+
+                gl.UniformMatrix4fv(_gTransformLoc, 1, false, &translation);
+
                 gl.DrawArrays(GL_TRIANGLES, 0, new IntPtr(3));
                 gl.CheckError();
-                
+
                 Dispatcher.UIThread.Post(InvalidateVisual, DispatcherPriority.Background);
             }
 
@@ -136,11 +136,11 @@ namespace Tutorial7
 
             string VertexShaderSource => GlExtensions.GetShader(GlVersion, false, @" 
                 in vec3 Position;
-                uniform mat4 gTranslation;
+                uniform mat4 gTransform;
 
                 void main()
                 {
-                    gl_Position = gTranslation * vec4(Position, 1.0);
+                    gl_Position = gTransform * vec4(Position, 1.0);
                 }
             ");
             string VertexFragmentShaderSource => GlExtensions.GetShader(GlVersion, true, @"
@@ -157,8 +157,8 @@ namespace Tutorial7
             int _vertexShader;
             int _fragmentShader;
             int _shaderProgram;
-            int _gTranslationLoc;
-            
+            int _gTransformLoc;
+
             float _offset = 0f;
             const float Delta = 0.005f;
         }
