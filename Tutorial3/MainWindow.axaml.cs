@@ -25,29 +25,47 @@ namespace Tutorial3
             {
                 base.OnOpenGlInit(gl, fb);
 
-                ConfigureShader(gl);
+                ConfigureShaders(gl);
                 CreateVertexBuffer(gl);
 
                 gl.CheckError();
             }
+            
+            protected override void OnOpenGlDeinit(GlInterface gl, int fb)
+            {
+                base.OnOpenGlDeinit(gl, fb);
+                
+                gl.BindBuffer(GL_ARRAY_BUFFER, 0);
+                gl.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+                gl.BindVertexArray(0);
+                gl.UseProgram(0);
 
-            void ConfigureShader(GlInterface gl)
+                gl.DeleteBuffer(_vbo);
+                gl.DeleteVertexArray(_vao);
+                gl.DeleteProgram(_shaderProgram);
+                gl.DeleteShader(_fragmentShader);
+                gl.DeleteShader(_vertexShader);
+                
+                gl.CheckError();
+            }
+
+            void ConfigureShaders(GlInterface gl)
             {
                 _shaderProgram = gl.CreateProgram();
 
                 CreateVertexShader(gl);
-                CreateVertexFragmentShader(gl);
+                CreateFragmentShader(gl);
 
                 Console.WriteLine(gl.LinkProgramAndGetError(_shaderProgram));
 
                 gl.UseProgram(_shaderProgram);
             }
 
-            void CreateVertexFragmentShader(GlInterface gl)
+            void CreateFragmentShader(GlInterface gl)
             {
-                _vertexFragmentShader = gl.CreateShader(GL_FRAGMENT_SHADER);
-                Console.WriteLine(gl.CompileShaderAndGetError(_vertexFragmentShader, VertexFragmentShaderSource));
-                gl.AttachShader(_shaderProgram, _vertexFragmentShader);
+                _fragmentShader = gl.CreateShader(GL_FRAGMENT_SHADER);
+                Console.WriteLine(gl.CompileShaderAndGetError(_fragmentShader, FragmentShaderSource));
+                gl.AttachShader(_shaderProgram, _fragmentShader);
             }
 
             void CreateVertexShader(GlInterface gl)
@@ -101,7 +119,7 @@ namespace Tutorial3
                     gl_Position = vec4(Position.x, Position.y, Position.z, 1.0);
                 }
             ");
-            string VertexFragmentShaderSource => GlExtensions.GetShader(GlVersion, true, @"
+            string FragmentShaderSource => GlExtensions.GetShader(GlVersion, true, @"
                 out vec4 FragColor;
               
                 void main()
@@ -113,7 +131,7 @@ namespace Tutorial3
             int _vbo;
             int _vao;
             int _vertexShader;
-            int _vertexFragmentShader;
+            int _fragmentShader;
             int _shaderProgram;
         }
     }
