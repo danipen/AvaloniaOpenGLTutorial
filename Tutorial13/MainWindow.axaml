@@ -4,7 +4,5 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Tutorial13.MainWindow"
-        Title="Tutorial13"
-        Width="600"
-        Height="600">
+        Title="Tutorial13">
 </Window>

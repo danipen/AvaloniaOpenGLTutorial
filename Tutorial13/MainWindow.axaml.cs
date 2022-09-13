@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Layout;
+using Avalonia.Media;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Avalonia.Threading;
@@ -20,6 +22,7 @@ namespace Tutorial13
 
         public MainWindow()
         {
+            this.AttachDevTools();
             BuildComponents();
         }
 
@@ -28,15 +31,27 @@ namespace Tutorial13
             DockPanel panel = new DockPanel();
 
             _myControl = new MyOpenGlControl();
+            _myControl.HorizontalAlignment = HorizontalAlignment.Center;
+            _myControl.VerticalAlignment = VerticalAlignment.Center;
+            _myControl.Width = 600;
+            _myControl.Height = 600;
+            
             StackPanel controls = BuildControls(_myControl);
 
             var scroll = new ScrollViewer();
             scroll.Content = controls;
 
+            Panel openGlControlContainer = new Panel();
+            openGlControlContainer.Background = Brushes.LightGray;
+            openGlControlContainer.Children.Add(_myControl);
+            
             panel.Children.Add(scroll);
-            panel.Children.Add(_myControl);
+            panel.Children.Add(openGlControlContainer);
 
             Content = panel;
+
+            Width = 1200;
+            Height = 750;
         }
 
         StackPanel BuildControls(MyOpenGlControl openGlControl)
@@ -45,7 +60,7 @@ namespace Tutorial13
             {
                 Spacing = 10,
                 Orientation = Orientation.Vertical,
-                Margin = new Thickness(10),
+                Margin = new Thickness(30, 20),
             };
 
             var sliderList = new List<(Panel panel, Action setInitialValue)>();
@@ -82,7 +97,19 @@ namespace Tutorial13
 
         (Panel, Action) BuildSlider(string label, double min, double max, double initialValue, Action<float> callback)
         {
+            TextBlock labelTextBlock = new TextBlock();
             Slider slider = new Slider();
+            SetLabelText(labelTextBlock, initialValue);
+            
+            void SetLabelText(TextBlock textBlock, double sliderValue)
+            {
+                textBlock.Text = string.Format("{0} ({1})",
+                    label,
+                    Math.Round(sliderValue, 2));
+            }
+            
+            slider.TickFrequency = 0.1;
+            slider.MinWidth = 350;
             slider.Maximum = max;
             slider.Minimum = min;
             slider.PropertyChanged += (s, e) =>
@@ -91,6 +118,8 @@ namespace Tutorial13
                     return;
 
                 callback((float)slider.Value);
+
+                SetLabelText(labelTextBlock, slider.Value);
             };
 
             void SetInitialValue()
@@ -99,9 +128,6 @@ namespace Tutorial13
             }
 
             SetInitialValue();
-
-            TextBlock labelTextBlock = new TextBlock();
-            labelTextBlock.Text = label;
 
             StackPanel panel = new StackPanel();
             panel.Children.Add(labelTextBlock);
