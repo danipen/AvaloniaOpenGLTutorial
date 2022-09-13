@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
-
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Layout;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Avalonia.Threading;
@@ -13,12 +16,98 @@ namespace Tutorial13
 {
     public partial class MainWindow : Window
     {
+        MyOpenGlControl _myControl;
+
         public MainWindow()
         {
-            InitializeComponent();
+            BuildComponents();
+        }
 
-            MyOpenGlControl myControl = new MyOpenGlControl();
-            Content = myControl;
+        void BuildComponents()
+        {
+            DockPanel panel = new DockPanel();
+
+            _myControl = new MyOpenGlControl();
+            StackPanel controls = BuildControls(_myControl);
+
+            var scroll = new ScrollViewer();
+            scroll.Content = controls;
+
+            panel.Children.Add(scroll);
+            panel.Children.Add(_myControl);
+
+            Content = panel;
+        }
+
+        StackPanel BuildControls(MyOpenGlControl openGlControl)
+        {
+            StackPanel controls = new StackPanel()
+            {
+                Spacing = 10,
+                Orientation = Orientation.Vertical,
+                Margin = new Thickness(10),
+            };
+
+            var sliderList = new List<(Panel panel, Action setInitialValue)>();
+            sliderList.Add(BuildSlider("Scale X", 0, 2, 1, (v) => openGlControl.SetScaleX(v)));
+            sliderList.Add(BuildSlider("Scale Y", 0, 2, 1, (v) => openGlControl.SetScaleY(v)));
+            sliderList.Add(BuildSlider("Scale Z", 0, 2, 1, (v) => openGlControl.SetScaleZ(v)));
+
+            sliderList.Add(BuildSlider("Translate X", -2, 2, 0, (v) => openGlControl.SetTranslateX(v)));
+            sliderList.Add(BuildSlider("Translate Y", -2, 2, 0, (v) => openGlControl.SetTranslateY(v)));
+            sliderList.Add(BuildSlider("Translate Z", -2, 2, 0, (v) => openGlControl.SetTranslateZ(v)));
+
+            sliderList.Add(BuildSlider("Rotate X", 0, 2 * MathF.PI, 0, (v) => openGlControl.SetRotateX(v)));
+            sliderList.Add(BuildSlider("Rotate Y", 0, 2 * MathF.PI, 0, (v) => openGlControl.SetRotateY(v)));
+            sliderList.Add(BuildSlider("Rotate Z", 0, 2 * MathF.PI, 0, (v) => openGlControl.SetRotateZ(v)));
+
+            sliderList.Add(BuildSlider("Field of View", 0.1, MathF.PI  - 0.1f, 60 * MathF.PI / 180, (v) => openGlControl.SetFieldOfView(v)));
+            sliderList.Add(BuildSlider("Near Clipping Plane", 0.01, 10, 1, (v) => openGlControl.SetNearPlane(v)));
+            sliderList.Add(BuildSlider("Far Clipping Plane", 10, 1000, 100, (v) => openGlControl.SetFarPlane(v)));
+
+            Button resetButton = new Button();
+            resetButton.Content = "Reset";
+            resetButton.Click += (s, e) =>
+            {
+                sliderList.ForEach(x => x.setInitialValue());
+            };
+
+            controls.Children.Add(resetButton);
+            controls.Children.AddRange(sliderList.Select(x => x.panel));
+
+            DockPanel.SetDock(controls, Dock.Left);
+
+            return controls;
+        }
+
+        (Panel, Action) BuildSlider(string label, double min, double max, double initialValue, Action<float> callback)
+        {
+            Slider slider = new Slider();
+            slider.Maximum = max;
+            slider.Minimum = min;
+            slider.PropertyChanged += (s, e) =>
+            {
+                if (e.Property != Slider.ValueProperty)
+                    return;
+
+                callback((float)slider.Value);
+            };
+
+            void SetInitialValue()
+            {
+                slider.Value = initialValue;
+            }
+
+            SetInitialValue();
+
+            TextBlock labelTextBlock = new TextBlock();
+            labelTextBlock.Text = label;
+
+            StackPanel panel = new StackPanel();
+            panel.Children.Add(labelTextBlock);
+            panel.Children.Add(slider);
+
+            return (panel, SetInitialValue);
         }
 
         unsafe class MyOpenGlControl : OpenGlControlBase
@@ -30,8 +119,17 @@ namespace Tutorial13
                 ConfigureShaders(gl);
                 CreateVertexBuffer(gl);
                 CreateIndexBuffer(gl);
+                ConfigureCamera();
 
                 gl.CheckError();
+            }
+
+            void ConfigureCamera()
+            {
+                Vector3 cameraPos = new Vector3(1.0f, 1.0f, -3.0f);
+                Vector3 cameraTarget = new Vector3(0.45f, 0.0f, 1.0f);
+                Vector3 cameraUp = new Vector3(0.0f, 1.0f, 0.0f);
+                _operations.SetCamera(cameraPos, cameraTarget, cameraUp);
             }
 
             protected override void OnOpenGlDeinit(GlInterface gl, int fb)
@@ -85,10 +183,18 @@ namespace Tutorial13
             {
                 _indices = new ushort[]
                 {
-                    0, 3, 1,
-                    1, 3, 2,
-                    2, 3, 0,
-                    0, 1, 2,
+                    0,1,3,
+                    3,1,2,
+                    4,5,7,
+                    7,5,6,
+                    8,9,11,
+                    11,9,10,
+                    12,13,15,
+                    15,13,14,
+                    16,17,19,
+                    19,17,18,
+                    20,21,23,
+                    23,21,22,
                 };
 
                 _ibo = gl.GenBuffer();
@@ -107,11 +213,14 @@ namespace Tutorial13
 
                 gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
 
-                _operations.SetPerspective(MathF.PI / 4f, (float)Bounds.Width, (float)Bounds.Height, 1f, 1000f);
-                _operations.Scale(MathF.Sin(_scale * 0.1f), MathF.Sin(_scale * 0.1f), MathF.Sin(_scale * 0.1f));
-                _operations.Position(MathF.Sin(_scale), 0, 0);
-                _operations.Rotate(MathF.Sin(_scale * MathF.PI / 2), MathF.Sin(_scale * MathF.PI / 2), MathF.Sin(_scale * MathF.PI / 2));
-                
+                // p.Rotate(0.0f, Scale, 0.0f);
+                // p.WorldPos(0.0f, 0.0f, 3.0f);
+
+                _operations.SetPerspective(_fieldOfView_rad, (float)Bounds.Width, (float)Bounds.Height, _nearPlane, _farPlane);
+                _operations.Scale(_scaleX, _scaleY, _scaleZ);
+                _operations.Position(_translateX, _translateY, _translateZ);
+                _operations.Rotate(_rotateX, _rotateY, _rotateZ);
+
                 Matrix4x4 transformation = _operations.GetTransformation();
                 gl.UniformMatrix4fv(_gTransformLoc, 1, false, &transformation);
 
@@ -125,10 +234,30 @@ namespace Tutorial13
             {
                 Vector3[] vertices = new Vector3[]
                 {
-                    new Vector3(-1.0f, -1.0f, 10f),
-                    new Vector3(0.0f, -1.0f, -10f),
-                    new Vector3(1.0f, -1.0f, 10f),
-                    new Vector3(0.0f, 1.0f, 10f),
+                    new Vector3(-0.5f,0.5f,-0.5f),
+                    new Vector3(-0.5f,-0.5f,-0.5f),
+                    new Vector3(0.5f,-0.5f,-0.5f),
+                    new Vector3(0.5f,0.5f,-0.5f),
+                    new Vector3(-0.5f,0.5f,0.5f),
+                    new Vector3(-0.5f,-0.5f,0.5f),
+                    new Vector3(0.5f,-0.5f,0.5f),
+                    new Vector3(0.5f,0.5f,0.5f),
+                    new Vector3(0.5f,0.5f,-0.5f),
+                    new Vector3(0.5f,-0.5f,-0.5f),
+                    new Vector3(0.5f,-0.5f,0.5f),
+                    new Vector3(0.5f,0.5f,0.5f),
+                    new Vector3(-0.5f,0.5f,-0.5f),
+                    new Vector3(-0.5f,-0.5f,-0.5f),
+                    new Vector3(-0.5f,-0.5f,0.5f),
+                    new Vector3(-0.5f,0.5f,0.5f),
+                    new Vector3(-0.5f,0.5f,0.5f),
+                    new Vector3(-0.5f,0.5f,-0.5f),
+                    new Vector3(0.5f,0.5f,-0.5f),
+                    new Vector3(0.5f,0.5f,0.5f),
+                    new Vector3(-0.5f,-0.5f,0.5f),
+                    new Vector3(-0.5f,-0.5f,-0.5f),
+                    new Vector3(0.5f,-0.5f,-0.5f),
+                    new Vector3(0.5f,-0.5f,0.5f),
                 };
 
                 _vbo = gl.GenBuffer();
@@ -180,6 +309,32 @@ namespace Tutorial13
             float _scale = 0.5f;
             ushort[]? _indices;
             readonly Pipeline _operations = new Pipeline();
+
+            float _scaleX;
+            float _scaleY;
+            float _scaleZ;
+            float _translateX;
+            float _translateY;
+            float _translateZ;
+            float _rotateX;
+            float _rotateY;
+            float _rotateZ;
+            float _fieldOfView_rad = 0.1f;
+            float _nearPlane = 0;
+            float _farPlane = 1;
+
+            public void SetScaleX(double v) => _scaleX = (float)v;
+            public void SetScaleY(double v) => _scaleY = (float)v;
+            public void SetScaleZ(double v) => _scaleZ = (float)v;
+            public void SetTranslateX(double v) => _translateX = (float)v;
+            public void SetTranslateY(double v) => _translateY = (float)v;
+            public void SetTranslateZ(double v) => _translateZ = (float)v;
+            public void SetRotateX(double v) => _rotateX = (float)v;
+            public void SetRotateY(double v) => _rotateY = (float)v;
+            public void SetRotateZ(double v) => _rotateZ = (float)v;
+            public void SetFieldOfView(double v) => _fieldOfView_rad = (float)v;
+            public void SetNearPlane(double v) => _nearPlane = (float)v;
+            public void SetFarPlane(double v) => _farPlane = (float)v;
         }
     }
 }

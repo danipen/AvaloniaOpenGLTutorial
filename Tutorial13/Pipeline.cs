@@ -1,7 +1,8 @@
 using System;
+using System.Drawing.Drawing2D;
 using System.Numerics;
 
-namespace Tutorial12
+namespace Tutorial13
 {
     internal class Pipeline
     {
@@ -47,19 +48,26 @@ namespace Tutorial12
             _farPlaneDistance = farPlaneDistance;
         }
 
+        public void SetCamera(Vector3 cameraPos, Vector3 cameraTarget, Vector3 cameraUp)
+        {
+            _cameraPos = cameraPos;
+            _cameraTarget = cameraTarget;
+            _cameraUp = cameraUp;
+        }
+
         public Matrix4x4 GetTransformation()
         {
             Matrix4x4 scale = Matrix4x4.CreateScale(_scaleData);
             Matrix4x4 rotate = Matrix4x4.CreateFromYawPitchRoll(_rotateData.Y, _rotateData.X, _rotateData.Z);
             Matrix4x4 translate = Matrix4x4.CreateTranslation(_positionData);
-
             Matrix4x4 perspective = Matrix4x4.CreatePerspectiveFieldOfView(
                 _fieldOfView,
                 _width / _height,
                 _nearPlaneDistance,
                 _farPlaneDistance);
+            // Matrix4x4 camera = Matrix4x4.CreateLookAt(_cameraPos, _cameraTarget, _cameraUp);
 
-            return perspective * translate * rotate * scale;
+            return /*perspective * /*camera */ translate * rotate * scale;
         }
 
         Vector3 _scaleData;
@@ -71,5 +79,8 @@ namespace Tutorial12
         float _height = 1f;
         float _nearPlaneDistance = 0.1f;
         float _farPlaneDistance = 1000f;
+        Vector3 _cameraPos;
+        Vector3 _cameraTarget;
+        Vector3 _cameraUp;
     };
 }
