@@ -239,9 +239,6 @@ namespace Tutorial13
 
                 gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
 
-                // p.Rotate(0.0f, Scale, 0.0f);
-                // p.WorldPos(0.0f, 0.0f, 3.0f);
-
                 _operations.SetPerspective(_fieldOfView_rad, (float)Bounds.Width, (float)Bounds.Height, _nearPlane, _farPlane);
                 _operations.Scale(_scaleX, _scaleY, _scaleZ);
                 _operations.Position(_translateX, _translateY, _translateZ);
@@ -303,24 +300,27 @@ namespace Tutorial13
 
 
             string VertexShaderSource => GlExtensions.GetShader(GlVersion, false, @" 
-                in vec3 Position;
+                in vec3 position;
                 uniform mat4 gTransform;
-
-                out vec4 Color;
+                out vec3 vertPos;
 
                 void main()
                 {
-                    gl_Position = gTransform * vec4(Position, 1.0);
-                    Color = vec4(clamp(Position, 0.0, 1.0), 1.0);
+                    vertPos = position;
+                    gl_Position = gTransform * vec4(position, 1.0);
                 }
             ");
             string VertexFragmentShaderSource => GlExtensions.GetShader(GlVersion, true, @"
-                in vec4 Color;
-                out vec4 FragColor;
+                in vec3 vertPos;
+                out vec4 fragColor;
 
                 void main()
                 {
-                    FragColor = Color;
+                        vec3 posAbs  = abs(vertPos);
+                        vec3 color = step(posAbs.yzx, posAbs) * step(posAbs.zxy, posAbs); 
+                        color += (1.0 - step(color.zxy * vertPos.zxy, vec3(0.0)));
+
+                        fragColor = vec4(color, 1.0);
                 }
             ");
 
