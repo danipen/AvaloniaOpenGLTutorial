@@ -1,4 +1,5 @@
 using System;
+using System.Drawing.Drawing2D;
 using System.Numerics;
 
 using Avalonia.Controls;
@@ -89,16 +90,14 @@ namespace Tutorial9
                 gl.Clear( GL_COLOR_BUFFER_BIT);
 
                 gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
-                
-                Matrix4x4 scaling = Matrix4x4.CreateScale(_scale);
 
-                // Matrix4x4 scaling = new Matrix4x4(
-                //     _scale, 0, 0.0f, 0.0f,
-                //     0, _scale, 0.0f, 0.0f,
-                //     0.0f, 0.0f, _scale, 0,
-                //     0.0f, 0.0f, 0.0f, 1.0f);
+                Matrix4x4 translating = Matrix4x4.CreateTranslation(_scale, 0, 0);
+                Matrix4x4 scaling = Matrix4x4.CreateScale(_scale);
+                Matrix4x4 rotating = Matrix4x4.CreateRotationX(_scale);
+
+                Matrix4x4 finalTransform = translating * rotating * scaling;
                 
-                gl.UniformMatrix4fv(_gTransformLoc, 1, false, &scaling);
+                gl.UniformMatrix4fv(_gTransformLoc, 1, false, &finalTransform);
 
                 gl.DrawArrays(GL_TRIANGLES, 0, new IntPtr(3));
                 gl.CheckError();
@@ -135,17 +134,21 @@ namespace Tutorial9
                 in vec3 Position;
                 uniform mat4 gTransform;
 
+                out vec4 Color;
+
                 void main()
                 {
                     gl_Position = gTransform * vec4(Position, 1.0);
+                    Color = vec4(clamp(Position, 0.0, 1.0), 1.0);
                 }
             ");
             string VertexFragmentShaderSource => GlExtensions.GetShader(GlVersion, true, @"
+                in vec4 Color;
                 out vec4 FragColor;
 
                 void main()
                 {
-                    FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+                    FragColor = Color;
                 }
             ");
 
