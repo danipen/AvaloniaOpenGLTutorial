@@ -100,9 +100,9 @@ namespace Tutorial10
 
             protected override void OnOpenGlRender(GlInterface gl, int fb)
             {
-                _scale += Delta;
+                _scale += _delta;
                 if ((_scale >= 1.0f) || (_scale < 0f)) {
-                    Delta *= -1.0f;
+                    _delta *= -1.0f;
                 }
 
                 gl.ClearColor(0, 0, 0, 1);
@@ -176,8 +176,8 @@ namespace Tutorial10
             int _gTransformLoc;
 
             float _scale = 0.6f;
-            float Delta = 0.005f;
-            ushort[] _indices;
+            float _delta = 0.005f;
+            ushort[]? _indices;
         }
     }
 }
