@@ -178,7 +178,7 @@ namespace Tutorial11
             int _gTransformLoc;
 
             float _scale = 0.5f;
-            ushort[] _indices;
+            ushort[]? _indices;
             Pipeline _operations = new Pipeline();
         }
     }

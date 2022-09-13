@@ -1,15 +1,15 @@
 using System;
-using System.Drawing.Drawing2D;
 using System.Numerics;
 
 using Avalonia.Controls;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Avalonia.Threading;
+using Common;
 using static Avalonia.OpenGL.GlConsts;
 using static Common.GlConstExtensions;
 
-namespace Tutorial10
+namespace Tutorial12
 {
     public partial class MainWindow : Window
     {
@@ -100,20 +100,22 @@ namespace Tutorial10
 
             protected override void OnOpenGlRender(GlInterface gl, int fb)
             {
-                _scale += _delta;
-                if ((_scale >= 1.0f) || (_scale < 0f)) {
-                    _delta *= -1.0f;
-                }
+                _scale += 0.005f;
 
                 gl.ClearColor(0, 0, 0, 1);
                 gl.Clear( GL_COLOR_BUFFER_BIT);
 
                 gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
 
-                Matrix4x4 rotating = Matrix4x4.CreateFromYawPitchRoll(_scale * 2 * MathF.PI , 0 ,0);
-                gl.UniformMatrix4fv(_gTransformLoc, 1, false, &rotating);
+                _operations.SetPerspective(MathF.PI / 4f, (float)Bounds.Width, (float)Bounds.Height, 1f, 1000f);
+                _operations.Scale(MathF.Sin(_scale * 0.1f), MathF.Sin(_scale * 0.1f), MathF.Sin(_scale * 0.1f));
+                _operations.Position(MathF.Sin(_scale), 0, 0);
+                _operations.Rotate(MathF.Sin(_scale * MathF.PI / 2), MathF.Sin(_scale * MathF.PI / 2), MathF.Sin(_scale * MathF.PI / 2));
+                
+                Matrix4x4 transformation = _operations.GetTransformation();
+                gl.UniformMatrix4fv(_gTransformLoc, 1, false, &transformation);
 
-                gl.DrawElements(GL_TRIANGLES, _indices.Length, GL_UNSIGNED_SHORT, IntPtr.Zero);
+                gl.DrawElements(GL_TRIANGLES, _indices!.Length, GL_UNSIGNED_SHORT, IntPtr.Zero);
                 gl.CheckError();
 
                 Dispatcher.UIThread.Post(InvalidateVisual, DispatcherPriority.Background);
@@ -123,10 +125,10 @@ namespace Tutorial10
             {
                 Vector3[] vertices = new Vector3[]
                 {
-                    new Vector3(-1.0f, -1.0f, 0.0f),
-                    new Vector3(0.0f, -1.0f, 1.0f),
-                    new Vector3(1.0f, -1.0f, 0.0f),
-                    new Vector3(0.0f, 1.0f, 0.0f),
+                    new Vector3(-1.0f, -1.0f, 10f),
+                    new Vector3(0.0f, -1.0f, -10f),
+                    new Vector3(1.0f, -1.0f, 10f),
+                    new Vector3(0.0f, 1.0f, 10f),
                 };
 
                 _vbo = gl.GenBuffer();
@@ -175,9 +177,9 @@ namespace Tutorial10
             int _shaderProgram;
             int _gTransformLoc;
 
-            float _scale = 0.6f;
-            float _delta = 0.005f;
+            float _scale = 0.5f;
             ushort[]? _indices;
+            readonly Pipeline _operations = new Pipeline();
         }
     }
 }

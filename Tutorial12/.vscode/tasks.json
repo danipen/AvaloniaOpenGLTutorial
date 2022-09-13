@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/tutorial8.csproj",
+                "${workspaceFolder}/tutorial12.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/tutorial8.csproj",
+                "${workspaceFolder}/tutorial12.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/tutorial8.csproj"
+                "${workspaceFolder}/tutorial12.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
