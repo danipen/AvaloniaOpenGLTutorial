@@ -73,7 +73,7 @@ namespace Tutorial6
                 gl.DrawArrays(GL_TRIANGLES, 0, new IntPtr(3));
                 gl.CheckError();
                 
-                _scale += DELTA;
+                _scale += Delta;
                 if ((_scale >= 1.0f) || (_scale <= -1.0f)) {
                     _scale *= -1.0f;
                 }
@@ -132,7 +132,7 @@ namespace Tutorial6
             int _gScaleLoc;
             
             float _scale = 0.5f;
-            const float DELTA = 0.005f;
+            const float Delta = 0.005f;
         }
     }
 }
