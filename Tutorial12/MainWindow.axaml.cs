@@ -107,6 +107,7 @@ namespace Tutorial12
 
                 gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
 
+                _operations.SetPerspective(MathF.PI / 4f, (float)Bounds.Width, (float)Bounds.Height, 1f, 1000f);
                 _operations.Scale(MathF.Sin(_scale * 0.1f), MathF.Sin(_scale * 0.1f), MathF.Sin(_scale * 0.1f));
                 _operations.Position(MathF.Sin(_scale), 0, 0);
                 _operations.Rotate(MathF.Sin(_scale * MathF.PI / 2), MathF.Sin(_scale * MathF.PI / 2), MathF.Sin(_scale * MathF.PI / 2));
@@ -124,10 +125,10 @@ namespace Tutorial12
             {
                 Vector3[] vertices = new Vector3[]
                 {
-                    new Vector3(-1.0f, -1.0f, 0.0f),
-                    new Vector3(0.0f, -1.0f, 1.0f),
-                    new Vector3(1.0f, -1.0f, 0.0f),
-                    new Vector3(0.0f, 1.0f, 0.0f),
+                    new Vector3(-1.0f, -1.0f, 10f),
+                    new Vector3(0.0f, -1.0f, -10f),
+                    new Vector3(1.0f, -1.0f, 10f),
+                    new Vector3(0.0f, 1.0f, 10f),
                 };
 
                 _vbo = gl.GenBuffer();
