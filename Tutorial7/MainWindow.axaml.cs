@@ -80,9 +80,9 @@ namespace Tutorial7
 
             protected override void OnOpenGlRender(GlInterface gl, int fb)
             {
-                _offset += Delta;
-                if ((_offset >= 1.0f) || (_offset <= -1.0f)) {
-                    _offset *= -1.0f;
+                _angle += Delta;
+                if ((_angle >= 1.0f) || (_angle <= -1.0f)) {
+                    _angle *= -1.0f;
                 }
 
                 gl.ClearColor(0, 0, 0, 1);
@@ -90,18 +90,16 @@ namespace Tutorial7
 
                 gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
 
-                Matrix4x4 translation = Matrix4x4.CreateTranslation(
-                    _offset,
-                    _offset,
-                    0);
+                float angle_rad = _angle * 2 * MathF.PI;
+                Matrix4x4 rotation = Matrix4x4.CreateRotationZ(angle_rad);
 
                 /* it creates new Matrix4x4(
-                    1.0f, 0.0f, 0.0f, 0.0f,
-                    0.0f, 1.0f, 0.0f, 0.0f,
+                    sin(angle),cos(angle), 0.0f, 0.0f,
+                    -cos(angle), sin(angle), 0.0f, 0.0f,
                     0.0f, 0.0f, 1.0f, 0,
-                    _offset, _offset, 0.0f, 1.0f);*/
+                    0.0f, 0.0f, 0.0f, 1.0f);*/
 
-                gl.UniformMatrix4fv(_gTransformLoc, 1, false, &translation);
+                gl.UniformMatrix4fv(_gTransformLoc, 1, false, &rotation);
 
                 gl.DrawArrays(GL_TRIANGLES, 0, new IntPtr(3));
                 gl.CheckError();
@@ -159,7 +157,7 @@ namespace Tutorial7
             int _shaderProgram;
             int _gTransformLoc;
 
-            float _offset = 0f;
+            float _angle = 0f;
             const float Delta = 0.005f;
         }
     }
