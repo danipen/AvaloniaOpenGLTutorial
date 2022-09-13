@@ -59,3 +59,7 @@ $RECYCLE.BIN/
 .idea
 */bin
 */obj
+##
+## Visual Studio
+##
+.vs/
