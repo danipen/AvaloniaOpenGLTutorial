@@ -8,7 +8,7 @@ using Avalonia.Threading;
 using static Avalonia.OpenGL.GlConsts;
 using static Common.GlConstExtensions;
 
-namespace Tutorial5
+namespace Tutorial6
 {
     public partial class MainWindow : Window
     {
@@ -61,7 +61,7 @@ namespace Tutorial5
 
                 gl.UseProgram(_shaderProgram);
                 
-                _gScaleLoc = gl.GetUniformLocationString(_shaderProgram, "gScale");
+                _gTranslationLoc = gl.GetUniformLocationString(_shaderProgram, "gTranslation");
             }
 
             void CreateFragmentShader(GlInterface gl)
@@ -80,21 +80,31 @@ namespace Tutorial5
 
             protected override void OnOpenGlRender(GlInterface gl, int fb)
             {
+                _offset += Delta;
+                if ((_offset >= 1.0f) || (_offset <= -1.0f)) {
+                    _offset *= -1.0f;
+                }
+                
                 gl.ClearColor(0, 0, 0, 1);
                 gl.Clear( GL_COLOR_BUFFER_BIT);
 
                 gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
-
                 
-                gl.Uniform1f(_gScaleLoc, _scale);
+                Matrix4x4 translation = Matrix4x4.CreateTranslation(
+                    _offset,
+                    _offset,
+                    0);
+                
+                /* it creates new Matrix4x4(
+                    1.0f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f, 0,
+                    _offset, _offset, 0.0f, 1.0f);*/
+                
+                gl.UniformMatrix4fv(_gTranslationLoc, 1, false, &translation);
                 
                 gl.DrawArrays(GL_TRIANGLES, 0, new IntPtr(3));
                 gl.CheckError();
-                
-                _scale += Delta;
-                if ((_scale >= 1.0f) || (_scale <= -1.0f)) {
-                    _scale *= -1.0f;
-                }
                 
                 Dispatcher.UIThread.Post(InvalidateVisual, DispatcherPriority.Background);
             }
@@ -126,11 +136,11 @@ namespace Tutorial5
 
             string VertexShaderSource => GlExtensions.GetShader(GlVersion, false, @" 
                 in vec3 Position;
-                uniform float gScale;
+                uniform mat4 gTranslation;
 
                 void main()
                 {
-                    gl_Position = vec4(gScale * Position.x, 0.5 * Position.y, Position.z, 1.0);
+                    gl_Position = gTranslation * vec4(Position, 1.0);
                 }
             ");
             string VertexFragmentShaderSource => GlExtensions.GetShader(GlVersion, true, @"
@@ -138,7 +148,7 @@ namespace Tutorial5
 
                 void main()
                 {
-                    FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+                    FragColor = vec4(0.0, 1.0, 0.0, 1.0);
                 }
             ");
 
@@ -147,9 +157,9 @@ namespace Tutorial5
             int _vertexShader;
             int _fragmentShader;
             int _shaderProgram;
-            int _gScaleLoc;
+            int _gTranslationLoc;
             
-            float _scale = 0.5f;
+            float _offset = 0f;
             const float Delta = 0.005f;
         }
     }
