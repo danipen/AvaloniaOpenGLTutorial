@@ -101,23 +101,18 @@ namespace Tutorial11
 
             protected override void OnOpenGlRender(GlInterface gl, int fb)
             {
-                _scale += Delta;
-                if ((_scale >= 1.0f) || (_scale < 0f)) {
-                    Delta *= -1.0f;
-                }
+                _scale += 0.005f;
 
                 gl.ClearColor(0, 0, 0, 1);
                 gl.Clear( GL_COLOR_BUFFER_BIT);
 
                 gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
 
-                //Matrix4x4 rotating = Matrix4x4.CreateFromYawPitchRoll(_scale * 2 * MathF.PI , 0 ,0);
-
-                _operations.Scale(_scale, 1, 1);
-                _operations.Rotate(_scale*MathF.PI * 2, 0,0);
-                _operations.Position(_scale, 0, 0);
-                Matrix4x4 transformation = _operations.GetTransformation();
+                _operations.Scale(MathF.Sin(_scale * 0.1f), MathF.Sin(_scale * 0.1f), MathF.Sin(_scale * 0.1f));
+                _operations.Position(MathF.Sin(_scale), 0, 0);
+                _operations.Rotate(MathF.Sin(_scale * MathF.PI / 2), MathF.Sin(_scale * MathF.PI / 2), MathF.Sin(_scale * MathF.PI / 2));
                 
+                Matrix4x4 transformation = _operations.GetTransformation();
                 gl.UniformMatrix4fv(_gTransformLoc, 1, false, &transformation);
 
                 gl.DrawElements(GL_TRIANGLES, _indices.Length, GL_UNSIGNED_SHORT, IntPtr.Zero);
@@ -182,8 +177,7 @@ namespace Tutorial11
             int _shaderProgram;
             int _gTransformLoc;
 
-            float _scale = 0.6f;
-            float Delta = 0.005f;
+            float _scale = 0.5f;
             ushort[] _indices;
             Pipeline _operations = new Pipeline();
         }
