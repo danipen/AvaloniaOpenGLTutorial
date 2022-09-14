@@ -93,9 +93,9 @@ namespace Tutorial14
             Vector3 oldTarget = _cameraTarget;
             Vector3 oldUp = _cameraUp;
             
-            _cameraPosition = new Vector3();
-            _cameraTarget = -Vector3.UnitZ;
-            _cameraUp = Vector3.UnitY;
+            _cameraPosition = new Vector3(0, 0, -2);
+            _cameraTarget = new Vector3(0, 0, 1f);
+            _cameraUp = new Vector3(0, 1, 0);
             
             CalculateLeftVector();
             
