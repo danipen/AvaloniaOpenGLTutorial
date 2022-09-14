@@ -59,17 +59,17 @@ namespace Tutorial14
                 Margin = new Thickness(30, 20)
             };
             
-            var cameraSliderList = new List<(Panel panel, Action setInitialValue)>
+            var cameraSliderList = new List<Panel>()
             {
-                BuildSlider("Camera position X", -100, 100, openGlControl.CameraPositionX, (v) => openGlControl.CameraPositionX = v),
-                BuildSlider("Camera position Y", -100, 100, openGlControl.CameraPositionY, (v) => openGlControl.CameraPositionY = v),
-                BuildSlider("Camera position Z", -10, 10, openGlControl.CameraPositionZ, (v) => openGlControl.CameraPositionZ = v),
-                BuildSlider("Camera target X", -100, 100, openGlControl.CameraTargetX, (v) => openGlControl.CameraTargetX = v),
-                BuildSlider("Camera target Y", -100, 100, openGlControl.CameraTargetY, (v) => openGlControl.CameraTargetY = v),
-                BuildSlider("Camera target Z", -100, 100, openGlControl.CameraTargetZ, (v) => openGlControl.CameraTargetZ = v),
-                BuildSlider("Camera up X", -1, 1, openGlControl.CameraUpX, (v) => openGlControl.CameraUpX = v),
-                BuildSlider("Camera up Y", -1, 1, openGlControl.CameraUpY, (v) => openGlControl.CameraUpY = v),
-                BuildSlider("Camera up Z", -1, 1, openGlControl.CameraUpZ, (v) => openGlControl.CameraUpZ = v),
+                BuildSlider("Camera position X", -100, 100, OpenGlControl.CameraPositionXProperty),
+                BuildSlider("Camera position Y", -100, 100, OpenGlControl.CameraPositionYProperty),
+                BuildSlider("Camera position Z", -10, 10, OpenGlControl.CameraPositionZProperty),
+                BuildSlider("Camera target X", -10, 10, OpenGlControl.CameraTargetXProperty),
+                BuildSlider("Camera target Y", -10, 10, OpenGlControl.CameraTargetYProperty),
+                BuildSlider("Camera target Z", -10, 10, OpenGlControl.CameraTargetZProperty),
+                BuildSlider("Camera up X", -1, 1, OpenGlControl.CameraUpXProperty),
+                BuildSlider("Camera up Y", -1, 1, OpenGlControl.CameraUpYProperty),
+                BuildSlider("Camera up Z", -1, 1, OpenGlControl.CameraUpZProperty),
             };
             
             Button resetCameraButton = new Button
@@ -79,11 +79,11 @@ namespace Tutorial14
             
             resetCameraButton.Click += (_, _) =>
             {
-                cameraSliderList.ForEach(x => x.setInitialValue());
+                _myControl.ResetCamera();
             };
             
             cameraControls.Children.Add(resetCameraButton);
-            cameraControls.Children.AddRange(cameraSliderList.Select(x => x.panel));
+            cameraControls.Children.AddRange(cameraSliderList);
 
             return cameraControls;
         }
@@ -97,20 +97,20 @@ namespace Tutorial14
                 Margin = new Thickness(30, 20),
             };
             
-            var viewSliderList = new List<(Panel panel, Action setInitialValue)>
+            var viewSliderList = new List<Panel>()
             {
-                BuildSlider("Scale X", 0, 4, openGlControl.ScaleX, (v) => openGlControl.ScaleX = v),
-                BuildSlider("Scale Y", 0, 4, openGlControl.ScaleY, (v) => openGlControl.ScaleY = v),
-                BuildSlider("Scale Z", 0, 4, openGlControl.ScaleZ, (v) => openGlControl.ScaleZ = v),
-                BuildSlider("Translate X", -2, 2, openGlControl.TranslateX, (v) => openGlControl.TranslateX = v),
-                BuildSlider("Translate Y", -2, 2, openGlControl.TranslateY, (v) => openGlControl.TranslateY = v),
-                BuildSlider("Translate Z", -4, 4, openGlControl.TranslateZ, (v) => openGlControl.TranslateZ = v),
-                BuildSlider("Rotate X", 0, 2 * MathF.PI, openGlControl.RotateX, (v) => openGlControl.RotateX = v),
-                BuildSlider("Rotate Y", 0, 2 * MathF.PI, openGlControl.RotateY, (v) => openGlControl.RotateY = v),
-                BuildSlider("Rotate Z", 0, 2 * MathF.PI, openGlControl.RotateZ, (v) => openGlControl.RotateZ = v),
-                BuildSlider("Field of View", 0.1, MathF.PI  - 0.1f, openGlControl.FieldOfViewAngle, (v) => openGlControl.FieldOfViewAngle = v, true),
-                BuildSlider("Near Clipping Plane", 0.01, 10, openGlControl.NearPlane, (v) => openGlControl.NearPlane = v),
-                BuildSlider("Far Clipping Plane", 10.1, 1000, openGlControl.FarPlane, (v) => openGlControl.FarPlane = v)
+                BuildSlider("Scale X", 0, 4, OpenGlControl.ScaleXProperty),
+                BuildSlider("Scale Y", 0, 4, OpenGlControl.ScaleYProperty),
+                BuildSlider("Scale Z", 0, 4, OpenGlControl.ScaleZProperty),
+                BuildSlider("Translate X", -2, 2, OpenGlControl.TranslateXProperty),
+                BuildSlider("Translate Y", -2, 2, OpenGlControl.TranslateYProperty),
+                BuildSlider("Translate Z", -4, 4, OpenGlControl.TranslateZProperty),
+                BuildSlider("Rotate X", 0, 2 * MathF.PI, OpenGlControl.RotateXProperty),
+                BuildSlider("Rotate Y", 0, 2 * MathF.PI, OpenGlControl.RotateYProperty),
+                BuildSlider("Rotate Z", 0, 2 * MathF.PI, OpenGlControl.RotateZProperty),
+                BuildSlider("Field of View", 0.1, MathF.PI  - 0.1f, OpenGlControl.FieldOfViewAngleProperty, true),
+                BuildSlider("Near Clipping Plane", 0.01, 10, OpenGlControl.NearPlaneProperty),
+                BuildSlider("Far Clipping Plane", 10.1, 1000, OpenGlControl.FarPlaneProperty)
             };
             
             Button resetViewButton = new Button
@@ -120,20 +120,23 @@ namespace Tutorial14
 
             resetViewButton.Click += (_, _) =>
             {
-                viewSliderList.ForEach(x => x.setInitialValue());
+                _myControl.ResetView();
             };
             
             viewControls.Children.Add(resetViewButton);
-            viewControls.Children.AddRange(viewSliderList.Select(x => x.panel));
+            viewControls.Children.AddRange(viewSliderList);
             
             return viewControls;
         }
 
-        (Panel, Action) BuildSlider(string label, double min, double max, double initialValue, Action<float> callback, bool convertToDegrees = false)
+        Panel BuildSlider(string label, double min, double max, AvaloniaProperty property, bool convertToDegrees = false)
         {
             TextBlock labelTextBlock = new TextBlock();
             Slider slider = new Slider();
-            SetLabelText(labelTextBlock, initialValue);
+
+            slider[!Slider.ValueProperty] = _myControl[!property];
+            
+            SetLabelText(labelTextBlock, slider.Value);
             
             void SetLabelText(TextBlock textBlock, double sliderValue)
             {
@@ -160,23 +163,14 @@ namespace Tutorial14
                 if (e.Property != RangeBase.ValueProperty)
                     return;
 
-                callback((float)slider.Value);
-
                 SetLabelText(labelTextBlock, slider.Value);
             };
-
-            void SetInitialValue()
-            {
-                slider.Value = initialValue;
-            }
-
-            SetInitialValue();
 
             StackPanel panel = new StackPanel();
             panel.Children.Add(labelTextBlock);
             panel.Children.Add(slider);
 
-            return (panel, SetInitialValue);
+            return panel;
         }
         
         OpenGlControl _myControl = null!;

@@ -103,14 +103,14 @@ namespace Tutorial14
             gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
 
             _operations.SetCamera(
-                new Vector3(_cameraPositionX, _cameraPositionY, _cameraPositionZ),
-                new Vector3(_cameraTargetX, _cameraTargetY, _cameraTargetZ),
-                new Vector3(_cameraUpX, _cameraUpY, _cameraUpZ));
-            _operations.SetPerspective(_fieldOfView, (float)Bounds.Width, (float)Bounds.Height, _nearPlane,
-                _farPlane);
-            _operations.Scale(_scaleX, _scaleY, _scaleZ);
-            _operations.Position(_translateX, _translateY, _translateZ);
-            _operations.Rotate(_rotateX, _rotateY, _rotateZ);
+                new Vector3((float)_cameraPositionX, (float)_cameraPositionY, (float)_cameraPositionZ),
+                new Vector3((float)_cameraTargetX, (float)_cameraTargetY, (float)_cameraTargetZ),
+                new Vector3((float)_cameraUpX, (float)_cameraUpY, (float)_cameraUpZ));
+            _operations.SetPerspective((float)_fieldOfView, (float)Bounds.Width, (float)Bounds.Height, (float)_nearPlane,
+                (float)_farPlane);
+            _operations.Scale((float)_scaleX, (float)_scaleY, (float)_scaleZ);
+            _operations.Position((float)_translateX, (float)_translateY, (float)_translateZ);
+            _operations.Rotate((float)_rotateX, (float)_rotateY, (float)_rotateZ);
 
             Matrix4x4 transformation = _operations.GetTransformation();
             gl.UniformMatrix4fv(_gTransformLoc, 1, false, &transformation);
