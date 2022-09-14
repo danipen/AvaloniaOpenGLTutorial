@@ -9,7 +9,7 @@ namespace Tutorial14
 {
     partial class OpenGlControl : Camera.IChangedCallback
     {
-        const float cameraPositionStepAmount = 1.1f;
+        const float POSITION_STEP_AMOUNT = 0.5f;
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -17,22 +17,22 @@ namespace Tutorial14
             {
                 case Key.W:
                 case Key.Up:
-                    _camera.MoveForward(cameraPositionStepAmount);
+                    _camera.MoveForward(POSITION_STEP_AMOUNT);
                     e.Handled = true;
                     break;
                 case Key.S:
                 case Key.Down:
-                    _camera.MoveBackward(cameraPositionStepAmount);
+                    _camera.MoveBackward(POSITION_STEP_AMOUNT);
                     e.Handled = true;
                     break;
                 case Key.A:
                 case Key.Left:
-                    _camera.MoveLeft(cameraPositionStepAmount);
+                    _camera.MoveLeft(POSITION_STEP_AMOUNT);
                     e.Handled = true;
                     break;
                 case Key.D:
                 case Key.Right:
-                    _camera.MoveRight(cameraPositionStepAmount);
+                    _camera.MoveRight(POSITION_STEP_AMOUNT);
                     e.Handled = true;
                     break;
             }

@@ -8,7 +8,7 @@ namespace Tutorial14
     {
         public static readonly DirectProperty<OpenGlControl, double> ScaleXProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                "ScaleX",
+               nameof(ScaleX),
                 o => o.ScaleX,
                 (o, v) => o.ScaleX = v);
 
@@ -20,7 +20,7 @@ namespace Tutorial14
 
         public static readonly DirectProperty<OpenGlControl, double> ScaleYProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                "ScaleY",
+               nameof(ScaleY),
                 o => o.ScaleY,
                 (o, v) => o.ScaleY = v);
 
@@ -32,7 +32,7 @@ namespace Tutorial14
 
         public static readonly DirectProperty<OpenGlControl, double> ScaleZProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                "ScaleZ",
+               nameof(ScaleZ),
                 o => o.ScaleZ,
                 (o, v) => o.ScaleZ = v);
 
@@ -44,7 +44,7 @@ namespace Tutorial14
 
         public static readonly DirectProperty<OpenGlControl, double> TranslateXProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                "TranslateX",
+               nameof(TranslateX),
                 o => o.TranslateX,
                 (o, v) => o.TranslateX = v);
 
@@ -56,7 +56,7 @@ namespace Tutorial14
 
         public static readonly DirectProperty<OpenGlControl, double> TranslateYProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                "TranslateY",
+               nameof(TranslateY),
                 o => o.TranslateY,
                 (o, v) => o.TranslateY = v);
 
@@ -68,7 +68,7 @@ namespace Tutorial14
 
         public static readonly DirectProperty<OpenGlControl, double> TranslateZProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                "TranslateZ",
+               nameof(TranslateZ),
                 o => o.TranslateZ,
                 (o, v) => o.TranslateZ = v);
 
@@ -80,7 +80,7 @@ namespace Tutorial14
 
         public static readonly DirectProperty<OpenGlControl, double> RotateXProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                "RotateX",
+               nameof(RotateX),
                 o => o.RotateX,
                 (o, v) => o.RotateX = v);
 
@@ -92,7 +92,7 @@ namespace Tutorial14
 
         public static readonly DirectProperty<OpenGlControl, double> RotateYProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                "RotateY",
+               nameof(RotateY),
                 o => o.RotateY,
                 (o, v) => o.RotateY = v);
 
@@ -104,7 +104,7 @@ namespace Tutorial14
 
         public static readonly DirectProperty<OpenGlControl, double> RotateZProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                "RotateZ",
+               nameof(RotateZ),
                 o => o.RotateZ,
                 (o, v) => o.RotateZ = v);
 
@@ -116,7 +116,7 @@ namespace Tutorial14
 
         public static readonly DirectProperty<OpenGlControl, double> FieldOfViewAngleProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                "FieldOfViewAngle",
+               nameof(FieldOfViewAngle),
                 o => o.FieldOfViewAngle,
                 (o, v) => o.FieldOfViewAngle = v);
 
@@ -128,7 +128,7 @@ namespace Tutorial14
 
         public static readonly DirectProperty<OpenGlControl, double> NearPlaneProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                "NearPlane",
+               nameof(NearPlane),
                 o => o.NearPlane,
                 (o, v) => o.NearPlane = v);
 
@@ -140,7 +140,7 @@ namespace Tutorial14
 
         public static readonly DirectProperty<OpenGlControl, double> FarPlaneProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                "FarPlane",
+               nameof(FarPlane),
                 o => o.FarPlane,
                 (o, v) => o.FarPlane = v);
 
@@ -152,138 +152,98 @@ namespace Tutorial14
 
         public static readonly DirectProperty<OpenGlControl, double> CameraPositionXProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                "CameraPositionX",
-                o => o.CameraPositionX,
-                (o, v) => o.CameraPositionX = v);
+                nameof(CameraPositionX),
+                o => o._camera.CameraPosition.X,
+                (o, v) => o._camera.CameraPosition = o._camera.CameraPosition with { X = (float)v});
 
         public double CameraPositionX
         {
-            get => _camera.CameraPosition.X;
-            set
-            {
-                float old = _camera.CameraPosition.X;
-                _camera.CameraPosition = _camera.CameraPosition with { X = (float)value };
-                RaisePropertyChanged(CameraPositionXProperty, old, value);
-            }
+            get => GetValue(CameraPositionXProperty);
+            set => SetValue(CameraPositionXProperty, value);
         }
 
         public static readonly DirectProperty<OpenGlControl, double> CameraPositionYProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                "CameraPositionY",
-                o => o.CameraPositionY,
-                (o, v) => o.CameraPositionY = v);
+                nameof(CameraPositionY),
+                o => o._camera.CameraPosition.Y,
+                (o, v) => o._camera.CameraPosition = o._camera.CameraPosition with { Y = (float)v});
 
         public double CameraPositionY
         {
-            get => _camera.CameraPosition.Y;
-            set
-            {
-                float old = _camera.CameraPosition.Y;
-                _camera.CameraPosition = _camera.CameraPosition with { Y = (float)value };
-                RaisePropertyChanged(CameraPositionYProperty, old, value);
-            }
+            get => GetValue(CameraPositionYProperty);
+            set => SetValue(CameraPositionYProperty, value);
         }
 
         public static readonly DirectProperty<OpenGlControl, double> CameraPositionZProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                "CameraPositionZ",
-                o => o.CameraPositionZ,
-                (o, v) => o.CameraPositionZ = v);
+                nameof(CameraPositionZ),
+                o => o._camera.CameraPosition.Z,
+                (o, v) => o._camera.CameraPosition = o._camera.CameraPosition with { Z = (float)v});
 
         public double CameraPositionZ
         {
-            get => _camera.CameraPosition.Z;
-            set
-            {
-                float old = _camera.CameraPosition.Z;
-                _camera.CameraPosition = _camera.CameraPosition with { Z = (float)value };
-                RaisePropertyChanged(CameraPositionZProperty, old, value);
-            }
+            get => GetValue(CameraPositionZProperty);
+            set => SetValue(CameraPositionZProperty, value);
         }
 
         public static readonly DirectProperty<OpenGlControl, double> CameraTargetXProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
                 nameof(CameraTargetX),
-                o => o.CameraTargetX,
-                (o, v) => o.CameraTargetX = v);
+                o => o._camera.CameraTarget.X,
+                (o, v) => o._camera.CameraTarget = o._camera.CameraTarget with { X = (float)v});
 
         public double CameraTargetX
         {
-            get => _camera.CameraTarget.X;
-            set
-            {
-                float old = _camera.CameraTarget.X;
-                _camera.CameraTarget = _camera.CameraTarget with { X = (float)value };
-                RaisePropertyChanged(CameraTargetXProperty, old, value);
-            }
+            get => GetValue(CameraTargetXProperty);
+            set => SetValue(CameraTargetXProperty, value);
         }
 
         public static readonly DirectProperty<OpenGlControl, double> CameraTargetYProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
                 nameof(CameraTargetY),
-                o => o.CameraTargetY,
-                (o, v) => o.CameraTargetY = v);
+                o => o._camera.CameraTarget.Y,
+                (o, v) => o._camera.CameraTarget = o._camera.CameraTarget with { Y = (float)v});
 
         public double CameraTargetY
         {
-            get => _camera.CameraTarget.Y;
-            set
-            {
-                float old = _camera.CameraTarget.Y;
-                _camera.CameraTarget = _camera.CameraTarget with { Y = (float)value };
-                RaisePropertyChanged(CameraTargetYProperty, old, value);
-            }
+            get => GetValue(CameraTargetYProperty);
+            set => SetValue(CameraTargetYProperty, value);
         }
 
         public static readonly DirectProperty<OpenGlControl, double> CameraTargetZProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
                 nameof(CameraTargetZ),
-                o => o.CameraTargetZ,
-                (o, v) => o.CameraTargetZ = v);
+                o => o._camera.CameraTarget.Z,
+                (o, v) => o._camera.CameraTarget = o._camera.CameraTarget with { Z = (float)v});
 
         public double CameraTargetZ
         {
-            get => _camera.CameraTarget.Z;
-            set
-            {
-                float old = _camera.CameraTarget.Z;
-                _camera.CameraTarget = _camera.CameraTarget with { Z = (float)value };
-                RaisePropertyChanged(CameraTargetZProperty, old, value);
-            }
+            get => GetValue(CameraTargetZProperty);
+            set => SetValue(CameraTargetZProperty, value);
         }
 
         public static readonly DirectProperty<OpenGlControl, double> CameraUpXProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
                 nameof(CameraUpX),
-                o => o.CameraUpX,
-                (o, v) => o.CameraUpX = v);
+                o => o._camera.CameraUp.X,
+                (o, v) => o._camera.CameraUp = o._camera.CameraUp with { X = (float)v});
 
         public double CameraUpX
         {
-            get => _camera.CameraUp.X;
-            set
-            {
-                float old = _camera.CameraUp.X;
-                _camera.CameraUp = _camera.CameraUp with { X = (float)value };
-                RaisePropertyChanged(CameraUpXProperty, old, value);
-            }
+            get => GetValue(CameraUpXProperty);
+            set => SetValue(CameraUpXProperty, value);
         }
 
         public static readonly DirectProperty<OpenGlControl, double> CameraUpYProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
                 nameof(CameraUpY),
-                o => o.CameraUpY,
-                (o, v) => o.CameraUpY = v);
+                o => o._camera.CameraUp.Y,
+                (o, v) => o._camera.CameraUp = o._camera.CameraUp with { Y = (float)v});
 
         public double CameraUpY
         {
-            get => _camera.CameraUp.Y;
-            set
-            {
-                float old = _camera.CameraUp.Y;
-                _camera.CameraUp = _camera.CameraUp with { Y = (float)value };
-                RaisePropertyChanged(CameraUpYProperty, old, value);
-            }
+            get => GetValue(CameraUpYProperty);
+            set => SetValue(CameraUpYProperty, value);
         }
 
         public static readonly DirectProperty<OpenGlControl, double> CameraUpZProperty =
@@ -344,6 +304,8 @@ namespace Tutorial14
 
         void InitCamera()
         {
+            _camera.InitFields();
+
             CameraPositionX = _camera.CameraPosition.X;
             CameraPositionY = _camera.CameraPosition.Y;
             CameraPositionZ = _camera.CameraPosition.Z;
