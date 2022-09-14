@@ -200,7 +200,7 @@ namespace Tutorial15
                 }
             }
 
-            m_AngleV = -ToDegrees(MathF.Asin(CameraTarget.Y));
+            m_AngleV = ToDegrees(MathF.Asin(CameraTarget.Y));
 
             m_OnUpperEdge = false;
             m_OnLowerEdge = false;
