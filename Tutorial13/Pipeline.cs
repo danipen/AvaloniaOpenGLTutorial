@@ -74,11 +74,11 @@ namespace Tutorial13
         Vector3 _positionData;
         Vector3 _rotateData;
 
-        float _fieldOfView = MathF.PI / 4f;
+        float _fieldOfView;
         float _width = 1f;
         float _height = 1f;
-        float _nearPlaneDistance = 0.1f;
-        float _farPlaneDistance = 1000f;
+        float _nearPlaneDistance;
+        float _farPlaneDistance;
         Vector3 _cameraPos;
         Vector3 _cameraTarget;
         Vector3 _cameraUp;
