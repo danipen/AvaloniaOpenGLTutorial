@@ -50,7 +50,9 @@ namespace Tutorial12
         public Matrix4x4 GetTransformation()
         {
             Matrix4x4 scale = Matrix4x4.CreateScale(_scaleData);
-            Matrix4x4 rotate = Matrix4x4.CreateFromYawPitchRoll(_rotateData.Y, _rotateData.X, _rotateData.Z);
+            Matrix4x4 rotateX = Matrix4x4.CreateRotationX(_rotateData.X);
+            Matrix4x4 rotateY = Matrix4x4.CreateRotationY(_rotateData.Y);
+            Matrix4x4 rotateZ = Matrix4x4.CreateRotationZ(_rotateData.Z);
             Matrix4x4 translate = Matrix4x4.CreateTranslation(_positionData);
 
             Matrix4x4 perspective = Matrix4x4.CreatePerspectiveFieldOfView(
@@ -59,7 +61,7 @@ namespace Tutorial12
                 _nearPlaneDistance,
                 _farPlaneDistance);
 
-            return perspective * translate * rotate * scale;
+            return scale * rotateX * rotateY * rotateZ * translate * perspective;
         }
 
         Vector3 _scaleData;
