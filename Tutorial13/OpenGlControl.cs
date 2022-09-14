@@ -2,18 +2,12 @@ using System;
 using System.Numerics;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
-using Avalonia.Threading;
-using Avalonia.OpenGL;
-using Avalonia.OpenGL.Controls;
-using Avalonia.Threading;
-using Common;
-using System.Numerics;
 using static Avalonia.OpenGL.GlConsts;
 using static Common.GlConstExtensions;
 
 namespace Tutorial13
 {
-    unsafe class OpenGlControl : OpenGlControlBase
+    unsafe partial class OpenGlControl : OpenGlControlBase
     {
         protected override void OnOpenGlInit(GlInterface gl, int fb)
         {
@@ -110,15 +104,13 @@ namespace Tutorial13
 
         protected override void OnOpenGlRender(GlInterface gl, int fb)
         {
-            _scale += 0.005f;
-
             gl.ClearColor(0, 0, 0, 1);
             gl.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             gl.Enable(GL_DEPTH_TEST);
 
             gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
 
-            _operations.SetPerspective(_fieldOfView_rad, (float)Bounds.Width, (float)Bounds.Height, _nearPlane,
+            _operations.SetPerspective(_fieldOfView, (float)Bounds.Width, (float)Bounds.Height, _nearPlane,
                 _farPlane);
             _operations.Scale(_scaleX, _scaleY, _scaleZ);
             _operations.Position(_translateX, _translateY, _translateZ);
@@ -129,8 +121,6 @@ namespace Tutorial13
 
             gl.DrawElements(GL_TRIANGLES, _indices!.Length, GL_UNSIGNED_SHORT, IntPtr.Zero);
             gl.CheckError();
-
-            Dispatcher.UIThread.Post(InvalidateVisual, DispatcherPriority.Background);
         }
 
         void CreateVertexBuffer(GlInterface gl)
@@ -178,7 +168,6 @@ namespace Tutorial13
             gl.EnableVertexAttribArray(0);
         }
 
-
         string VertexShaderSource => GlExtensions.GetShader(GlVersion, false, @" 
                 in vec3 position;
                 uniform mat4 gTransform;
@@ -213,34 +202,7 @@ namespace Tutorial13
         int _shaderProgram;
         int _gTransformLoc;
 
-        float _scale = 0.5f;
         ushort[]? _indices;
         readonly Pipeline _operations = new Pipeline();
-
-        float _scaleX;
-        float _scaleY;
-        float _scaleZ;
-        float _translateX;
-        float _translateY;
-        float _translateZ;
-        float _rotateX;
-        float _rotateY;
-        float _rotateZ;
-        float _fieldOfView_rad = 0.1f;
-        float _nearPlane = 0;
-        float _farPlane = 1;
-
-        public void SetScaleX(double v) => _scaleX = (float)v;
-        public void SetScaleY(double v) => _scaleY = (float)v;
-        public void SetScaleZ(double v) => _scaleZ = (float)v;
-        public void SetTranslateX(double v) => _translateX = (float)v;
-        public void SetTranslateY(double v) => _translateY = (float)v;
-        public void SetTranslateZ(double v) => _translateZ = (float)v;
-        public void SetRotateX(double v) => _rotateX = (float)v;
-        public void SetRotateY(double v) => _rotateY = (float)v;
-        public void SetRotateZ(double v) => _rotateZ = (float)v;
-        public void SetFieldOfView(double v) => _fieldOfView_rad = (float)v;
-        public void SetNearPlane(double v) => _nearPlane = (float)v;
-        public void SetFarPlane(double v) => _farPlane = (float)v;
     }
 }
