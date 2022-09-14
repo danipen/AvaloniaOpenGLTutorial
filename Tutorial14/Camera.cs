@@ -55,7 +55,7 @@ namespace Tutorial14
             _changedCallback = changedCallback;
             InitCamera();
         }
-        
+
         public void ResetCamera()
         {
             InitCamera();
@@ -73,19 +73,22 @@ namespace Tutorial14
 
         public void MoveLeft(float stepAmount)
         {
-            CameraPosition += _left * stepAmount;
+            CameraPosition -= _left * stepAmount;
         }
 
         public void MoveRight(float stepAmount)
         {
-            CameraPosition -= _left * stepAmount;
+            CameraPosition += _left * stepAmount;
         }
 
-        public void InitFields()
+        public void MoveUp(float stepAmount)
         {
-            _cameraPosition = Vector3.Zero;
-            _cameraTarget = Vector3.UnitZ;
-            _cameraUp = Vector3.UnitY;
+            CameraPosition -= CameraUp * stepAmount;
+        }
+
+        public void MoveDown(float stepAmount)
+        {
+            CameraPosition += CameraUp * stepAmount;
         }
 
         void CalculateLeftVector()
@@ -99,18 +102,18 @@ namespace Tutorial14
             Vector3 oldPosition = _cameraPosition;
             Vector3 oldTarget = _cameraTarget;
             Vector3 oldUp = _cameraUp;
-            
+
             _cameraPosition = new Vector3(0, 0, -2);
             _cameraTarget = new Vector3(0, 0, 1f);
             _cameraUp = new Vector3(0, 1, 0);
-            
+
             CalculateLeftVector();
-            
+
             _changedCallback.PositionChanged(oldPosition, _cameraPosition);
             _changedCallback.TargetChanged(oldTarget, _cameraTarget);
             _changedCallback.PositionChanged(oldUp, _cameraUp);
         }
-        
+
         Vector3 _cameraPosition;
         Vector3 _cameraTarget;
         Vector3 _cameraUp;

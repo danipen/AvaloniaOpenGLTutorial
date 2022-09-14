@@ -15,6 +15,14 @@ namespace Tutorial14
             base.OnKeyDown(e);
             switch (e.Key)
             {
+                case Key.PageUp:
+                    _camera.MoveUp(POSITION_STEP_AMOUNT);
+                    e.Handled = true;
+                    break;
+                case Key.PageDown:
+                    _camera.MoveDown(POSITION_STEP_AMOUNT);
+                    e.Handled = true;
+                    break;
                 case Key.W:
                 case Key.Up:
                     _camera.MoveForward(POSITION_STEP_AMOUNT);

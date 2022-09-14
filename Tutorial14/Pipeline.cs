@@ -60,13 +60,13 @@ namespace Tutorial14
             Matrix4x4 rotateY = Matrix4x4.CreateRotationY(_rotateData.Y);
             Matrix4x4 rotateZ = Matrix4x4.CreateRotationZ(_rotateData.Z);
             Matrix4x4 translate = Matrix4x4.CreateTranslation(_positionData);
-            Matrix4x4 camera = Matrix4x4.CreateLookAt(_cameraPos, _cameraTarget, _cameraUp);
+            Matrix4x4 camera = Matrix4x4.CreateLookAt(_cameraPos, _cameraTarget + _cameraPos, _cameraUp);
             Matrix4x4 perspective = Matrix4x4.CreatePerspectiveFieldOfView(
                 _fieldOfView,
                 _width / _height,
                 _nearPlaneDistance,
                 _farPlaneDistance);
-            
+
             return scale * rotateX * rotateY * rotateZ * translate * camera * perspective;
         }
 
