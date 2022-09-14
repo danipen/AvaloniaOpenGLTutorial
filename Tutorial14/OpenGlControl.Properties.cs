@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using Avalonia;
 
 namespace Tutorial14
@@ -250,13 +251,46 @@ namespace Tutorial14
                 "CameraUpZ",
                 o => o.CameraUpZ,
                 (o, v) => o.CameraUpZ = v);
-
+        
         public double CameraUpZ
         {
             get => _cameraUpZ;
             set => SetAndRaise(CameraUpZProperty, ref _cameraUpZ, value);
         }
+
+        public Vector3 CameraPosition
+        {
+            get => new Vector3((float)_cameraPositionX, (float)_cameraPositionY, (float)_cameraPositionZ);
+            set
+            {
+                CameraPositionX = value.X;
+                CameraPositionY = value.Y;
+                CameraPositionZ = value.Z;
+            } 
+        }
         
+        public Vector3 CameraTarget
+        {
+            get => new Vector3((float)_cameraTargetX, (float)_cameraTargetY, (float)_cameraTargetZ);
+            set
+            {
+                CameraTargetX = value.X;
+                CameraTargetY = value.Y;
+                CameraTargetZ = value.Z;
+            } 
+        }
+        
+        public Vector3 CameraUp
+        {
+            get => new Vector3((float)_cameraUpX, (float)_cameraUpY, (float)_cameraUpZ);
+            set
+            {
+                CameraUpX = value.X;
+                CameraUpY = value.Y;
+                CameraUpZ = value.Z;
+            } 
+        }
+
         public void ResetCamera()
         {
             InitCamera();            
@@ -271,6 +305,7 @@ namespace Tutorial14
         {
             InitCamera();
             InitView();
+            Focusable = true;
         }
         
         static OpenGlControl()
