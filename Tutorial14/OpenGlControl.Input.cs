@@ -1,90 +1,62 @@
 using System.Numerics;
+using Avalonia;
 using Avalonia.Automation.Provider;
+using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.OpenGL.Controls;
 
 namespace Tutorial14
 {
-    partial class OpenGlControl
+    partial class OpenGlControl : Camera.IChangedCallback
     {
-        const float cameraPositionStep = 1.1f;
+        const float cameraPositionStepAmount = 1.1f;
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
             switch (e.Key)
             {
+                case Key.W:
                 case Key.Up:
-                    CameraPosition += CameraTarget * cameraPositionStep;
+                    _camera.MoveForward(cameraPositionStepAmount);
                     e.Handled = true;
                     break;
+                case Key.S:
                 case Key.Down:
-                    CameraPosition -= CameraTarget * cameraPositionStep;
+                    _camera.MoveBackward(cameraPositionStepAmount);
                     e.Handled = true;
                     break;
+                case Key.A:
                 case Key.Left:
-                    Vector3 left = Vector3.Cross(CameraTarget, CameraUp);
-                    left = Vector3.Normalize(left);
-                    left *= cameraPositionStep;
-                    CameraPosition += left;
+                    _camera.MoveLeft(cameraPositionStepAmount);
                     e.Handled = true;
                     break;
+                case Key.D:
                 case Key.Right:
-                    Vector3 right = Vector3.Cross(CameraUp, CameraTarget);
-                    right = Vector3.Normalize(right);
-                    right *= cameraPositionStep;
-                    CameraPosition += right;
+                    _camera.MoveRight(cameraPositionStepAmount);
                     e.Handled = true;
                     break;
             }
-            
-            // switch (Key) {
-            //
-            //     case OGLDEV_KEY_UP:
-            //     {
-            //         m_pos += (m_target * STEP_SCALE);
-            //         Ret = true;
-            //     }
-            //         break;
-            //
-            //     case OGLDEV_KEY_DOWN:
-            //     {
-            //         m_pos -= (m_target * STEP_SCALE);
-            //         Ret = true;
-            //     }
-            //         break;
-            //
-            //     case OGLDEV_KEY_LEFT:
-            //     {
-            //         Vector3f Left = m_target.Cross(m_up);
-            //         Left.Normalize();
-            //         Left *= STEP_SCALE;
-            //         m_pos += Left;
-            //         Ret = true;
-            //     }
-            //         break;
-            //
-            //     case OGLDEV_KEY_RIGHT:
-            //     {
-            //         Vector3f Right = m_up.Cross(m_target);
-            //         Right.Normalize();
-            //         Right *= STEP_SCALE;
-            //         m_pos += Right;
-            //         Ret = true;
-            //     }
-            //         break;
-            //
-            //     case OGLDEV_KEY_PAGE_UP:
-            //         m_pos.y += STEP_SCALE;
-            //         break;
-            //
-            //     case OGLDEV_KEY_PAGE_DOWN:
-            //         m_pos.y -= STEP_SCALE;
-            //         break;
-            //
-            //     default:
-            //         break;            
-            // }
+        }
 
+        public void PositionChanged(Vector3 oldVector, Vector3 newVector)
+        {
+            RaisePropertyChanged(CameraPositionXProperty, oldVector.X, newVector.X);
+            RaisePropertyChanged(CameraPositionYProperty, oldVector.Y, newVector.Y);
+            RaisePropertyChanged(CameraPositionZProperty, oldVector.Z, newVector.Z);
+        }
+
+        public void TargetChanged(Vector3 oldVector, Vector3 newVector)
+        {
+            RaisePropertyChanged(CameraTargetXProperty, oldVector.X, newVector.X);
+            RaisePropertyChanged(CameraTargetYProperty, oldVector.Y, newVector.Y);
+            RaisePropertyChanged(CameraTargetZProperty, oldVector.Z, newVector.Z);
+        }
+
+        public void UpChanged(Vector3 oldVector, Vector3 newVector)
+        {
+            RaisePropertyChanged(CameraUpXProperty, oldVector.X, newVector.X);
+            RaisePropertyChanged(CameraUpYProperty, oldVector.Y, newVector.Y);
+            RaisePropertyChanged(CameraUpZProperty, oldVector.Z, newVector.Z);
         }
     }
 }

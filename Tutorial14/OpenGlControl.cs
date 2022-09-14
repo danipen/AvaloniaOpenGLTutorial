@@ -18,7 +18,7 @@ namespace Tutorial14
             ConfigureShaders(gl);
             CreateVertexBuffer(gl);
             CreateIndexBuffer(gl);
-            
+
             gl.CheckError();
         }
 
@@ -40,7 +40,7 @@ namespace Tutorial14
 
             gl.CheckError();
         }
-        
+
         void ConfigureShaders(GlInterface gl)
         {
             _shaderProgram = gl.CreateProgram();
@@ -104,9 +104,9 @@ namespace Tutorial14
             gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
 
             _operations.SetCamera(
-                new Vector3((float)_cameraPositionX, (float)_cameraPositionY, (float)_cameraPositionZ),
-                new Vector3((float)_cameraTargetX, (float)_cameraTargetY, (float)_cameraTargetZ),
-                new Vector3((float)_cameraUpX, (float)_cameraUpY, (float)_cameraUpZ));
+                _camera.CameraPosition,
+                _camera.CameraTarget,
+                _camera.CameraUp);
             _operations.SetPerspective((float)_fieldOfView, (float)Bounds.Width, (float)Bounds.Height, (float)_nearPlane,
                 (float)_farPlane);
             _operations.Scale((float)_scaleX, (float)_scaleY, (float)_scaleZ);
