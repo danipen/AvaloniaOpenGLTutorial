@@ -69,7 +69,7 @@ namespace Tutorial13
                 _farPlaneDistance);
             // Matrix4x4 camera = Matrix4x4.CreateLookAt(_cameraPos, _cameraTarget, _cameraUp);
 
-            return /*perspective * /*camera */ scale * rotateX * rotateY * rotateZ * translate;
+            return /*camera */ scale * rotateX * rotateY * rotateZ * translate * perspective;
         }
 
         Vector3 _scaleData;

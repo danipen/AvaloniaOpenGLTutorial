@@ -166,17 +166,17 @@ namespace Tutorial13
                 FarPlaneProperty);
         }
         
-        float _scaleX = 1;
-        float _scaleY = 1;
-        float _scaleZ = 1;
+        float _scaleX = 1f;
+        float _scaleY = 1f;
+        float _scaleZ = 1f;
         float _translateX = 0;
         float _translateY = 0;
-        float _translateZ = 0;
+        float _translateZ = -2;
         float _rotateX = 0;
         float _rotateY = 0;
         float _rotateZ = 0;
         float _fieldOfView = 60 * MathF.PI / 180;
-        float _nearPlane = 0.1f;
+        float _nearPlane = 0.01f;
         float _farPlane = 100;
     }
 }

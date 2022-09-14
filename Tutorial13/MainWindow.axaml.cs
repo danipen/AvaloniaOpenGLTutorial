@@ -62,18 +62,18 @@ namespace Tutorial13
 
             var sliderList = new List<(Panel panel, Action setInitialValue)>
             {
-                BuildSlider("Scale X", 0, 2, openGlControl.ScaleX, (v) => openGlControl.ScaleX = v),
-                BuildSlider("Scale Y", 0, 2, openGlControl.ScaleY, (v) => openGlControl.ScaleY = v),
-                BuildSlider("Scale Z", 0, 2, openGlControl.ScaleZ, (v) => openGlControl.ScaleZ = v),
+                BuildSlider("Scale X", 0, 4, openGlControl.ScaleX, (v) => openGlControl.ScaleX = v),
+                BuildSlider("Scale Y", 0, 4, openGlControl.ScaleY, (v) => openGlControl.ScaleY = v),
+                BuildSlider("Scale Z", 0, 4, openGlControl.ScaleZ, (v) => openGlControl.ScaleZ = v),
                 BuildSlider("Translate X", -2, 2, openGlControl.TranslateX, (v) => openGlControl.TranslateX = v),
                 BuildSlider("Translate Y", -2, 2, openGlControl.TranslateY, (v) => openGlControl.TranslateY = v),
-                BuildSlider("Translate Z", -2, 2, openGlControl.TranslateZ, (v) => openGlControl.TranslateZ = v),
+                BuildSlider("Translate Z", -4, 4, openGlControl.TranslateZ, (v) => openGlControl.TranslateZ = v),
                 BuildSlider("Rotate X", 0, 2 * MathF.PI, openGlControl.RotateX, (v) => openGlControl.RotateX = v),
                 BuildSlider("Rotate Y", 0, 2 * MathF.PI, openGlControl.RotateY, (v) => openGlControl.RotateY = v),
                 BuildSlider("Rotate Z", 0, 2 * MathF.PI, openGlControl.RotateZ, (v) => openGlControl.RotateZ = v),
-                BuildSlider("Field of View", 0.1, MathF.PI  - 0.1f, openGlControl.FieldOfViewAngle, (v) => openGlControl.FieldOfViewAngle = v),
+                BuildSlider("Field of View", 0.1, MathF.PI  - 0.1f, openGlControl.FieldOfViewAngle, (v) => openGlControl.FieldOfViewAngle = v, true),
                 BuildSlider("Near Clipping Plane", 0.01, 10, openGlControl.NearPlane, (v) => openGlControl.NearPlane = v),
-                BuildSlider("Far Clipping Plane", 10, 1000, openGlControl.FarPlane, (v) => openGlControl.FarPlane = v)
+                BuildSlider("Far Clipping Plane", 10.1, 1000, openGlControl.FarPlane, (v) => openGlControl.FarPlane = v)
             };
 
             Button resetButton = new Button
@@ -94,7 +94,7 @@ namespace Tutorial13
             return controls;
         }
 
-        (Panel, Action) BuildSlider(string label, double min, double max, double initialValue, Action<float> callback)
+        (Panel, Action) BuildSlider(string label, double min, double max, double initialValue, Action<float> callback, bool convertToDegrees = false)
         {
             TextBlock labelTextBlock = new TextBlock();
             Slider slider = new Slider();
@@ -102,6 +102,15 @@ namespace Tutorial13
             
             void SetLabelText(TextBlock textBlock, double sliderValue)
             {
+                if (convertToDegrees)
+                {
+                    textBlock.Text = string.Format("{0} ({1}º)",
+                        label,
+                        (int)(sliderValue * 180 / MathF.PI));
+
+                    return;
+                }
+
                 textBlock.Text = string.Format("{0} ({1})",
                     label,
                     Math.Round(sliderValue, 2));
