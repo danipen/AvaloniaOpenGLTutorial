@@ -16,17 +16,8 @@ namespace Tutorial13
             ConfigureShaders(gl);
             CreateVertexBuffer(gl);
             CreateIndexBuffer(gl);
-            ConfigureCamera();
-
+            
             gl.CheckError();
-        }
-
-        void ConfigureCamera()
-        {
-            Vector3 cameraPos = new Vector3(1.0f, 1.0f, -3.0f);
-            Vector3 cameraTarget = new Vector3(0.45f, 0.0f, 1.0f);
-            Vector3 cameraUp = new Vector3(0.0f, 1.0f, 0.0f);
-            _operations.SetCamera(cameraPos, cameraTarget, cameraUp);
         }
 
         protected override void OnOpenGlDeinit(GlInterface gl, int fb)
@@ -110,6 +101,10 @@ namespace Tutorial13
 
             gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
 
+            _operations.SetCamera(
+                new Vector3(_cameraPositionX, _cameraPositionY, _cameraPositionZ),
+                new Vector3(_cameraTargetX, _cameraTargetY, _cameraTargetZ),
+                new Vector3(_cameraUpX, _cameraUpY, _cameraUpZ));
             _operations.SetPerspective(_fieldOfView, (float)Bounds.Width, (float)Bounds.Height, _nearPlane,
                 _farPlane);
             _operations.Scale(_scaleX, _scaleY, _scaleZ);

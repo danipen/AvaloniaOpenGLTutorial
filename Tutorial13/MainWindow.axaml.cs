@@ -29,38 +29,87 @@ namespace Tutorial13
                 Height = 600
             };
 
-            StackPanel controls = BuildControls(_myControl);
+            StackPanel viewControls = BuildViewControls(_myControl);
+            StackPanel cameraControls = BuildCameraControls(_myControl);
 
-            var scroll = new ScrollViewer
+            var viewPanelScroll = new ScrollViewer
             {
-                Content = controls
+                Content = viewControls
+            };
+            
+            var cameraPanelScroll = new ScrollViewer
+            {
+                Content = cameraControls
             };
 
             Panel openGlControlContainer = new Panel
             {
                 Background = Brushes.LightGray
             };
+            
             openGlControlContainer.Children.Add(_myControl);
             
-            panel.Children.Add(scroll);
+            DockPanel.SetDock(viewPanelScroll, Dock.Left);
+            DockPanel.SetDock(cameraPanelScroll, Dock.Right);
+            
+            panel.Children.Add(viewPanelScroll);
+            panel.Children.Add(cameraPanelScroll);
             panel.Children.Add(openGlControlContainer);
 
             Content = panel;
 
-            Width = 1200;
+            Width = 1500;
             Height = 750;
         }
 
-        StackPanel BuildControls(OpenGlControl openGlControl)
+        StackPanel BuildCameraControls(OpenGlControl openGlControl)
         {
-            StackPanel controls = new StackPanel()
+            StackPanel cameraControls = new StackPanel()
+            {
+                Spacing = 10,
+                Orientation = Orientation.Vertical,
+                Margin = new Thickness(30, 20)
+            };
+            
+            var cameraSliderList = new List<(Panel panel, Action setInitialValue)>
+            {
+                BuildSlider("Camera position X", -100, 100, openGlControl.CameraPositionX, (v) => openGlControl.CameraPositionX = v),
+                BuildSlider("Camera position Y", -100, 100, openGlControl.CameraPositionY, (v) => openGlControl.CameraPositionY = v),
+                BuildSlider("Camera position Z", -10, 10, openGlControl.CameraPositionZ, (v) => openGlControl.CameraPositionZ = v),
+                BuildSlider("Camera target X", -100, 100, openGlControl.CameraTargetX, (v) => openGlControl.CameraTargetX = v),
+                BuildSlider("Camera target Y", -100, 100, openGlControl.CameraTargetY, (v) => openGlControl.CameraTargetY = v),
+                BuildSlider("Camera target Z", -100, 100, openGlControl.CameraTargetZ, (v) => openGlControl.CameraTargetZ = v),
+                BuildSlider("Camera up X", -1, 1, openGlControl.CameraUpX, (v) => openGlControl.CameraUpX = v),
+                BuildSlider("Camera up Y", -1, 1, openGlControl.CameraUpY, (v) => openGlControl.CameraUpY = v),
+                BuildSlider("Camera up Z", -1, 1, openGlControl.CameraUpZ, (v) => openGlControl.CameraUpZ = v),
+            };
+            
+            Button resetCameraButton = new Button
+            {
+                Content = "Reset"
+            };
+            
+            resetCameraButton.Click += (_, _) =>
+            {
+                cameraSliderList.ForEach(x => x.setInitialValue());
+            };
+            
+            cameraControls.Children.Add(resetCameraButton);
+            cameraControls.Children.AddRange(cameraSliderList.Select(x => x.panel));
+
+            return cameraControls;
+        }
+        
+        StackPanel BuildViewControls(OpenGlControl openGlControl)
+        {
+            StackPanel viewControls = new StackPanel()
             {
                 Spacing = 10,
                 Orientation = Orientation.Vertical,
                 Margin = new Thickness(30, 20),
             };
-
-            var sliderList = new List<(Panel panel, Action setInitialValue)>
+            
+            var viewSliderList = new List<(Panel panel, Action setInitialValue)>
             {
                 BuildSlider("Scale X", 0, 4, openGlControl.ScaleX, (v) => openGlControl.ScaleX = v),
                 BuildSlider("Scale Y", 0, 4, openGlControl.ScaleY, (v) => openGlControl.ScaleY = v),
@@ -75,23 +124,21 @@ namespace Tutorial13
                 BuildSlider("Near Clipping Plane", 0.01, 10, openGlControl.NearPlane, (v) => openGlControl.NearPlane = v),
                 BuildSlider("Far Clipping Plane", 10.1, 1000, openGlControl.FarPlane, (v) => openGlControl.FarPlane = v)
             };
-
-            Button resetButton = new Button
+            
+            Button resetViewButton = new Button
             {
                 Content = "Reset"
             };
 
-            resetButton.Click += (_, _) =>
+            resetViewButton.Click += (_, _) =>
             {
-                sliderList.ForEach(x => x.setInitialValue());
+                viewSliderList.ForEach(x => x.setInitialValue());
             };
-
-            controls.Children.Add(resetButton);
-            controls.Children.AddRange(sliderList.Select(x => x.panel));
-
-            DockPanel.SetDock(controls, Dock.Left);
-
-            return controls;
+            
+            viewControls.Children.Add(resetViewButton);
+            viewControls.Children.AddRange(viewSliderList.Select(x => x.panel));
+            
+            return viewControls;
         }
 
         (Panel, Action) BuildSlider(string label, double min, double max, double initialValue, Action<float> callback, bool convertToDegrees = false)

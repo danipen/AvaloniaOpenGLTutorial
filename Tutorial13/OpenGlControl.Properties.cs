@@ -149,6 +149,114 @@ namespace Tutorial13
             set => SetAndRaise(FarPlaneProperty, ref _farPlane, value);
         }
         
+        public static readonly DirectProperty<OpenGlControl, float> CameraPositionXProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, float>(
+                "CameraPositionX",
+                o => o.CameraPositionX,
+                (o, v) => o.CameraPositionX = v);
+
+        public float CameraPositionX
+        {
+            get => _cameraPositionX;
+            set => SetAndRaise(CameraPositionXProperty, ref _cameraPositionX, value);
+        }
+        
+        public static readonly DirectProperty<OpenGlControl, float> CameraPositionYProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, float>(
+                "CameraPositionY",
+                o => o.CameraPositionY,
+                (o, v) => o.CameraPositionY = v);
+
+        public float CameraPositionY
+        {
+            get => _cameraPositionY;
+            set => SetAndRaise(CameraPositionYProperty, ref _cameraPositionY, value);
+        }
+ 
+        public static readonly DirectProperty<OpenGlControl, float> CameraPositionZProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, float>(
+                "CameraPositionZ",
+                o => o.CameraPositionZ,
+                (o, v) => o.CameraPositionZ = v);
+
+        public float CameraPositionZ
+        {
+            get => _cameraPositionZ;
+            set => SetAndRaise(CameraPositionZProperty, ref _cameraPositionZ, value);
+        }
+        
+        public static readonly DirectProperty<OpenGlControl, float> CameraTargetXProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, float>(
+                "CameraTargetX",
+                o => o.CameraTargetX,
+                (o, v) => o.CameraTargetX = v);
+
+        public float CameraTargetX
+        {
+            get => _cameraTargetX;
+            set => SetAndRaise(CameraTargetXProperty, ref _cameraTargetX, value);
+        }
+        
+        public static readonly DirectProperty<OpenGlControl, float> CameraTargetYProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, float>(
+                "CameraTargetY",
+                o => o.CameraTargetY,
+                (o, v) => o.CameraTargetY = v);
+
+        public float CameraTargetY
+        {
+            get => _cameraTargetY;
+            set => SetAndRaise(CameraTargetYProperty, ref _cameraTargetY, value);
+        }
+ 
+        public static readonly DirectProperty<OpenGlControl, float> CameraTargetZProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, float>(
+                "CameraTargetZ",
+                o => o.CameraTargetZ,
+                (o, v) => o.CameraTargetZ = v);
+
+        public float CameraTargetZ
+        {
+            get => _cameraTargetZ;
+            set => SetAndRaise(CameraTargetZProperty, ref _cameraTargetZ, value);
+        }
+        
+        public static readonly DirectProperty<OpenGlControl, float> CameraUpXProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, float>(
+                "CameraUpX",
+                o => o.CameraUpX,
+                (o, v) => o.CameraUpX = v);
+
+        public float CameraUpX
+        {
+            get => _cameraUpX;
+            set => SetAndRaise(CameraUpXProperty, ref _cameraUpX, value);
+        }
+        
+        public static readonly DirectProperty<OpenGlControl, float> CameraUpYProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, float>(
+                "CameraUpY",
+                o => o.CameraUpY,
+                (o, v) => o.CameraUpY = v);
+
+        public float CameraUpY
+        {
+            get => _cameraUpY;
+            set => SetAndRaise(CameraUpYProperty, ref _cameraUpY, value);
+        }
+ 
+        public static readonly DirectProperty<OpenGlControl, float> CameraUpZProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, float>(
+                "CameraUpZ",
+                o => o.CameraUpZ,
+                (o, v) => o.CameraUpZ = v);
+
+        public float CameraUpZ
+        {
+            get => _cameraUpZ;
+            set => SetAndRaise(CameraUpZProperty, ref _cameraUpZ, value);
+        }        
+        
         static OpenGlControl()
         {
             AffectsRender<OpenGlControl>(
@@ -163,7 +271,16 @@ namespace Tutorial13
                 RotateZProperty,
                 FieldOfViewAngleProperty,
                 NearPlaneProperty,
-                FarPlaneProperty);
+                FarPlaneProperty,
+                CameraPositionXProperty,
+                CameraPositionYProperty,
+                CameraPositionZProperty,
+                CameraTargetXProperty,
+                CameraTargetYProperty,
+                CameraTargetZProperty,
+                CameraUpXProperty,
+                CameraUpYProperty,
+                CameraUpZProperty);
         }
         
         float _scaleX = 1f;
@@ -171,12 +288,24 @@ namespace Tutorial13
         float _scaleZ = 1f;
         float _translateX = 0;
         float _translateY = 0;
-        float _translateZ = -2;
+        float _translateZ = 0;
         float _rotateX = 0;
         float _rotateY = 0;
         float _rotateZ = 0;
         float _fieldOfView = 60 * MathF.PI / 180;
         float _nearPlane = 0.01f;
         float _farPlane = 100;
+
+        float _cameraPositionX = 0;
+        float _cameraPositionY = 0;
+        float _cameraPositionZ = -2;
+        
+        float _cameraTargetX = 0;
+        float _cameraTargetY = 0;
+        float _cameraTargetZ = 0;
+        
+        float _cameraUpX = 0;
+        float _cameraUpY = -1;
+        float _cameraUpZ = 0;
     }
 }
