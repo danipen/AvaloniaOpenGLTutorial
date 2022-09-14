@@ -49,8 +49,8 @@ namespace Tutorial14
         public void SetCamera(Vector3 cameraPos, Vector3 cameraTarget, Vector3 cameraUp)
         {
             _cameraPos = cameraPos;
-            _cameraTarget = cameraTarget;
-            _cameraUp = cameraUp;
+            _cameraTarget = Vector3.Normalize(cameraTarget);
+            _cameraUp = Vector3.Normalize(cameraUp);
         }
 
         public Matrix4x4 GetTransformation()

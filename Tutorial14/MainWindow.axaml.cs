@@ -30,16 +30,16 @@ namespace Tutorial14
             {
                 Content = viewControls
             };
-            
+
             var cameraPanelScroll = new ScrollViewer
             {
                 Content = cameraControls
             };
 
-            
+
             DockPanel.SetDock(viewPanelScroll, Dock.Left);
             DockPanel.SetDock(cameraPanelScroll, Dock.Right);
-            
+
             panel.Children.Add(viewPanelScroll);
             panel.Children.Add(cameraPanelScroll);
             panel.Children.Add(_myControl);
@@ -58,36 +58,36 @@ namespace Tutorial14
                 Orientation = Orientation.Vertical,
                 Margin = new Thickness(30, 20)
             };
-            
+
             var cameraSliderList = new List<Panel>()
             {
-                BuildSlider("Camera position X", -100, 100, OpenGlControl.CameraPositionXProperty),
-                BuildSlider("Camera position Y", -100, 100, OpenGlControl.CameraPositionYProperty),
+                BuildSlider("Camera position X", -10, 10, OpenGlControl.CameraPositionXProperty),
+                BuildSlider("Camera position Y", -10, 10, OpenGlControl.CameraPositionYProperty),
                 BuildSlider("Camera position Z", -10, 10, OpenGlControl.CameraPositionZProperty),
-                BuildSlider("Camera target X", -10, 10, OpenGlControl.CameraTargetXProperty),
-                BuildSlider("Camera target Y", -10, 10, OpenGlControl.CameraTargetYProperty),
-                BuildSlider("Camera target Z", -10, 10, OpenGlControl.CameraTargetZProperty),
+                BuildSlider("Camera target X", -1, 1, OpenGlControl.CameraTargetXProperty),
+                BuildSlider("Camera target Y", -1, 1, OpenGlControl.CameraTargetYProperty),
+                BuildSlider("Camera target Z", -1, 1, OpenGlControl.CameraTargetZProperty),
                 BuildSlider("Camera up X", -1, 1, OpenGlControl.CameraUpXProperty),
                 BuildSlider("Camera up Y", -1, 1, OpenGlControl.CameraUpYProperty),
                 BuildSlider("Camera up Z", -1, 1, OpenGlControl.CameraUpZProperty),
             };
-            
+
             Button resetCameraButton = new Button
             {
                 Content = "Reset"
             };
-            
+
             resetCameraButton.Click += (_, _) =>
             {
                 _myControl.ResetCamera();
             };
-            
+
             cameraControls.Children.Add(resetCameraButton);
             cameraControls.Children.AddRange(cameraSliderList);
 
             return cameraControls;
         }
-        
+
         StackPanel BuildViewControls(OpenGlControl openGlControl)
         {
             StackPanel viewControls = new StackPanel()
@@ -96,7 +96,7 @@ namespace Tutorial14
                 Orientation = Orientation.Vertical,
                 Margin = new Thickness(30, 20),
             };
-            
+
             var viewSliderList = new List<Panel>()
             {
                 BuildSlider("Scale X", 0, 4, OpenGlControl.ScaleXProperty),
@@ -112,7 +112,7 @@ namespace Tutorial14
                 BuildSlider("Near Clipping Plane", 0.01, 10, OpenGlControl.NearPlaneProperty),
                 BuildSlider("Far Clipping Plane", 10.1, 1000, OpenGlControl.FarPlaneProperty)
             };
-            
+
             Button resetViewButton = new Button
             {
                 Content = "Reset"
@@ -122,10 +122,10 @@ namespace Tutorial14
             {
                 _myControl.ResetView();
             };
-            
+
             viewControls.Children.Add(resetViewButton);
             viewControls.Children.AddRange(viewSliderList);
-            
+
             return viewControls;
         }
 
@@ -135,9 +135,9 @@ namespace Tutorial14
             Slider slider = new Slider();
 
             slider[!Slider.ValueProperty] = _myControl[!property];
-            
+
             SetLabelText(labelTextBlock, slider.Value);
-            
+
             void SetLabelText(TextBlock textBlock, double sliderValue)
             {
                 if (convertToDegrees)
@@ -153,7 +153,7 @@ namespace Tutorial14
                     label,
                     Math.Round(sliderValue, 2));
             }
-            
+
             slider.TickFrequency = 0.1;
             slider.MinWidth = 350;
             slider.Maximum = max;
@@ -172,7 +172,7 @@ namespace Tutorial14
 
             return panel;
         }
-        
+
         OpenGlControl _myControl = null!;
     }
 }
