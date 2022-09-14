@@ -1,7 +1,6 @@
-using System;
 using System.Numerics;
 
-namespace Tutorial12
+namespace Tutorial14
 {
     internal class Pipeline
     {
@@ -47,6 +46,13 @@ namespace Tutorial12
             _farPlaneDistance = farPlaneDistance;
         }
 
+        public void SetCamera(Vector3 cameraPos, Vector3 cameraTarget, Vector3 cameraUp)
+        {
+            _cameraPos = cameraPos;
+            _cameraTarget = Vector3.Normalize(cameraTarget);
+            _cameraUp = Vector3.Normalize(cameraUp);
+        }
+
         public Matrix4x4 GetTransformation()
         {
             Matrix4x4 scale = Matrix4x4.CreateScale(_scaleData);
@@ -54,24 +60,28 @@ namespace Tutorial12
             Matrix4x4 rotateY = Matrix4x4.CreateRotationY(_rotateData.Y);
             Matrix4x4 rotateZ = Matrix4x4.CreateRotationZ(_rotateData.Z);
             Matrix4x4 translate = Matrix4x4.CreateTranslation(_positionData);
-
+            Matrix4x4 camera = Matrix4x4.CreateLookAt(_cameraPos, _cameraTarget + _cameraPos, _cameraUp);
             Matrix4x4 perspective = Matrix4x4.CreatePerspectiveFieldOfView(
                 _fieldOfView,
                 _width / _height,
                 _nearPlaneDistance,
                 _farPlaneDistance);
 
-            return scale * rotateX * rotateY * rotateZ * translate * perspective;
+            return scale * rotateX * rotateY * rotateZ * translate * camera * perspective;
         }
 
         Vector3 _scaleData;
         Vector3 _positionData;
         Vector3 _rotateData;
 
-        float _fieldOfView = MathF.PI / 4f;
+        float _fieldOfView;
         float _width = 1f;
         float _height = 1f;
-        float _nearPlaneDistance = 0.1f;
-        float _farPlaneDistance = 1000f;
+        float _nearPlaneDistance;
+        float _farPlaneDistance;
+
+        Vector3 _cameraPos;
+        Vector3 _cameraTarget;
+        Vector3 _cameraUp;
     };
 }
