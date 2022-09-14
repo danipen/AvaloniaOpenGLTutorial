@@ -5,6 +5,7 @@ using Avalonia.Automation.Provider;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.OpenGL.Controls;
+using Avalonia.Threading;
 
 namespace Tutorial15
 {
@@ -50,31 +51,41 @@ namespace Tutorial15
         protected override void OnPointerMoved(PointerEventArgs e)
         {
             base.OnPointerMoved(e);
-
             Point p = e.GetPosition(this);
-            
-            _camera.OnMouse((float)p.X, (float)p.Y);
+            _camera.OnMouse((float) Bounds.Width - (float) p.X, (float) p.Y);
         }
 
         public void PositionChanged(Vector3 oldVector, Vector3 newVector)
         {
-            RaisePropertyChanged(CameraPositionXProperty, oldVector.X, newVector.X);
-            RaisePropertyChanged(CameraPositionYProperty, oldVector.Y, newVector.Y);
-            RaisePropertyChanged(CameraPositionZProperty, oldVector.Z, newVector.Z);
+            Dispatcher.UIThread.Post(
+                () =>
+                {
+                    RaisePropertyChanged(CameraPositionXProperty, oldVector.X, newVector.X);
+                    RaisePropertyChanged(CameraPositionYProperty, oldVector.Y, newVector.Y);
+                    RaisePropertyChanged(CameraPositionZProperty, oldVector.Z, newVector.Z);
+                });
         }
 
         public void TargetChanged(Vector3 oldVector, Vector3 newVector)
         {
-            RaisePropertyChanged(CameraTargetXProperty, oldVector.X, newVector.X);
-            RaisePropertyChanged(CameraTargetYProperty, oldVector.Y, newVector.Y);
-            RaisePropertyChanged(CameraTargetZProperty, oldVector.Z, newVector.Z);
+            Dispatcher.UIThread.Post(
+                () =>
+                {
+                    RaisePropertyChanged(CameraTargetXProperty, oldVector.X, newVector.X);
+                    RaisePropertyChanged(CameraTargetYProperty, oldVector.Y, newVector.Y);
+                    RaisePropertyChanged(CameraTargetZProperty, oldVector.Z, newVector.Z);
+                });
         }
 
         public void UpChanged(Vector3 oldVector, Vector3 newVector)
         {
-            RaisePropertyChanged(CameraUpXProperty, oldVector.X, newVector.X);
-            RaisePropertyChanged(CameraUpYProperty, oldVector.Y, newVector.Y);
-            RaisePropertyChanged(CameraUpZProperty, oldVector.Z, newVector.Z);
+            Dispatcher.UIThread.Post(
+                () =>
+                {
+                    RaisePropertyChanged(CameraUpXProperty, oldVector.X, newVector.X);
+                    RaisePropertyChanged(CameraUpYProperty, oldVector.Y, newVector.Y);
+                    RaisePropertyChanged(CameraUpZProperty, oldVector.Z, newVector.Z);
+                });
         }
 
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs e)
@@ -83,7 +94,7 @@ namespace Tutorial15
 
             if (e.Property == BoundsProperty)
             {
-                _camera.SetWindowSize((float)Bounds.Width, (float)Bounds.Height);                
+                _camera.SetWindowSize((float)Bounds.Width, (float)Bounds.Height);
             }
         }
     }
