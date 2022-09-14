@@ -212,8 +212,6 @@ namespace Tutorial15
 
         void Update()
         {
-            Console.WriteLine("H/V angle: {0}º, {1}º", m_AngleH, m_AngleV);
-            
             Vector3 vAxis = new Vector3(0.0f, 1.0f, 0.0f);
 
             // Rotate the view vector by the horizontal angle around the vertical axis
