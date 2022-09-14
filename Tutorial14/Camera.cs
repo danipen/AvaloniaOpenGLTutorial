@@ -27,12 +27,12 @@ namespace Tutorial14
             get => _cameraTarget;
             set
             {
-                Vector3 oldVector = _cameraTarget;
+                Vector3 oldTarget = _cameraTarget;
                 _cameraTarget = value;
 
                 CalculateLeftVector();
 
-                _changedCallback.TargetChanged(oldVector, value);
+                _changedCallback.TargetChanged(oldTarget, value);
             }
         }
 
@@ -41,18 +41,24 @@ namespace Tutorial14
             get => _cameraUp;
             set
             {
-                Vector3 oldVector = _cameraUp;
+                Vector3 oldUp = _cameraUp;
                 _cameraUp = value;
 
                 CalculateLeftVector();
 
-                _changedCallback.UpChanged(oldVector, value);
+                _changedCallback.UpChanged(oldUp, value);
             }
         }
 
         public Camera(IChangedCallback changedCallback)
         {
             _changedCallback = changedCallback;
+            InitCamera();
+        }
+        
+        public void ResetCamera()
+        {
+            InitCamera();
         }
 
         public void MoveForward(float stepAmount)
@@ -88,6 +94,23 @@ namespace Tutorial14
             _left = Vector3.Normalize(_left);
         }
 
+        void InitCamera()
+        {
+            Vector3 oldPosition = _cameraPosition;
+            Vector3 oldTarget = _cameraTarget;
+            Vector3 oldUp = _cameraUp;
+            
+            _cameraPosition = new Vector3(0, 0, -2);
+            _cameraTarget = new Vector3(0, 0, 1f);
+            _cameraUp = new Vector3(0, 1, 0);
+            
+            CalculateLeftVector();
+            
+            _changedCallback.PositionChanged(oldPosition, _cameraPosition);
+            _changedCallback.TargetChanged(oldTarget, _cameraTarget);
+            _changedCallback.PositionChanged(oldUp, _cameraUp);
+        }
+        
         Vector3 _cameraPosition;
         Vector3 _cameraTarget;
         Vector3 _cameraUp;
