@@ -21,11 +21,7 @@ namespace Tutorial14
         {
             DockPanel panel = new DockPanel();
 
-            _myControl = new OpenGlControl
-            {
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-            };
+            _myControl = new OpenGlControl();
 
             StackPanel viewControls = BuildViewControls(_myControl);
             StackPanel cameraControls = BuildCameraControls(_myControl);
