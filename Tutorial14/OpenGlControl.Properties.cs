@@ -344,17 +344,7 @@ namespace Tutorial14
 
         void InitCamera()
         {
-            CameraPositionX = _camera.CameraPosition.X;
-            CameraPositionY = _camera.CameraPosition.Y;
-            CameraPositionZ = _camera.CameraPosition.Z;
-
-            CameraTargetX = _camera.CameraTarget.X;
-            CameraTargetY = _camera.CameraTarget.Y;
-            CameraTargetZ = _camera.CameraTarget.Z;
-
-            CameraUpX = _camera.CameraUp.X;
-            CameraUpY = _camera.CameraUp.Y;
-            CameraUpZ = _camera.CameraUp.Z;
+            _camera.ResetCamera();
         }
 
         void InitView()

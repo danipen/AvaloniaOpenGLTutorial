@@ -27,12 +27,12 @@ namespace Tutorial14
             get => _cameraTarget;
             set
             {
-                Vector3 oldPosition = _cameraTarget;
+                Vector3 oldTarget = _cameraTarget;
                 _cameraTarget = value;
 
                 CalculateLeftVector();
 
-                _changedCallback.TargetChanged(oldPosition, value);
+                _changedCallback.TargetChanged(oldTarget, value);
             }
         }
 
@@ -41,19 +41,24 @@ namespace Tutorial14
             get => _cameraUp;
             set
             {
-                Vector3 oldPosition = _cameraUp;
+                Vector3 oldUp = _cameraUp;
                 _cameraUp = value;
 
                 CalculateLeftVector();
 
-                _changedCallback.UpChanged(oldPosition, value);
+                _changedCallback.UpChanged(oldUp, value);
             }
         }
 
         public Camera(IChangedCallback changedCallback)
         {
-
             _changedCallback = changedCallback;
+            InitCamera();
+        }
+        
+        public void ResetCamera()
+        {
+            InitCamera();
         }
 
         public void MoveForward(float stepAmount)
@@ -82,9 +87,26 @@ namespace Tutorial14
             _left = Vector3.Normalize(_left);
         }
 
-        Vector3 _cameraPosition = new Vector3();
-        Vector3 _cameraTarget = -Vector3.UnitZ;
-        Vector3 _cameraUp = Vector3.UnitY;
+        void InitCamera()
+        {
+            Vector3 oldPosition = _cameraPosition;
+            Vector3 oldTarget = _cameraTarget;
+            Vector3 oldUp = _cameraUp;
+            
+            _cameraPosition = new Vector3();
+            _cameraTarget = -Vector3.UnitZ;
+            _cameraUp = Vector3.UnitY;
+            
+            CalculateLeftVector();
+            
+            _changedCallback.PositionChanged(oldPosition, _cameraPosition);
+            _changedCallback.TargetChanged(oldTarget, _cameraTarget);
+            _changedCallback.PositionChanged(oldUp, _cameraUp);
+        }
+        
+        Vector3 _cameraPosition;
+        Vector3 _cameraTarget;
+        Vector3 _cameraUp;
         Vector3 _left;
 
         readonly IChangedCallback _changedCallback;
