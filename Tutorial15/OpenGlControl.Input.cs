@@ -52,7 +52,8 @@ namespace Tutorial15
         {
             base.OnPointerMoved(e);
             Point p = e.GetPosition(this);
-            _camera.OnMouse((float) Bounds.Width - (float) p.X, (float) p.Y);
+            
+            _camera.OnMouse((float)Bounds.Width - (float)p.X, (float)p.Y);
         }
 
         public void PositionChanged(Vector3 oldVector, Vector3 newVector)
