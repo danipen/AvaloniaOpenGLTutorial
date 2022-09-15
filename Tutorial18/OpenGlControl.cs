@@ -20,7 +20,7 @@ namespace Tutorial18
 
             gl.CheckError();
 
-            _model = new PyramidModel();
+            _model = new CubeModel();
 
             ConfigureShaders(gl);
             CreateVertexBuffer(gl);
@@ -215,9 +215,9 @@ namespace Tutorial18
 
                 void main()
                 {
-                    vec4 ambientColor = vec4(gDirectionalLight.Color * gDirectionalLight.AmbientIntensity, 1.0);
+                    vec4 ambientColor = vec4(gDirectionalLight.Color, 1) * gDirectionalLight.AmbientIntensity;
                                                                                     
-                    float diffuseFactor = dot(normalize(normal0), -gDirectionalLight.Direction);    
+                    float diffuseFactor = dot(normalize(normal0), gDirectionalLight.Direction);    
                                                                                                     
                     vec4 diffuseColor;                                                              
                                                                                                     
@@ -231,9 +231,7 @@ namespace Tutorial18
                     }                                                                               
                                                                                                     
                     fragColor = texture(gSampler, texCoord0.xy) *                                 
-                                (ambientColor + diffuseColor);   
-
-                    //fragColor = vec4(normal0.xyz, 1);                                   
+                                vec4((ambientColor + diffuseColor).xyz, 1);                                 
                 }
             ");
 
@@ -251,7 +249,7 @@ namespace Tutorial18
         int _gDirectionalLightDirectionLoc;
         int _gDirectionalLightDiffuseIntensityLoc;
 
-        PyramidModel _model;
+        IModel _model;
         Texture _texture;
 
         readonly Pipeline _operations = new Pipeline();
