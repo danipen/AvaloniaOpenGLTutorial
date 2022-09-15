@@ -56,6 +56,13 @@ namespace Tutorial18
             _camera.OnMouse((float)Bounds.Width - (float)p.X, (float)p.Y);
         }
 
+        protected override void OnPointerExited(PointerEventArgs e)
+        {
+            base.OnPointerExited(e);
+            
+            _camera.OnMouseExited();
+        }
+
         public void PositionChanged(Vector3 oldVector, Vector3 newVector)
         {
             Dispatcher.UIThread.Post(

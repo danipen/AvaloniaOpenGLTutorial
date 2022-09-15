@@ -98,6 +98,14 @@ namespace Tutorial18
             _windowHeight = windowHeight;
         }
 
+        public void OnMouseExited()
+        {
+            _isOnRightEdge = false;
+            _isOnLowerEdge = false;
+            _isOnRightEdge = false;
+            _isOnUpperEdge = false;
+        }
+        
         public void OnMouse(float x, float y)
         {
             float deltaX = x - _mousePosition.X;
@@ -109,28 +117,30 @@ namespace Tutorial18
             _verticalAngle += deltaX / 20.0f;
             _horizontalAngle += deltaY / 20.0f;
 
-            if (deltaX == 0) {
-                if (x <= MARGIN) {
-                    _isOnLeftEdge = true;
-                }
-                else if (x >= (_windowWidth - MARGIN)) {
-                    _isOnRightEdge = true;
-                }
+            if (x <= MARGIN && x > 0)
+            {
+                _isOnLeftEdge = true;
             }
-            else {
+            else if (x >= (_windowWidth - MARGIN) && x < _windowWidth)
+            {
+                _isOnRightEdge = true;
+            }
+            else
+            {
                 _isOnLeftEdge = false;
                 _isOnRightEdge = false;
             }
 
-            if (deltaY == 0) {
-                if (y <= MARGIN) {
-                    _isOnUpperEdge = true;
-                }
-                else if (y >= (_windowHeight - MARGIN)) {
-                    _isOnLowerEdge = true;
-                }
+            if (y <= MARGIN && y > 0)
+            {
+                _isOnUpperEdge = true;
             }
-            else {
+            else if (y >= (_windowHeight - MARGIN) && y < _windowHeight)
+            {
+                _isOnLowerEdge = true;
+            }
+            else
+            {
                 _isOnUpperEdge = false;
                 _isOnLowerEdge = false;
             }
@@ -233,7 +243,7 @@ namespace Tutorial18
             Vector3 oldTarget = _cameraTarget;
             Vector3 oldUp = _cameraUp;
 
-            _cameraPosition = new Vector3(0, 0, -2);
+            _cameraPosition = new Vector3(0, 0, -3);
             _cameraTarget = new Vector3(0, 0, 1f);
             _cameraUp = new Vector3(0, 1, 0);
 
@@ -270,7 +280,7 @@ namespace Tutorial18
 
         readonly IChangedCallback _changedCallback;
 
-        const int MARGIN = 10;
+        const int MARGIN = 40;
         const float EDGE_STEP = 0.5f;
     }
 }
