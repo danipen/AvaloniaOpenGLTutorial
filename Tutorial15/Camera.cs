@@ -31,8 +31,6 @@ namespace Tutorial15
                 Vector3 oldTarget = _cameraTarget;
                 _cameraTarget = value;
 
-                CalculateLeftVector();
-
                 _changedCallback.TargetChanged(oldTarget, value);
             }
         }
@@ -44,8 +42,6 @@ namespace Tutorial15
             {
                 Vector3 oldUp = _cameraUp;
                 _cameraUp = value;
-
-                CalculateLeftVector();
 
                 _changedCallback.UpChanged(oldUp, value);
             }
@@ -74,12 +70,16 @@ namespace Tutorial15
 
         public void MoveLeft(float stepAmount)
         {
-            CameraPosition -= _left * stepAmount;
+            Vector3 left = Vector3.Normalize(Vector3.Cross(CameraTarget, CameraUp));
+            left *= stepAmount;
+            CameraPosition += left;
         }
 
         public void MoveRight(float stepAmount)
         {
-            CameraPosition += _left * stepAmount;
+            Vector3 right = Vector3.Normalize(Vector3.Cross(CameraUp, CameraTarget));
+            right *= stepAmount;
+            CameraPosition += right;
         }
 
         public void MoveUp(float stepAmount)
@@ -94,47 +94,45 @@ namespace Tutorial15
         
         public void SetWindowSize(float windowWidth, float windowHeight)
         {
-            m_windowWidth = windowWidth;
-            m_windowHeight = windowHeight;
+            _windowWidth = windowWidth;
+            _windowHeight = windowHeight;
         }
         
         public void OnMouse(float x, float y)
         {
-            float deltaX = x - m_mousePos.X;
-            float deltaY = y - m_mousePos.Y;
+            float deltaX = x - _mousePosition.X;
+            float deltaY = y - _mousePosition.Y;
 
-            m_mousePos.X = x;
-            m_mousePos.Y = y;
+            _mousePosition.X = x;
+            _mousePosition.Y = y;
 
-            m_AngleH += deltaX / 20.0f;
-            m_AngleV += deltaY / 20.0f;
+            _verticalAngle += deltaX / 20.0f;
+            _horizontalAngle += deltaY / 20.0f;
 
             if (deltaX == 0) {
                 if (x <= MARGIN) {
-                    //    m_AngleH -= 1.0f;
-                    m_OnLeftEdge = true;
+                    _isOnLeftEdge = true;
                 }
-                else if (x >= (m_windowWidth - MARGIN)) {
-                    //    m_AngleH += 1.0f;
-                    m_OnRightEdge = true;
+                else if (x >= (_windowWidth - MARGIN)) {
+                    _isOnRightEdge = true;
                 }
             }
             else {
-                m_OnLeftEdge = false;
-                m_OnRightEdge = false;
+                _isOnLeftEdge = false;
+                _isOnRightEdge = false;
             }
 
             if (deltaY == 0) {
                 if (y <= MARGIN) {
-                    m_OnUpperEdge = true;
+                    _isOnUpperEdge = true;
                 }
-                else if (y >= (m_windowHeight - MARGIN)) {
-                    m_OnLowerEdge = true;
+                else if (y >= (_windowHeight - MARGIN)) {
+                    _isOnLowerEdge = true;
                 }
             }
             else {
-                m_OnUpperEdge = false;
-                m_OnLowerEdge = false;
+                _isOnUpperEdge = false;
+                _isOnLowerEdge = false;
             }
 
             Update();
@@ -144,24 +142,24 @@ namespace Tutorial15
         {
             bool shouldUpdate = false;
 
-            if (m_OnLeftEdge) {
-                m_AngleH -= EDGE_STEP;
+            if (_isOnLeftEdge) {
+                _verticalAngle -= EDGE_STEP;
                 shouldUpdate = true;
             }
-            else if (m_OnRightEdge) {
-                m_AngleH += EDGE_STEP;
+            else if (_isOnRightEdge) {
+                _verticalAngle += EDGE_STEP;
                 shouldUpdate = true;
             }
 
-            if (m_OnUpperEdge) {
-                if (m_AngleV > -90.0f) {
-                    m_AngleV -= EDGE_STEP;
+            if (_isOnUpperEdge) {
+                if (_horizontalAngle > -90.0f) {
+                    _horizontalAngle -= EDGE_STEP;
                     shouldUpdate = true;
                 }
             }
-            else if (m_OnLowerEdge) {
-                if (m_AngleV < 90.0f) {
-                    m_AngleV += EDGE_STEP;
+            else if (_isOnLowerEdge) {
+                if (_horizontalAngle < 90.0f) {
+                    _horizontalAngle += EDGE_STEP;
                     shouldUpdate = true;
                 }
             }
@@ -181,33 +179,33 @@ namespace Tutorial15
             {
                 if (hTarget.X >= 0.0f)
                 {
-                    m_AngleH = 360.0f - ToDegrees(MathF.Asin(hTarget.Z));
+                    _verticalAngle = 360.0f - ToDegrees(MathF.Asin(hTarget.Z));
                 }
                 else
                 {
-                    m_AngleH = 180.0f + ToDegrees(MathF.Asin(hTarget.Z));
+                    _verticalAngle = 180.0f + ToDegrees(MathF.Asin(hTarget.Z));
                 }
             }
             else
             {
                 if (hTarget.X >= 0.0f)
                 {
-                    m_AngleH = ToDegrees(MathF.Asin(-hTarget.Z));
+                    _verticalAngle = ToDegrees(MathF.Asin(-hTarget.Z));
                 }
                 else
                 {
-                    m_AngleH = 180.0f - ToDegrees(MathF.Asin(-hTarget.Z));
+                    _verticalAngle = 180.0f - ToDegrees(MathF.Asin(-hTarget.Z));
                 }
             }
 
-            m_AngleV = ToDegrees(MathF.Asin(CameraTarget.Y));
+            _horizontalAngle = ToDegrees(MathF.Asin(CameraTarget.Y));
 
-            m_OnUpperEdge = false;
-            m_OnLowerEdge = false;
-            m_OnLeftEdge  = false;
-            m_OnRightEdge = false;
-            m_mousePos.X  = m_windowWidth / 2;
-            m_mousePos.Y  = m_windowHeight / 2;
+            _isOnUpperEdge = false;
+            _isOnLowerEdge = false;
+            _isOnLeftEdge  = false;
+            _isOnRightEdge = false;
+            _mousePosition.X  = _windowWidth / 2;
+            _mousePosition.Y  = _windowHeight / 2;
         }
 
         void Update()
@@ -216,23 +214,17 @@ namespace Tutorial15
 
             // Rotate the view vector by the horizontal angle around the vertical axis
             Vector3 view = new Vector3(1.0f, 0.0f, 0.0f);
-            view = Vector3.Transform(view, Matrix4x4.CreateRotationY(ToRadians(m_AngleH)));
+            view = Vector3.Transform(view, Matrix4x4.CreateRotationY(ToRadians(_verticalAngle)));
             view = Vector3.Normalize(view);
 
             // Rotate the view vector by the vertical angle around the horizontal axis
             Vector3 hAxis = Vector3.Cross(vAxis, view);
             hAxis = Vector3.Normalize(hAxis);
             
-            view = Vector3.Transform(view, Matrix4x4.CreateRotationX(ToRadians(m_AngleV)));
+            view = Vector3.Transform(view, Matrix4x4.CreateRotationX(ToRadians(_horizontalAngle)));
 
             CameraTarget = Vector3.Normalize(view);
             CameraUp = Vector3.Normalize(Vector3.Cross(CameraTarget, hAxis));
-        }
-        
-        void CalculateLeftVector()
-        {
-            _left = Vector3.Cross(CameraTarget, CameraUp);
-            _left = Vector3.Normalize(_left);
         }
 
         void InitCamera()
@@ -244,8 +236,6 @@ namespace Tutorial15
             _cameraPosition = new Vector3(0, 0, -2);
             _cameraTarget = new Vector3(0, 0, 1f);
             _cameraUp = new Vector3(0, 1, 0);
-
-            CalculateLeftVector();
 
             _changedCallback.PositionChanged(oldPosition, _cameraPosition);
             _changedCallback.TargetChanged(oldTarget, _cameraTarget);
@@ -265,23 +255,22 @@ namespace Tutorial15
         Vector3 _cameraPosition;
         Vector3 _cameraTarget;
         Vector3 _cameraUp;
-        Vector3 _left;
+ 
+        Vector2 _mousePosition;
+        float _verticalAngle;
+        float _horizontalAngle;
 
-        private Vector2 m_mousePos;
-        private float m_AngleH;
-        private float m_AngleV;
-
-        private bool m_OnLeftEdge;
-        private bool m_OnUpperEdge;
-        private bool m_OnLowerEdge;
-        private bool m_OnRightEdge;
+        bool _isOnLeftEdge;
+        bool _isOnUpperEdge;
+        bool _isOnLowerEdge;
+        bool _isOnRightEdge;
         
-        private const int MARGIN = 10;
-        const float EDGE_STEP = 0.5f;
-
-        private float m_windowWidth;
-        private float m_windowHeight;
+        float _windowWidth;
+        float _windowHeight;
         
         readonly IChangedCallback _changedCallback;
+        
+        const int MARGIN = 10;
+        const float EDGE_STEP = 0.5f;
     }
 }
