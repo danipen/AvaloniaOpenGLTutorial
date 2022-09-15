@@ -119,7 +119,9 @@ namespace Tutorial16
             gl.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             gl.Enable(GL_DEPTH_TEST);
 
-            gl.Viewport(0, 0, (int)Bounds.Width, (int)Bounds.Height);
+            gl.Viewport(0, 0,
+                (int)(Bounds.Width * VisualRoot.RenderScaling),
+                (int)(Bounds.Height * VisualRoot.RenderScaling));
 
             _operations.SetCamera(
                 _camera.CameraPosition,
