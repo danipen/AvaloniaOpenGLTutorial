@@ -10,107 +10,135 @@ namespace Tutorial18
 
         internal CubeModel()
         {
+            const float ONESIXTH = 1;
             _vertices = new Vertex[]
             {
+                // ----- Face 1 ----
                 new()
                 {
                     Position = new Vector3(-0.5f, 0.5f, -0.5f),
-                    TextCoord = new Vector2(0, 1f)
+                    TextCoord = new Vector2(0f, 1f)
                 },
                 new()
                 {
                     Position = new Vector3(-0.5f, -0.5f, -0.5f),
-                    TextCoord = new Vector2(0, 0f)
+                    TextCoord = new Vector2(0f, 0f)
                 },
                 new()
                 {
                     Position = new Vector3(0.5f, -0.5f, -0.5f),
-                    TextCoord = new Vector2(1, 0f)
+                    TextCoord = new Vector2(1f, 0f)
                 },
                 new()
                 {
                     Position = new Vector3(0.5f, 0.5f, -0.5f),
-                    TextCoord = new Vector2(1, 1f)
+                    TextCoord = new Vector2(1f, 1f)
                 },
+                // ----- Face 2 ----
                 new()
                 {
                     Position = new Vector3(-0.5f, 0.5f, 0.5f),
+                    TextCoord = new Vector2(0f, 1f)
                 },
                 new()
                 {
                     Position = new Vector3(-0.5f, -0.5f, 0.5f),
+                    TextCoord = new Vector2(0f, 0f)
                 },
                 new()
                 {
                     Position = new Vector3(0.5f, -0.5f, 0.5f),
+                    TextCoord = new Vector2(1f, 0f)
                 },
                 new()
                 {
                     Position = new Vector3(0.5f, 0.5f, 0.5f),
+                    TextCoord = new Vector2(1f, 1f)
                 },
+                // ----- Face 3 ----
                 new()
                 {
                     Position = new Vector3(0.5f, 0.5f, -0.5f),
+                    TextCoord = new Vector2(0f, 1f)
                 },
                 new()
                 {
                     Position = new Vector3(0.5f, -0.5f, -0.5f),
+                    TextCoord = new Vector2(0f, 0f)
                 },
                 new()
                 {
                     Position = new Vector3(0.5f, -0.5f, 0.5f),
+                    TextCoord = new Vector2(1f, 0f)
                 },
                 new()
                 {
                     Position = new Vector3(0.5f, 0.5f, 0.5f),
+                    TextCoord = new Vector2(1f, 1f)
                 },
+                // ----- Face 4 ----
                 new()
                 {
                     Position = new Vector3(-0.5f, 0.5f, -0.5f),
+                    TextCoord = new Vector2(0f, 1f)
                 },
                 new()
                 {
                     Position = new Vector3(-0.5f, -0.5f, -0.5f),
+                    TextCoord = new Vector2(0f, 0f)
                 },
                 new()
                 {
                     Position = new Vector3(-0.5f, -0.5f, 0.5f),
+                    TextCoord = new Vector2(1f, 0f)
+
                 },
                 new()
                 {
                     Position = new Vector3(-0.5f, 0.5f, 0.5f),
+                    TextCoord = new Vector2(1f, 1f)
                 },
+                // ----- Face 5 ----
                 new()
                 {
                     Position = new Vector3(-0.5f, 0.5f, 0.5f),
+                    TextCoord = new Vector2(0f, 1f)
                 },
                 new()
                 {
                     Position = new Vector3(-0.5f, 0.5f, -0.5f),
+                    TextCoord = new Vector2(0f, 0f)
                 },
                 new()
                 {
                     Position = new Vector3(0.5f, 0.5f, -0.5f),
+                    TextCoord = new Vector2(1f, 0f)
                 },
                 new()
                 {
                     Position = new Vector3(0.5f, 0.5f, 0.5f),
+                    TextCoord = new Vector2(1f, 1f)
                 },
+                // ----- Face 6 ----
                 new()
                 {
                     Position = new Vector3(-0.5f, -0.5f, 0.5f),
+                    TextCoord = new Vector2(0f, 1f)
                 },
                 new()
                 {
                     Position = new Vector3(-0.5f, -0.5f, -0.5f),
+                    TextCoord = new Vector2(0f, 0f)
                 },
                 new()
                 {
                     Position = new Vector3(0.5f, -0.5f, -0.5f),
+                    TextCoord = new Vector2(1f, 0f)
                 },
                 new()
                 {
                     Position = new Vector3(0.5f, -0.5f, 0.5f),
+                    TextCoord = new Vector2(1f, 1f)
                 },
             };
 
