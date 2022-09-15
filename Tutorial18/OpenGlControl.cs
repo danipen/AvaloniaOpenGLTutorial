@@ -1,8 +1,10 @@
 using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Avalonia.Input;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
+using Avalonia.Threading;
 using Common;
 using static Avalonia.OpenGL.GlConsts;
 using static Common.GlConstExtensions;
@@ -126,7 +128,8 @@ namespace Tutorial18
                 _camera.CameraPosition,
                 _camera.CameraTarget,
                 _camera.CameraUp);
-            _operations.SetPerspective((float)_fieldOfView, (float)Bounds.Width, (float)Bounds.Height, (float)_nearPlane,
+            _operations.SetPerspective((float)_fieldOfView, (float)Bounds.Width, (float)Bounds.Height,
+                (float)_nearPlane,
                 (float)_farPlane);
             _operations.Scale((float)_scaleX, (float)_scaleY, (float)_scaleZ);
             _operations.Position((float)_translateX, (float)_translateY, (float)_translateZ);
@@ -147,6 +150,12 @@ namespace Tutorial18
             gl.CheckError();
 
             _camera.OnRender();
+
+            if (_pressedKey == Key.None)
+                return;
+            
+            ProcessInputKey(_pressedKey);
+            Dispatcher.UIThread.Post(InvalidateVisual, DispatcherPriority.Background);
         }
 
         void CreateVertexBuffer(GlInterface gl)

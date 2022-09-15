@@ -11,40 +11,22 @@ namespace Tutorial18
 {
     partial class OpenGlControl : Camera.IChangedCallback
     {
-        const float POSITION_STEP_AMOUNT = 0.5f;
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
-            switch (e.Key)
+            _pressedKey = e.Key;
+            
+            InvalidateVisual();
+        }
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            base.OnKeyUp(e);
+
+            if (e.Key == _pressedKey)
             {
-                case Key.PageUp:
-                    _camera.MoveUp(POSITION_STEP_AMOUNT);
-                    e.Handled = true;
-                    break;
-                case Key.PageDown:
-                    _camera.MoveDown(POSITION_STEP_AMOUNT);
-                    e.Handled = true;
-                    break;
-                case Key.W:
-                case Key.Up:
-                    _camera.MoveForward(POSITION_STEP_AMOUNT);
-                    e.Handled = true;
-                    break;
-                case Key.S:
-                case Key.Down:
-                    _camera.MoveBackward(POSITION_STEP_AMOUNT);
-                    e.Handled = true;
-                    break;
-                case Key.A:
-                case Key.Left:
-                    _camera.MoveLeft(POSITION_STEP_AMOUNT);
-                    e.Handled = true;
-                    break;
-                case Key.D:
-                case Key.Right:
-                    _camera.MoveRight(POSITION_STEP_AMOUNT);
-                    e.Handled = true;
-                    break;
+                _pressedKey = Key.None;
+                InvalidateVisual();
             }
         }
 
@@ -105,5 +87,38 @@ namespace Tutorial18
                 _camera.SetWindowSize((float)Bounds.Width, (float)Bounds.Height);
             }
         }
+
+        void ProcessInputKey(Key key)
+        {
+            switch (key)
+            {
+                case Key.PageUp:
+                    _camera.MoveUp(POSITION_STEP_AMOUNT);
+                    break;
+                case Key.PageDown:
+                    _camera.MoveDown(POSITION_STEP_AMOUNT);
+                    break;
+                case Key.W:
+                case Key.Up:
+                    _camera.MoveForward(POSITION_STEP_AMOUNT);
+                    break;
+                case Key.S:
+                case Key.Down:
+                    _camera.MoveBackward(POSITION_STEP_AMOUNT);
+                    break;
+                case Key.A:
+                case Key.Left:
+                    _camera.MoveLeft(POSITION_STEP_AMOUNT);
+                    break;
+                case Key.D:
+                case Key.Right:
+                    _camera.MoveRight(POSITION_STEP_AMOUNT);
+                    break;
+            }
+        }
+        
+        Key _pressedKey = Key.None;
+        
+        const float POSITION_STEP_AMOUNT = 0.05f;
     }
 }
