@@ -70,16 +70,16 @@ namespace Tutorial15
 
         public void MoveLeft(float stepAmount)
         {
-            Vector3 left = Vector3.Normalize(Vector3.Cross(CameraTarget, CameraUp));
-            left *= stepAmount;
-            CameraPosition += left;
+            Vector3 right = Vector3.Normalize(Vector3.Cross(CameraUp, CameraTarget));
+            right *= stepAmount;
+            CameraPosition += right;
         }
 
         public void MoveRight(float stepAmount)
         {
-            Vector3 right = Vector3.Normalize(Vector3.Cross(CameraUp, CameraTarget));
-            right *= stepAmount;
-            CameraPosition += right;
+            Vector3 left = Vector3.Normalize(Vector3.Cross(CameraTarget, CameraUp));
+            left *= stepAmount;
+            CameraPosition += left;
         }
 
         public void MoveUp(float stepAmount)
