@@ -1,5 +1,8 @@
 ﻿namespace Common
 {
+    /// <summary>
+    /// more at https://registry.khronos.org/OpenGL/api/GL/glcorearb.h
+    /// </summary>
     public class GlConstExtensions
     {
         public const int GL_TRUE = 1;

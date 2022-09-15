@@ -84,20 +84,20 @@ namespace Tutorial16
 
         public void MoveUp(float stepAmount)
         {
-            CameraPosition -= CameraUp * stepAmount;
+            CameraPosition += CameraUp * stepAmount;
         }
 
         public void MoveDown(float stepAmount)
         {
-            CameraPosition += CameraUp * stepAmount;
+            CameraPosition -= CameraUp * stepAmount;
         }
-        
+
         public void SetWindowSize(float windowWidth, float windowHeight)
         {
             _windowWidth = windowWidth;
             _windowHeight = windowHeight;
         }
-        
+
         public void OnMouse(float x, float y)
         {
             float deltaX = x - _mousePosition.X;
@@ -137,7 +137,7 @@ namespace Tutorial16
 
             Update();
         }
-        
+
         public void OnRender()
         {
             bool shouldUpdate = false;
@@ -172,9 +172,9 @@ namespace Tutorial16
         internal void Init(float windowWidth, float windowHeight)
         {
             SetWindowSize(windowWidth, windowHeight);
-            
+
             Vector3 hTarget = Vector3.Normalize(new Vector3(CameraTarget.X, 0.0f, CameraTarget.Z));
-           
+
             if (hTarget.Z >= 0.0f)
             {
                 if (hTarget.X >= 0.0f)
@@ -220,7 +220,7 @@ namespace Tutorial16
             // Rotate the view vector by the vertical angle around the horizontal axis
             Vector3 hAxis = Vector3.Cross(vAxis, view);
             hAxis = Vector3.Normalize(hAxis);
-            
+
             view = Vector3.Transform(view, Matrix4x4.CreateRotationX(ToRadians(_horizontalAngle)));
 
             CameraTarget = Vector3.Normalize(view);
@@ -255,7 +255,7 @@ namespace Tutorial16
         Vector3 _cameraPosition;
         Vector3 _cameraTarget;
         Vector3 _cameraUp;
- 
+
         Vector2 _mousePosition;
         float _verticalAngle;
         float _horizontalAngle;
@@ -264,12 +264,12 @@ namespace Tutorial16
         bool _isOnUpperEdge;
         bool _isOnLowerEdge;
         bool _isOnRightEdge;
-        
+
         float _windowWidth;
         float _windowHeight;
-        
+
         readonly IChangedCallback _changedCallback;
-        
+
         const int MARGIN = 10;
         const float EDGE_STEP = 0.5f;
     }

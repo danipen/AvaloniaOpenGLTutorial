@@ -18,15 +18,15 @@ namespace Tutorial16
             gl.FrontFace(GL_CW);
             gl.CullFace(GL_BACK);
             gl.Enable(GL_CULL_FACE);
-            
+
             gl.CheckError();
-            
+
             ConfigureShaders(gl);
             CreateVertexBuffer(gl);
             CreateIndexBuffer(gl);
-            
+
             gl.CheckError();
-            
+
             _camera.Init((float)Bounds.Width, (float)Bounds.Height);
         }
 
@@ -47,7 +47,7 @@ namespace Tutorial16
             gl.DeleteShader(_vertexShader);
 
             _texture.Dispose(gl);
-            
+
             gl.CheckError();
         }
 
@@ -66,10 +66,10 @@ namespace Tutorial16
             _gTransformLoc = gl.GetUniformLocationString(_shaderProgram, "gTransform");
             _gSamplerLoc = gl.GetUniformLocationString(_shaderProgram, "gSampler");
             gl.CheckError();
-            
+
             gl.Uniform1i(_gSamplerLoc, 0);
             gl.CheckError();
-            
+
             _texture = new Texture(ResourceLoader.LoadTestTexture());
             _texture.Load(gl);
             _texture.Bind(gl, GL_TEXTURE0);
@@ -88,11 +88,11 @@ namespace Tutorial16
             Console.WriteLine(gl.CompileShaderAndGetError(_vertexShader, VertexShaderSource));
             gl.AttachShader(_shaderProgram, _vertexShader);
         }
-        
+
         void BindAttributeLocations(GlInterface gl)
         {
             gl.BindAttribLocationString(_shaderProgram, PositionLocation, "position");
-            gl.BindAttribLocationString(_shaderProgram, TexCoordLocation, "textCoord");
+            gl.BindAttribLocationString(_shaderProgram, TexCoordLocation, "texCoord");
         }
 
         void CreateIndexBuffer(GlInterface gl)
@@ -102,7 +102,7 @@ namespace Tutorial16
                 0, 3, 1,
                 1, 3, 2,
                 2, 3, 0,
-                0, 1, 2 
+                0, 1, 2
             };
 
             _ibo = gl.GenBuffer();
@@ -135,7 +135,7 @@ namespace Tutorial16
 
             Matrix4x4 transformation = _operations.GetTransformation();
             gl.UniformMatrix4fv(_gTransformLoc, 1, false, &transformation);
-            
+
             gl.DrawElements(GL_TRIANGLES, _indices!.Length, GL_UNSIGNED_SHORT, IntPtr.Zero);
             gl.CheckError();
 
@@ -176,19 +176,19 @@ namespace Tutorial16
 
             _vao = gl.GenVertexArray();
             gl.BindVertexArray(_vao);
-            
+
             gl.VertexAttribPointer(
                 PositionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), IntPtr.Zero);
             gl.VertexAttribPointer(
                 TexCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), new IntPtr(sizeof(Vector3)));
-            
+
             gl.EnableVertexAttribArray(PositionLocation);
             gl.EnableVertexAttribArray(TexCoordLocation);
         }
 
         const int PositionLocation = 0;
         const int TexCoordLocation = 1;
-        
+
         string VertexShaderSource => GlExtensions.GetShader(GlVersion, false, @"
                 in vec3 position;
                 in vec2 texCoord;
@@ -220,7 +220,7 @@ namespace Tutorial16
             public Vector3 Position;
             public Vector2 TextCoord;
         }
-        
+
         int _vbo;
         int _vao;
         int _ibo;
@@ -231,7 +231,7 @@ namespace Tutorial16
         int _gSamplerLoc;
 
         Texture _texture;
-        
+
         ushort[]? _indices;
         readonly Pipeline _operations = new Pipeline();
     }

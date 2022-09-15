@@ -38,23 +38,23 @@ namespace Tutorial16
             using (var buffer = _image.Lock())
             {
                 gl.TexImage2D(
-                    GL_TEXTURE_2D, 
-                    0, 
-                    GL_RGBA8, 
-                    (int)_image.Size.Width, 
+                    GL_TEXTURE_2D,
+                    0,
+                    GL_RGBA,
+                    (int)_image.Size.Width,
                     (int)_image.Size.Height,
                     0,
                     GL_RGBA,
-                    GL_UNSIGNED_BYTE, 
+                    GL_UNSIGNED_BYTE,
                     buffer.Address);
                 gl.CheckError();
             }
-            
+
             gl.TexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             gl.TexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             gl.TexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             gl.TexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            
+
             gl.BindTexture(GL_TEXTURE_2D, 0);
         }
 
