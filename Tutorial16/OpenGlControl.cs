@@ -17,9 +17,11 @@ namespace Tutorial16
         {
             base.OnOpenGlInit(gl, fb);
 
-            /*gl.FrontFace(GL_CW);
+            gl.FrontFace(GL_CW);
             gl.CullFace(GL_BACK);
-            gl.Enable(GL_CULL_FACE);*/
+            gl.Enable(GL_CULL_FACE);
+            
+            gl.CheckError();
             
             ConfigureShaders(gl);
             CreateVertexBuffer(gl);
@@ -46,6 +48,8 @@ namespace Tutorial16
             gl.DeleteShader(_fragmentShader);
             gl.DeleteShader(_vertexShader);
 
+            _texture.Dispose(gl);
+            
             gl.CheckError();
         }
 
@@ -64,7 +68,7 @@ namespace Tutorial16
             _gSamplerLoc = gl.GetUniformLocationString(_shaderProgram, "gSampler");
             gl.CheckError();
             
-            gl.Uniform1f(_gSamplerLoc, 0);
+            gl.Uniform1i(_gSamplerLoc, 0);
             gl.CheckError();
             
             _texture = new Texture(ResourceLoader.LoadTestTexture());
@@ -201,6 +205,7 @@ namespace Tutorial16
                 void main()
                 {
                     fragColor = texture(gSampler, texCoord0.xy);
+                    //fragColor = vec4(1, 1, 1, 1);
                 }
             ");
 

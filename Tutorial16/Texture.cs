@@ -1,7 +1,11 @@
+using System;
+using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.OpenGL;
+using Avalonia.Platform;
 using static Avalonia.OpenGL.GlConsts;
+using static Common.GlConstExtensions;
 
 namespace Tutorial16
 {
@@ -23,14 +27,14 @@ namespace Tutorial16
             gl.BindTexture(GL_TEXTURE_2D, 0);
             gl.DeleteTexture(_textureBuffer);
         }
-        
-        public void Load(GlInterface gl)
+
+        public unsafe void Load(GlInterface gl)
         {
             _textureBuffer = gl.GenTexture();
             gl.CheckError();
             gl.BindTexture(GL_TEXTURE_2D, _textureBuffer);
             gl.CheckError();
-            
+
             using (var buffer = _image.Lock())
             {
                 gl.TexImage2D(
@@ -45,8 +49,15 @@ namespace Tutorial16
                     buffer.Address);
                 gl.CheckError();
             }
+            
+            gl.TexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            gl.TexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            gl.TexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            gl.TexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            
+            gl.BindTexture(GL_TEXTURE_2D, 0);
         }
-        
+
         readonly WriteableBitmap _image;
         int _textureBuffer;
     }

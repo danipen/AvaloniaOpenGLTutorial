@@ -41,4 +41,60 @@ public static class GlExtensions
 
         return data;
     }
+
+    public unsafe static void Uniform1i(this GlInterface glInterface, int location, int value)
+    {
+        const string EntryPoint = "glUniform1i";
+        
+        IntPtr procAddress = glInterface.GetProcAddress(EntryPoint);
+
+        if (procAddress == IntPtr.Zero)
+            throw new ArgumentException("Entry point not found: " + EntryPoint);
+        
+        var uniform1iDelegate = (delegate* unmanaged[Stdcall]<int,int,void>)procAddress;
+
+        uniform1iDelegate(location, value);
+    }
+
+    public unsafe static void FrontFace(this GlInterface glInterface, int val)
+    {
+        const string EntryPoint = "glFrontFace";
+        
+        IntPtr procAddress = glInterface.GetProcAddress(EntryPoint);
+
+        if (procAddress == IntPtr.Zero)
+            throw new ArgumentException("Entry point not found: " + EntryPoint);
+        
+        var glFrontFaceDelegate = (delegate* unmanaged[Stdcall]<int,void>)procAddress;
+
+        glFrontFaceDelegate(val);
+    }
+
+    public unsafe static void CullFace(this GlInterface glInterface, int val)
+    {
+        const string EntryPoint = "glCullFace";
+        
+        IntPtr procAddress = glInterface.GetProcAddress(EntryPoint);
+
+        if (procAddress == IntPtr.Zero)
+            throw new ArgumentException("Entry point not found: " + EntryPoint);
+        
+        var glCullFaceDelegate = (delegate* unmanaged[Stdcall]<int,void>)procAddress;
+
+        glCullFaceDelegate(val);
+    }
+
+    public unsafe static void TexParameterf(this GlInterface glInterface, int target, int pName, float value)
+    {
+        const string EntryPoint = "glTexParameterf";
+        
+        IntPtr procAddress = glInterface.GetProcAddress(EntryPoint);
+
+        if (procAddress == IntPtr.Zero)
+            throw new ArgumentException("Entry point not found: " + EntryPoint);
+        
+        var glTexParameterfDelegate = (delegate* unmanaged[Stdcall]<int,int,float,void>)procAddress;
+
+        glTexParameterfDelegate(target, pName, value);
+    }
 }
