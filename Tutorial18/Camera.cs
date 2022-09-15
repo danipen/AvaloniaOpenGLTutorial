@@ -102,7 +102,7 @@ namespace Tutorial18
         {
             _isOnRightEdge = false;
             _isOnLowerEdge = false;
-            _isOnRightEdge = false;
+            _isOnLeftEdge = false;
             _isOnUpperEdge = false;
         }
         
