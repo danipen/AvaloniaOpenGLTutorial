@@ -1,8 +1,6 @@
 using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using Avalonia.Input;
-using Avalonia.Layout;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Common;
@@ -59,6 +57,7 @@ namespace Tutorial16
 
             CreateVertexShader(gl);
             CreateFragmentShader(gl);
+            BindAttributeLocations(gl);
 
             Console.WriteLine(gl.LinkProgramAndGetError(_shaderProgram));
 
@@ -73,6 +72,7 @@ namespace Tutorial16
             
             _texture = new Texture(ResourceLoader.LoadTestTexture());
             _texture.Load(gl);
+            _texture.Bind(gl, GL_TEXTURE0);
         }
 
         void CreateFragmentShader(GlInterface gl)
@@ -87,6 +87,12 @@ namespace Tutorial16
             _vertexShader = gl.CreateShader(GL_VERTEX_SHADER);
             Console.WriteLine(gl.CompileShaderAndGetError(_vertexShader, VertexShaderSource));
             gl.AttachShader(_shaderProgram, _vertexShader);
+        }
+        
+        void BindAttributeLocations(GlInterface gl)
+        {
+            gl.BindAttribLocationString(_shaderProgram, PositionLocation, "position");
+            gl.BindAttribLocationString(_shaderProgram, TexCoordLocation, "textCoord");
         }
 
         void CreateIndexBuffer(GlInterface gl)
@@ -127,8 +133,6 @@ namespace Tutorial16
 
             Matrix4x4 transformation = _operations.GetTransformation();
             gl.UniformMatrix4fv(_gTransformLoc, 1, false, &transformation);
-
-            _texture.Bind(gl, GL_TEXTURE0);
             
             gl.DrawElements(GL_TRIANGLES, _indices!.Length, GL_UNSIGNED_SHORT, IntPtr.Zero);
             gl.CheckError();
@@ -141,17 +145,17 @@ namespace Tutorial16
             Vertex[] vertices = {
                 new Vertex()
                 {
-                    Position = new Vector3(-1.0f, -1.0f, 0.5773f),
+                    Position = new Vector3(-1.0f, -1.0f, 0),
                     TextCoord = new Vector2(0, 0)
                 },
                 new Vertex()
                 {
-                    Position = new Vector3(0.0f, -1.0f, -1.15475f),
+                    Position = new Vector3(0.0f, -1.0f, 1),
                     TextCoord = new Vector2(0.5f, 0.0f)
                 },
                 new Vertex()
                 {
-                    Position = new Vector3(1.0f, -1.0f, 0.5773f),
+                    Position = new Vector3(1.0f, -1.0f, 0),
                     TextCoord = new Vector2(1.0f, 0.0f)
                 },
                 new Vertex()
@@ -170,19 +174,19 @@ namespace Tutorial16
 
             _vao = gl.GenVertexArray();
             gl.BindVertexArray(_vao);
-
-            int positionLocation = 0;
-            int textureCoordLocation = 1;
             
             gl.VertexAttribPointer(
-                positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), IntPtr.Zero);
+                PositionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), IntPtr.Zero);
             gl.VertexAttribPointer(
-                textureCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), new IntPtr(sizeof(Vector3)));
+                TexCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), new IntPtr(sizeof(Vector3)));
             
-            gl.EnableVertexAttribArray(positionLocation);
-            gl.EnableVertexAttribArray(textureCoordLocation);
+            gl.EnableVertexAttribArray(PositionLocation);
+            gl.EnableVertexAttribArray(TexCoordLocation);
         }
 
+        const int PositionLocation = 0;
+        const int TexCoordLocation = 1;
+        
         string VertexShaderSource => GlExtensions.GetShader(GlVersion, false, @"
                 in vec3 position;
                 in vec2 texCoord;
@@ -205,7 +209,6 @@ namespace Tutorial16
                 void main()
                 {
                     fragColor = texture(gSampler, texCoord0.xy);
-                    //fragColor = vec4(1, 1, 1, 1);
                 }
             ");
 
