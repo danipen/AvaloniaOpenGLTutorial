@@ -65,6 +65,8 @@ namespace Tutorial17
 
             _gTransformLoc = gl.GetUniformLocationString(_shaderProgram, "gTransform");
             _gSamplerLoc = gl.GetUniformLocationString(_shaderProgram, "gSampler");
+            _gDirectionalLightColorLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.Color");
+            _gDirectionalLightAmbientIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.AmbientIntensity");
             gl.CheckError();
 
             gl.Uniform1i(_gSamplerLoc, 0);
@@ -136,6 +138,9 @@ namespace Tutorial17
             Matrix4x4 transformation = _operations.GetTransformation();
             gl.UniformMatrix4fv(_gTransformLoc, 1, false, &transformation);
 
+            gl.Uniform3f(_gDirectionalLightColorLoc, 1f, 1f, 1f);
+            gl.Uniform1f(_gDirectionalLightAmbientIntensityLoc, 0.5f);
+
             gl.DrawElements(GL_TRIANGLES, _indices!.Length, GL_UNSIGNED_SHORT, IntPtr.Zero);
             gl.CheckError();
 
@@ -206,11 +211,22 @@ namespace Tutorial17
         string VertexFragmentShaderSource => GlExtensions.GetShader(GlVersion, true, @"
                 in vec2 texCoord0;
                 out vec4 fragColor;
+
+                struct DirectionalLight
+                {
+                    vec3 Color;
+                    float AmbientIntensity;
+                };
+
+                uniform DirectionalLight gDirectionalLight;
                 uniform sampler2D gSampler;
 
                 void main()
                 {
-                    fragColor = texture(gSampler, texCoord0.xy);
+                    fragColor = vec4(
+                                (texture(gSampler, texCoord0.xy) *
+                                vec4(gDirectionalLight.Color, 1.0f) *
+                                gDirectionalLight.AmbientIntensity).xyz, 1);
                 }
             ");
 
@@ -229,6 +245,8 @@ namespace Tutorial17
         int _shaderProgram;
         int _gTransformLoc;
         int _gSamplerLoc;
+        int _gDirectionalLightColorLoc;
+        int _gDirectionalLightAmbientIntensityLoc;
 
         Texture _texture;
 
