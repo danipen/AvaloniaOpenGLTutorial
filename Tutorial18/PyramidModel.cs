@@ -14,22 +14,22 @@ namespace Tutorial18
             {
                 new Vertex()
                 {
-                    Position = new Vector3(-1.0f, -1.0f, 0),
+                    Position = new Vector3(-1.0f, -0.75f, 0.5773f),
                     TextCoord = new Vector2(0, 0)
                 },
                 new Vertex()
                 {
-                    Position = new Vector3(0.0f, -1.0f, 1),
+                    Position = new Vector3(0.0f, -0.75f, -1.15475f),
                     TextCoord = new Vector2(0.5f, 0.0f)
                 },
                 new Vertex()
                 {
-                    Position = new Vector3(1.0f, -1.0f, 0),
+                    Position = new Vector3(1.0f, -0.75f, 0.5773f),
                     TextCoord = new Vector2(1.0f, 0.0f)
                 },
                 new Vertex()
                 {
-                    Position = new Vector3(0.0f, 1.0f, 0.0f),
+                    Position = new Vector3(0.0f, 0.75f, 0.0f),
                     TextCoord = new Vector2(0.5f, 1.0f)
                 },
             };

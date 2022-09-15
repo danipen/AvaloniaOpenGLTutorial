@@ -17,7 +17,6 @@ namespace Tutorial18
 
             gl.FrontFace(GL_CW);
             gl.CullFace(GL_BACK);
-            gl.Enable(GL_CULL_FACE);
 
             gl.CheckError();
 
