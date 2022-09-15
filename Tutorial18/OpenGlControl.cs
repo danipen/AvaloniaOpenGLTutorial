@@ -21,10 +21,11 @@ namespace Tutorial18
 
             gl.CheckError();
 
+            _model = new PyramidModel();
+
             ConfigureShaders(gl);
             CreateVertexBuffer(gl);
             CreateIndexBuffer(gl);
-            CalculateNormals(_indices, _vertices);
 
             gl.CheckError();
 
@@ -104,19 +105,11 @@ namespace Tutorial18
 
         void CreateIndexBuffer(GlInterface gl)
         {
-            _indices = new ushort[]
-            {
-                0, 3, 1,
-                1, 3, 2,
-                2, 3, 0,
-                0, 1, 2
-            };
-
             _ibo = gl.GenBuffer();
             gl.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
 
-            fixed (void* pIndicesData = _indices)
-                gl.BufferData(GL_ELEMENT_ARRAY_BUFFER, new IntPtr(sizeof(ushort) * _indices.Length),
+            fixed (void* pIndicesData = _model.Indices)
+                gl.BufferData(GL_ELEMENT_ARRAY_BUFFER, new IntPtr(sizeof(ushort) * _model.Indices.Length),
                     new IntPtr(pIndicesData), GL_STATIC_DRAW);
         }
 
@@ -147,11 +140,11 @@ namespace Tutorial18
             gl.UniformMatrix4fv(_gWorldTransformLoc, 1, false, &worldTransformation);
 
             gl.Uniform3f(_gDirectionalLightColorLoc, 1f, 1f, 1f);
-            gl.Uniform1f(_gDirectionalLightAmbientIntensityLoc, 0.1f);
+            gl.Uniform1f(_gDirectionalLightAmbientIntensityLoc, 0.4f);
             gl.Uniform3f(_gDirectionalLightDirectionLoc, 1f, 0f, 0f);
-            gl.Uniform1f(_gDirectionalLightDiffuseIntensityLoc, 1f);
+            gl.Uniform1f(_gDirectionalLightDiffuseIntensityLoc, 0.75f);
 
-            gl.DrawElements(GL_TRIANGLES, _indices!.Length, GL_UNSIGNED_SHORT, IntPtr.Zero);
+            gl.DrawElements(GL_TRIANGLES, _model.Indices.Length, GL_UNSIGNED_SHORT, IntPtr.Zero);
             gl.CheckError();
 
             _camera.OnRender();
@@ -159,35 +152,11 @@ namespace Tutorial18
 
         void CreateVertexBuffer(GlInterface gl)
         {
-            _vertices = new []
-            {
-                new Vertex()
-                {
-                    Position = new Vector3(-1.0f, -1.0f, 0),
-                    TextCoord = new Vector2(0, 0)
-                },
-                new Vertex()
-                {
-                    Position = new Vector3(0.0f, -1.0f, 1),
-                    TextCoord = new Vector2(0.5f, 0.0f)
-                },
-                new Vertex()
-                {
-                    Position = new Vector3(1.0f, -1.0f, 0),
-                    TextCoord = new Vector2(1.0f, 0.0f)
-                },
-                new Vertex()
-                {
-                    Position = new Vector3(0.0f, 1.0f, 0.0f),
-                    TextCoord = new Vector2(0.5f, 1.0f)
-                },
-            };
-
             _vbo = gl.GenBuffer();
             gl.BindBuffer(GL_ARRAY_BUFFER, _vbo);
 
-            fixed (void* pVertices = _vertices)
-                gl.BufferData(GL_ARRAY_BUFFER, new IntPtr(sizeof(Vertex) * _vertices.Length),
+            fixed (void* pVertices = _model.Vertices)
+                gl.BufferData(GL_ARRAY_BUFFER, new IntPtr(sizeof(Vertex) * _model.Vertices.Length),
                     new IntPtr(pVertices), GL_STATIC_DRAW);
 
             _vao = gl.GenVertexArray();
@@ -203,28 +172,6 @@ namespace Tutorial18
             gl.EnableVertexAttribArray(PositionLocation);
             gl.EnableVertexAttribArray(TexCoordLocation);
             gl.EnableVertexAttribArray(NormalLocation);
-        }
-
-        void CalculateNormals(ushort[] pIndices,  Vertex[] pVertices)
-        {
-            for (int i = 0 ; i < pIndices.Length ; i += 3)
-            {
-                ushort index0 = pIndices[i];
-                ushort index1 = pIndices[i + 1];
-                ushort index2 = pIndices[i + 2];
-
-                Vector3 v1 = pVertices[index1].Position - pVertices[index0].Position;
-                Vector3 v2 = pVertices[index2].Position - pVertices[index0].Position;
-                Vector3 normal = Vector3.Cross(v1, v2);
-                normal = Vector3.Normalize(normal);
-
-                pVertices[index0].Normal += normal;
-                pVertices[index1].Normal += normal;
-                pVertices[index2].Normal += normal;
-            }
-
-            for (int i = 0 ; i < pVertices.Length ; i++)
-                pVertices[i].Normal = Vector3.Normalize(pVertices[i].Normal);
         }
 
         const int PositionLocation = 0;
@@ -291,14 +238,6 @@ namespace Tutorial18
                 }
             ");
 
-        [StructLayout(LayoutKind.Sequential)]
-        struct Vertex
-        {
-            public Vector3 Position;
-            public Vector2 TextCoord;
-            public Vector3 Normal;
-        }
-
         int _vbo;
         int _vao;
         int _ibo;
@@ -313,10 +252,8 @@ namespace Tutorial18
         int _gDirectionalLightDirectionLoc;
         int _gDirectionalLightDiffuseIntensityLoc;
 
+        PyramidModel _model;
         Texture _texture;
-
-        ushort[] _indices;
-        Vertex[] _vertices;
 
         readonly Pipeline _operations = new Pipeline();
     }
