@@ -57,7 +57,7 @@ namespace Tutorial16
 
             CreateVertexShader(gl);
             CreateFragmentShader(gl);
-            BindAttributeLocations(gl);
+            BindAttributeLocations(gl); // has to be done before linkProgram
 
             Console.WriteLine(gl.LinkProgramAndGetError(_shaderProgram));
 
