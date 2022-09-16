@@ -10,7 +10,6 @@ namespace Tutorial18
 
         internal CubeModel()
         {
-            const float ONESIXTH = 1;
             _vertices = new Vertex[]
             {
                 // ----- Face 1 ----
