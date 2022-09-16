@@ -1,8 +1,10 @@
 using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Avalonia.Input;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
+using Avalonia.Threading;
 using Common;
 using static Avalonia.OpenGL.GlConsts;
 using static Common.GlConstExtensions;
@@ -20,6 +22,8 @@ namespace Tutorial18
             gl.Enable(GL_CULL_FACE);
 
             gl.CheckError();
+
+            _model = new CubeModel();
 
             ConfigureShaders(gl);
             CreateVertexBuffer(gl);
@@ -63,10 +67,13 @@ namespace Tutorial18
 
             gl.UseProgram(_shaderProgram);
 
-            _gTransformLoc = gl.GetUniformLocationString(_shaderProgram, "gTransform");
+            _gLocalTransformLoc = gl.GetUniformLocationString(_shaderProgram, "gLocalTransform");
+            _gWorldTransformLoc = gl.GetUniformLocationString(_shaderProgram, "gWorldTransform");
             _gSamplerLoc = gl.GetUniformLocationString(_shaderProgram, "gSampler");
             _gDirectionalLightColorLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.Color");
             _gDirectionalLightAmbientIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.AmbientIntensity");
+            _gDirectionalLightDirectionLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.Direction");
+            _gDirectionalLightDiffuseIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.DiffuseIntensity");
             gl.CheckError();
 
             gl.Uniform1i(_gSamplerLoc, 0);
@@ -95,23 +102,16 @@ namespace Tutorial18
         {
             gl.BindAttribLocationString(_shaderProgram, PositionLocation, "position");
             gl.BindAttribLocationString(_shaderProgram, TexCoordLocation, "texCoord");
+            gl.BindAttribLocationString(_shaderProgram, NormalLocation, "normal");
         }
 
         void CreateIndexBuffer(GlInterface gl)
         {
-            _indices = new ushort[]
-            {
-                0, 3, 1,
-                1, 3, 2,
-                2, 3, 0,
-                0, 1, 2
-            };
-
             _ibo = gl.GenBuffer();
             gl.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
 
-            fixed (void* pIndicesData = _indices)
-                gl.BufferData(GL_ELEMENT_ARRAY_BUFFER, new IntPtr(sizeof(ushort) * _indices.Length),
+            fixed (void* pIndicesData = _model.Indices)
+                gl.BufferData(GL_ELEMENT_ARRAY_BUFFER, new IntPtr(sizeof(ushort) * _model.Indices.Length),
                     new IntPtr(pIndicesData), GL_STATIC_DRAW);
         }
 
@@ -129,54 +129,43 @@ namespace Tutorial18
                 _camera.CameraPosition,
                 _camera.CameraTarget,
                 _camera.CameraUp);
-            _operations.SetPerspective((float)_fieldOfView, (float)Bounds.Width, (float)Bounds.Height, (float)_nearPlane,
+            _operations.SetPerspective((float)_fieldOfView, (float)Bounds.Width, (float)Bounds.Height,
+                (float)_nearPlane,
                 (float)_farPlane);
             _operations.Scale((float)_scaleX, (float)_scaleY, (float)_scaleZ);
             _operations.Position((float)_translateX, (float)_translateY, (float)_translateZ);
             _operations.Rotate((float)_rotateX, (float)_rotateY, (float)_rotateZ);
 
-            Matrix4x4 transformation = _operations.GetTransformation();
-            gl.UniformMatrix4fv(_gTransformLoc, 1, false, &transformation);
+            Matrix4x4 localTransformation = _operations.GetLocalTransformation();
+            Matrix4x4 worldTransformation = _operations.GetWorldTransformation();
+
+            gl.UniformMatrix4fv(_gLocalTransformLoc, 1, false, &localTransformation);
+            gl.UniformMatrix4fv(_gWorldTransformLoc, 1, false, &worldTransformation);
 
             gl.Uniform3f(_gDirectionalLightColorLoc, 1f, 1f, 1f);
-            gl.Uniform1f(_gDirectionalLightAmbientIntensityLoc, 0.5f);
+            gl.Uniform1f(_gDirectionalLightAmbientIntensityLoc, 0.4f);
+            gl.Uniform3f(_gDirectionalLightDirectionLoc, 1f, 0f, 0f);
+            gl.Uniform1f(_gDirectionalLightDiffuseIntensityLoc, 0.75f);
 
-            gl.DrawElements(GL_TRIANGLES, _indices!.Length, GL_UNSIGNED_SHORT, IntPtr.Zero);
+            gl.DrawElements(GL_TRIANGLES, _model.Indices.Length, GL_UNSIGNED_SHORT, IntPtr.Zero);
             gl.CheckError();
 
             _camera.OnRender();
+
+            if (_pressedKey == Key.None)
+                return;
+            
+            ProcessInputKey(_pressedKey);
+            Dispatcher.UIThread.Post(InvalidateVisual, DispatcherPriority.Background);
         }
 
         void CreateVertexBuffer(GlInterface gl)
         {
-            Vertex[] vertices = {
-                new Vertex()
-                {
-                    Position = new Vector3(-1.0f, -1.0f, 0),
-                    TextCoord = new Vector2(0, 0)
-                },
-                new Vertex()
-                {
-                    Position = new Vector3(0.0f, -1.0f, 1),
-                    TextCoord = new Vector2(0.5f, 0.0f)
-                },
-                new Vertex()
-                {
-                    Position = new Vector3(1.0f, -1.0f, 0),
-                    TextCoord = new Vector2(1.0f, 0.0f)
-                },
-                new Vertex()
-                {
-                    Position = new Vector3(0.0f, 1.0f, 0.0f),
-                    TextCoord = new Vector2(0.5f, 1.0f)
-                }
-            };
-
             _vbo = gl.GenBuffer();
             gl.BindBuffer(GL_ARRAY_BUFFER, _vbo);
 
-            fixed (void* pVertices = vertices)
-                gl.BufferData(GL_ARRAY_BUFFER, new IntPtr(sizeof(Vertex) * vertices.Length),
+            fixed (void* pVertices = _model.Vertices)
+                gl.BufferData(GL_ARRAY_BUFFER, new IntPtr(sizeof(Vertex) * _model.Vertices.Length),
                     new IntPtr(pVertices), GL_STATIC_DRAW);
 
             _vao = gl.GenVertexArray();
@@ -186,36 +175,49 @@ namespace Tutorial18
                 PositionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), IntPtr.Zero);
             gl.VertexAttribPointer(
                 TexCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), new IntPtr(sizeof(Vector3)));
+            gl.VertexAttribPointer(
+                NormalLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), new IntPtr(sizeof(Vector3) + sizeof(Vector2)));
 
             gl.EnableVertexAttribArray(PositionLocation);
             gl.EnableVertexAttribArray(TexCoordLocation);
+            gl.EnableVertexAttribArray(NormalLocation);
         }
 
         const int PositionLocation = 0;
         const int TexCoordLocation = 1;
+        const int NormalLocation = 2;
 
         string VertexShaderSource => GlExtensions.GetShader(GlVersion, false, @"
                 in vec3 position;
                 in vec2 texCoord;
-                uniform mat4 gTransform;
+                in vec3 normal;
+
+                uniform mat4 gLocalTransform;
+                uniform mat4 gWorldTransform;
 
                 out vec2 texCoord0;
+                out vec3 normal0;
 
                 void main()
                 {
-                    gl_Position = gTransform * vec4(position, 1.0);
+                    gl_Position = gLocalTransform * vec4(position, 1.0);
                     texCoord0 = texCoord;
+                    normal0 = (gWorldTransform * vec4(normal, 0.0)).xyz;
                 }
             ");
 
         string VertexFragmentShaderSource => GlExtensions.GetShader(GlVersion, true, @"
                 in vec2 texCoord0;
+                in vec3 normal0;
+
                 out vec4 fragColor;
 
                 struct DirectionalLight
                 {
                     vec3 Color;
                     float AmbientIntensity;
+                    vec3 Direction;
+                    float DiffuseIntensity;
                 };
 
                 uniform DirectionalLight gDirectionalLight;
@@ -223,19 +225,25 @@ namespace Tutorial18
 
                 void main()
                 {
-                    fragColor = vec4(
-                                (texture(gSampler, texCoord0.xy) *
-                                vec4(gDirectionalLight.Color, 1.0f) *
-                                gDirectionalLight.AmbientIntensity).xyz, 1);
+                    vec4 ambientColor = vec4(gDirectionalLight.Color, 1) * gDirectionalLight.AmbientIntensity;
+                                                                                    
+                    float diffuseFactor = dot(normalize(normal0), -gDirectionalLight.Direction);    
+                                                                                                    
+                    vec4 diffuseColor;                                                              
+                                                                                                    
+                    if (diffuseFactor > 0) {                                                        
+                        diffuseColor = vec4(gDirectionalLight.Color, 1.0f) *                        
+                                    gDirectionalLight.DiffuseIntensity *                         
+                                    diffuseFactor;                                               
+                    }                                                                               
+                    else {                                                                          
+                        diffuseColor = vec4(0, 0, 0, 0);
+                    }                                                                               
+                                                                                                    
+                    fragColor = texture(gSampler, texCoord0.xy) *                                 
+                                vec4((ambientColor + diffuseColor).xyz, 1);                                 
                 }
             ");
-
-        [StructLayout(LayoutKind.Sequential)]
-        struct Vertex
-        {
-            public Vector3 Position;
-            public Vector2 TextCoord;
-        }
 
         int _vbo;
         int _vao;
@@ -243,14 +251,17 @@ namespace Tutorial18
         int _vertexShader;
         int _fragmentShader;
         int _shaderProgram;
-        int _gTransformLoc;
+        int _gLocalTransformLoc;
+        int _gWorldTransformLoc;
         int _gSamplerLoc;
         int _gDirectionalLightColorLoc;
         int _gDirectionalLightAmbientIntensityLoc;
+        int _gDirectionalLightDirectionLoc;
+        int _gDirectionalLightDiffuseIntensityLoc;
 
+        IModel _model;
         Texture _texture;
 
-        ushort[]? _indices;
         readonly Pipeline _operations = new Pipeline();
     }
 }

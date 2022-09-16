@@ -4,8 +4,10 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 
 namespace Tutorial18
 {
@@ -45,6 +47,11 @@ namespace Tutorial18
             panel.Children.Add(_myControl);
 
             Content = panel;
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                _myControl.Focus();
+            }, DispatcherPriority.Input - 1);
 
             Width = 1500;
             Height = 750;

@@ -53,13 +53,8 @@ namespace Tutorial18
             _cameraUp = cameraUp;
         }
 
-        public Matrix4x4 GetTransformation()
+        public Matrix4x4 GetLocalTransformation()
         {
-            Matrix4x4 scale = Matrix4x4.CreateScale(_scaleData);
-            Matrix4x4 rotateX = Matrix4x4.CreateRotationX(_rotateData.X);
-            Matrix4x4 rotateY = Matrix4x4.CreateRotationY(_rotateData.Y);
-            Matrix4x4 rotateZ = Matrix4x4.CreateRotationZ(_rotateData.Z);
-            Matrix4x4 translate = Matrix4x4.CreateTranslation(_positionData);
             Matrix4x4 camera = Matrix4x4.CreateLookAt(_cameraPos, _cameraTarget + _cameraPos, _cameraUp);
             Matrix4x4 perspective = Matrix4x4.CreatePerspectiveFieldOfView(
                 _fieldOfView,
@@ -67,7 +62,18 @@ namespace Tutorial18
                 _nearPlaneDistance,
                 _farPlaneDistance);
 
-            return scale * rotateX * rotateY * rotateZ * translate * camera * perspective;
+            return GetWorldTransformation() * camera * perspective;
+        }
+
+        public Matrix4x4 GetWorldTransformation()
+        {
+            Matrix4x4 scale = Matrix4x4.CreateScale(_scaleData);
+            Matrix4x4 rotateX = Matrix4x4.CreateRotationX(_rotateData.X);
+            Matrix4x4 rotateY = Matrix4x4.CreateRotationY(_rotateData.Y);
+            Matrix4x4 rotateZ = Matrix4x4.CreateRotationZ(_rotateData.Z);
+            Matrix4x4 translate = Matrix4x4.CreateTranslation(_positionData);
+
+            return scale * rotateX * rotateY * rotateZ * translate;
         }
 
         Vector3 _scaleData;
