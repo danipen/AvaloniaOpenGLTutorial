@@ -23,7 +23,8 @@ namespace Tutorial22
 
             gl.CheckError();
 
-            _model = new Model(ResourceLoader.LoadCoyoteModel());
+            // _model = new Model(ResourceLoader.LoadBusModel());
+            _model = new CubeModel();
             _model.LoadMesh();
 
             ConfigureShaders(gl);
@@ -242,7 +243,7 @@ namespace Tutorial22
                         diffuseColor = vec4(0, 0, 0, 0);
                     }                                                                               
                                                                                                     
-                    fragColor = //texture(gSampler, texCoord0.xy) *                                 
+                    fragColor = texture(gSampler, texCoord0.xy) *                                 
                                 vec4((ambientColor + diffuseColor).xyz, 1);                                 
                 }
             ");
