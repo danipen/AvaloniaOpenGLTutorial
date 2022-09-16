@@ -19,6 +19,7 @@ namespace Tutorial18
 
             gl.FrontFace(GL_CW);
             gl.CullFace(GL_BACK);
+            gl.Enable(GL_CULL_FACE);
 
             gl.CheckError();
 
@@ -226,7 +227,7 @@ namespace Tutorial18
                 {
                     vec4 ambientColor = vec4(gDirectionalLight.Color, 1) * gDirectionalLight.AmbientIntensity;
                                                                                     
-                    float diffuseFactor = dot(normalize(normal0), gDirectionalLight.Direction);    
+                    float diffuseFactor = dot(normalize(normal0), -gDirectionalLight.Direction);    
                                                                                                     
                     vec4 diffuseColor;                                                              
                                                                                                     
@@ -236,7 +237,7 @@ namespace Tutorial18
                                     diffuseFactor;                                               
                     }                                                                               
                     else {                                                                          
-                        diffuseColor = vec4(0, 0, 0, 0);                                            
+                        diffuseColor = vec4(0, 0, 0, 0);
                     }                                                                               
                                                                                                     
                     fragColor = texture(gSampler, texCoord0.xy) *                                 
