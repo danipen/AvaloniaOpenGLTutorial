@@ -143,18 +143,18 @@ namespace Tutorial18
 
             _indices = new ushort[]
             {
-                0, 1, 3,
-                3, 1, 2,
-                4, 5, 7,
-                7, 5, 6,
-                8, 9, 11,
-                11, 9, 10,
-                12, 13, 15,
-                15, 13, 14,
-                16, 17, 19,
-                19, 17, 18,
-                20, 21, 23,
-                23, 21, 22,
+                0, 1, 3,    // front face
+                3, 1, 2,    // front face
+                7, 5, 4,    // back face
+                6, 5, 7,    // back face
+                8, 9, 11,   // left face
+                11, 9, 10,  // left face
+                15, 13, 12, // right face
+                14, 13, 15, // right face
+                16, 17, 19, // top face
+                19, 17, 18, // top face
+                23, 21, 20, // bottom face
+                22, 21, 23, // bottom face
             };
 
             VertexHelper.CalculateNormals(_indices, _vertices);
