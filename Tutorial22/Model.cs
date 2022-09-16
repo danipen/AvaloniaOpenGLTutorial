@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Assimp;
+using Matrix4x4 = System.Numerics.Matrix4x4;
 
 namespace Tutorial22
 {
@@ -13,7 +14,7 @@ namespace Tutorial22
         Vector3 IModel.MinPosition => _minPosition;
         Vector3 IModel.MaxPosition => _maxPosition;
 
-        public Model(Scene scene)
+        public Model(Assimp.Scene scene)
         {
             _scene = scene;
         }
@@ -33,15 +34,18 @@ namespace Tutorial22
             VertexHelper.CalculateMaxMinPosition(_vertices, ref _maxPosition, ref _minPosition);
         }
 
-        void RecursiveLoadScene(Node node, Scene scene, List<Vertex> vertices, List<uint> indices)
+        void RecursiveLoadScene(Assimp.Node node, Assimp.Scene scene, List<Vertex> vertices, List<uint> indices)
         {
+            Matrix4x4 transform = ToMatrix4x4(node.Transform);
             for (int m = 0; m < node.MeshCount; m++)
             {
-                Mesh mesh = scene.Meshes[node.MeshIndices[m]];
+                Assimp.Mesh mesh = scene.Meshes[node.MeshIndices[m]];
                 for(int i = 0; i < mesh.Vertices.Count; i++)
                 {
                     Vertex vertex = new();
-                    vertex.Position = ToVector3(mesh.Vertices[i]);
+
+                    var position = ToVector3(mesh.Vertices[i]);
+                    vertex.Position =  Vector3.Transform(position, transform);
 
                     if (mesh.HasNormals)
                         vertex.Normal = ToVector3(mesh.Normals[i]);
@@ -52,7 +56,7 @@ namespace Tutorial22
                     vertices.Add(vertex);
                 }
 
-                foreach (Face face in mesh.Faces)
+                foreach (Assimp.Face face in mesh.Faces)
                 {
                     if (face.IndexCount != 3)
                         continue;
@@ -63,18 +67,27 @@ namespace Tutorial22
                 }
             }
 
-            foreach (Node child in node.Children)
+            foreach (Assimp.Node child in node.Children)
             {
                 RecursiveLoadScene(child, scene, vertices, indices);
             }
         }
 
-        Vector3 ToVector3(Vector3D v3d)
+        Matrix4x4 ToMatrix4x4(Assimp.Matrix4x4 m4x4)
+        {
+            return new Matrix4x4(
+                m4x4.A1, m4x4.A2, m4x4.A3, m4x4.A4,
+                m4x4.B1, m4x4.B2, m4x4.B3, m4x4.B4,
+                m4x4.C1, m4x4.C2, m4x4.C3, m4x4.C4,
+                m4x4.D1, m4x4.D2, m4x4.D3, m4x4.D4);
+        }
+
+        Vector3 ToVector3(Assimp.Vector3D v3d)
         {
             return new Vector3(v3d.X, v3d.Y, v3d.Z);
         }
 
-        Vector2 ToVector2(Vector3D v3d)
+        Vector2 ToVector2(Assimp.Vector3D v3d)
         {
             return new Vector2(v3d.X, v3d.Y);
         }

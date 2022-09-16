@@ -309,12 +309,12 @@ namespace Tutorial22
             TranslateX = 0;
             TranslateY = 0;
             TranslateZ = 0;
-            RotateX = Math.PI * 1.5;
+            RotateX = 0;
             RotateY = 0;
             RotateZ = 0;
             FieldOfViewAngle = 60 * MathF.PI / 180;
             NearPlane = 0.01f;
-            FarPlane = 100;
+            FarPlane = 1000;
         }
 
         double _scaleX;

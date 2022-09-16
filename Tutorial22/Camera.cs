@@ -271,7 +271,7 @@ namespace Tutorial22
         static float CalculateCenter(float maxPosition, float minPosition)
         {
             float size = maxPosition - minPosition;
-            return minPosition + size / 2 ;
+            return minPosition + size / 2;
         }
 
         static float ToDegrees(float radians)

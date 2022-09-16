@@ -68,9 +68,9 @@ namespace Tutorial22
 
             var cameraSliderList = new List<Panel>()
             {
-                BuildSlider("Camera position X", -10, 10, OpenGlControl.CameraPositionXProperty),
-                BuildSlider("Camera position Y", -10, 10, OpenGlControl.CameraPositionYProperty),
-                BuildSlider("Camera position Z", -10, 10, OpenGlControl.CameraPositionZProperty),
+                BuildSlider("Camera position X", -10000, 10000, OpenGlControl.CameraPositionXProperty),
+                BuildSlider("Camera position Y", -10000, 10000, OpenGlControl.CameraPositionYProperty),
+                BuildSlider("Camera position Z", -10000, 10000, OpenGlControl.CameraPositionZProperty),
                 BuildSlider("Camera target X", -1, 1, OpenGlControl.CameraTargetXProperty),
                 BuildSlider("Camera target Y", -1, 1, OpenGlControl.CameraTargetYProperty),
                 BuildSlider("Camera target Z", -1, 1, OpenGlControl.CameraTargetZProperty),
@@ -117,7 +117,7 @@ namespace Tutorial22
                 BuildSlider("Rotate Z", 0, 2 * MathF.PI, OpenGlControl.RotateZProperty),
                 BuildSlider("Field of View", 0.1, MathF.PI  - 0.1f, OpenGlControl.FieldOfViewAngleProperty, true),
                 BuildSlider("Near Clipping Plane", 0.01, 10, OpenGlControl.NearPlaneProperty),
-                BuildSlider("Far Clipping Plane", 10.1, 1000, OpenGlControl.FarPlaneProperty)
+                BuildSlider("Far Clipping Plane", 10.1, 10000, OpenGlControl.FarPlaneProperty)
             };
 
             Button resetViewButton = new Button

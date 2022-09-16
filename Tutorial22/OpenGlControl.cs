@@ -23,8 +23,8 @@ namespace Tutorial22
 
             gl.CheckError();
 
-            // _model = new Model(ResourceLoader.LoadBusModel());
-            _model = new CubeModel();
+            _model = new Model(ResourceLoader.LoadLanciaIntegraleModel());
+            // _model = new CubeModel();
             _model.LoadMesh();
 
             ConfigureShaders(gl);
@@ -34,7 +34,7 @@ namespace Tutorial22
             gl.CheckError();
 
             _camera.Init((float)Bounds.Width, (float)Bounds.Height, _model.MaxPosition, _model.MinPosition);
-
+            FarPlane = _model.MaxPosition.Z - _model.MinPosition.Z * 10;
         }
 
         protected override void OnOpenGlDeinit(GlInterface gl, int fb)
