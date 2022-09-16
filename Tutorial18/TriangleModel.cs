@@ -24,8 +24,8 @@ namespace Tutorial18
                 },
                 new Vertex()
                 {
-                    Position = new Vector3(0.0f, -1.0f, 1),
-                    TextCoord = new Vector2(0.5f, 0.0f)
+                    Position = new Vector3(0.0f, 1.0f, 1),
+                    TextCoord = new Vector2(0.5f, 1.0f)
                 },
             };
 
