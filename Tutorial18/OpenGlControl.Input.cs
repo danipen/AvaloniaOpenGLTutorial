@@ -15,6 +15,9 @@ namespace Tutorial18
         {
             base.OnKeyDown(e);
             _pressedKey = e.Key;
+
+            if (ProcessInputKey(e.Key))
+                e.Handled = true;
             
             InvalidateVisual();
         }
@@ -88,33 +91,35 @@ namespace Tutorial18
             }
         }
 
-        void ProcessInputKey(Key key)
+        bool ProcessInputKey(Key key)
         {
             switch (key)
             {
                 case Key.PageUp:
                     _camera.MoveUp(POSITION_STEP_AMOUNT);
-                    break;
+                    return true;
                 case Key.PageDown:
                     _camera.MoveDown(POSITION_STEP_AMOUNT);
-                    break;
+                    return true;
                 case Key.W:
                 case Key.Up:
                     _camera.MoveForward(POSITION_STEP_AMOUNT);
-                    break;
+                    return true;
                 case Key.S:
                 case Key.Down:
                     _camera.MoveBackward(POSITION_STEP_AMOUNT);
-                    break;
+                    return true;
                 case Key.A:
                 case Key.Left:
                     _camera.MoveLeft(POSITION_STEP_AMOUNT);
-                    break;
+                    return true;
                 case Key.D:
                 case Key.Right:
                     _camera.MoveRight(POSITION_STEP_AMOUNT);
-                    break;
+                    return true;
             }
+
+            return false;
         }
         
         Key _pressedKey = Key.None;
