@@ -21,7 +21,7 @@ namespace Tutorial22
                 new Vertex()
                 {
                     Position = new Vector3(0.0f, -0.75f, -1.15475f),
-                    TextCoord = new Vector2(0.5f, 0.0f)
+                    TextCoord = new Vector2(0.5f, 0.25f)
                 },
                 new Vertex()
                 {
@@ -37,10 +37,10 @@ namespace Tutorial22
 
             _indices = new uint[]
             {
-                0, 3, 1,
-                1, 3, 2,
-                2, 3, 0,
-                0, 1, 2
+                1, 3, 0, // right face
+                2, 3, 1, // left face
+                0, 3, 2, // back face
+                2, 1, 0, // bottom face
             };
 
             VertexHelper.CalculateNormals(_indices, _vertices);

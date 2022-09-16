@@ -15,7 +15,7 @@ namespace Tutorial22
 
                 Vector3 v1 = vertices[index1].Position - vertices[index0].Position;
                 Vector3 v2 = vertices[index2].Position - vertices[index0].Position;
-                Vector3 normal = Vector3.Cross(v1, v2);
+                Vector3 normal = -Vector3.Cross(v1, v2);
                 normal = Vector3.Normalize(normal);
 
                 vertices[index0].Normal += normal;
