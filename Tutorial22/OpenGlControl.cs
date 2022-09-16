@@ -23,7 +23,8 @@ namespace Tutorial22
 
             gl.CheckError();
 
-            _model = new CubeModel();
+            _model = new Model(ResourceLoader.LoadBusModel());
+            _model.LoadMesh();
 
             ConfigureShaders(gl);
             CreateVertexBuffer(gl);
@@ -111,7 +112,7 @@ namespace Tutorial22
             gl.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
 
             fixed (void* pIndicesData = _model.Indices)
-                gl.BufferData(GL_ELEMENT_ARRAY_BUFFER, new IntPtr(sizeof(ushort) * _model.Indices.Length),
+                gl.BufferData(GL_ELEMENT_ARRAY_BUFFER, new IntPtr(sizeof(uint) * _model.Indices.Length),
                     new IntPtr(pIndicesData), GL_STATIC_DRAW);
         }
 
@@ -147,14 +148,14 @@ namespace Tutorial22
             gl.Uniform3f(_gDirectionalLightDirectionLoc, 1f, 0f, 0f);
             gl.Uniform1f(_gDirectionalLightDiffuseIntensityLoc, 0.75f);
 
-            gl.DrawElements(GL_TRIANGLES, _model.Indices.Length, GL_UNSIGNED_SHORT, IntPtr.Zero);
+            gl.DrawElements(GL_TRIANGLES, _model.Indices.Length, GL_UNSIGNED_INT, IntPtr.Zero);
             gl.CheckError();
 
             _camera.OnRender();
 
             if (_pressedKey == Key.None)
                 return;
-            
+
             ProcessInputKey(_pressedKey);
             Dispatcher.UIThread.Post(InvalidateVisual, DispatcherPriority.Background);
         }

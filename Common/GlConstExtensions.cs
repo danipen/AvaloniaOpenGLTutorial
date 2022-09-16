@@ -16,5 +16,7 @@
         public const int GL_TEXTURE_WRAP_S = 0x2802;
         public const int GL_TEXTURE_WRAP_T = 0x2803;
         public const int GL_REPEAT = 0x2901;
+
+        public const int GL_UNSIGNED_INT = 0x1405;
     }
 }

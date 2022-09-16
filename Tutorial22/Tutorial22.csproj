@@ -19,6 +19,7 @@
     <TrimmableAssembly Include="Avalonia.Themes.Default" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="AssimpNet" Version="5.0.0-beta1" />
     <PackageReference Include="Avalonia" Version="11.0.0-preview1" />
     <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview1" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview1" />

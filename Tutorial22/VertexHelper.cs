@@ -2,15 +2,15 @@ using System.Numerics;
 
 namespace Tutorial22
 {
-    internal class VertexHelper
+    internal static class VertexHelper
     {
-        public static void CalculateNormals(ushort[] indices, Vertex[] vertices)
+        public static void CalculateNormals(uint[] indices, Vertex[] vertices)
         {
             for (int i = 0; i < indices.Length; i += 3)
             {
-                ushort index0 = indices[i];
-                ushort index1 = indices[i + 1];
-                ushort index2 = indices[i + 2];
+                uint index0 = indices[i];
+                uint index1 = indices[i + 1];
+                uint index2 = indices[i + 2];
 
                 Vector3 v1 = vertices[index1].Position - vertices[index0].Position;
                 Vector3 v2 = vertices[index2].Position - vertices[index0].Position;

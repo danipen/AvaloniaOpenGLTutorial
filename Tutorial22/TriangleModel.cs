@@ -4,11 +4,11 @@ namespace Tutorial22
 {
     internal class TriangleModel : IModel
     {
-        ushort[] IModel.Indices => _indices;
+        uint[] IModel.Indices => _indices;
 
         Vertex[] IModel.Vertices => _vertices;
 
-        internal TriangleModel()
+        void IModel.LoadMesh()
         {
             _vertices = new[]
             {
@@ -29,7 +29,7 @@ namespace Tutorial22
                 },
             };
 
-            _indices = new ushort[]
+            _indices = new uint[]
             {
                 0, 1, 2,
             };
@@ -37,7 +37,7 @@ namespace Tutorial22
             VertexHelper.CalculateNormals(_indices, _vertices);
         }
 
-        readonly ushort[] _indices;
-        readonly Vertex[] _vertices;
+        uint[] _indices;
+        Vertex[] _vertices;
     }
 }

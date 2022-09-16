@@ -4,11 +4,10 @@ namespace Tutorial22
 {
     internal class CubeModel : IModel
     {
-        ushort[] IModel.Indices => _indices;
+        uint[] IModel.Indices => _indices;
 
         Vertex[] IModel.Vertices => _vertices;
-
-        internal CubeModel()
+        public void LoadMesh()
         {
             _vertices = new Vertex[]
             {
@@ -141,7 +140,7 @@ namespace Tutorial22
                 },
             };
 
-            _indices = new ushort[]
+            _indices = new uint[]
             {
                 0, 1, 3,    // front face
                 3, 1, 2,    // front face
@@ -160,7 +159,7 @@ namespace Tutorial22
             VertexHelper.CalculateNormals(_indices, _vertices);
         }
 
-        readonly Vertex[] _vertices;
-        readonly ushort[] _indices;
+        Vertex[] _vertices;
+        uint[] _indices;
     }
 }

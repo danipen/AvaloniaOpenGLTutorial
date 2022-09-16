@@ -7,10 +7,15 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="AssimpNet" Version="5.0.0-beta1" />
         <PackageReference Include="Avalonia" Version="11.0.0-preview1" />
     </ItemGroup>
     <ItemGroup>
       <None Remove="Content\test.png" />
       <EmbeddedResource Include="Content\test.png" />
+      <None Remove="Content\bus.fbx" />
+      <EmbeddedResource Include="Content\bus.fbx" />
+      <None Remove="Content\car.fbx" />
+      <EmbeddedResource Include="Content\car.fbx" />
     </ItemGroup>
 </Project>

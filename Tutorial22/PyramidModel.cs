@@ -4,11 +4,11 @@ namespace Tutorial22
 {
     internal class PyramidModel : IModel
     {
-        ushort[] IModel.Indices => _indices;
+        uint[] IModel.Indices => _indices;
 
         Vertex[] IModel.Vertices => _vertices;
 
-        internal PyramidModel()
+        public void LoadMesh()
         {
             _vertices = new[]
             {
@@ -34,7 +34,7 @@ namespace Tutorial22
                 },
             };
 
-            _indices = new ushort[]
+            _indices = new uint[]
             {
                 0, 3, 1,
                 1, 3, 2,
@@ -45,7 +45,7 @@ namespace Tutorial22
             VertexHelper.CalculateNormals(_indices, _vertices);
         }
 
-        readonly ushort[] _indices;
-        readonly Vertex[] _vertices;
+        uint[] _indices;
+        Vertex[] _vertices;
     }
 }
