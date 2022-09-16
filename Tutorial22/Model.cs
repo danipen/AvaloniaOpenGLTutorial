@@ -9,8 +9,9 @@ namespace Tutorial22
     internal class Model : IModel
     {
         uint[] IModel.Indices => _indices;
-
         Vertex[] IModel.Vertices => _vertices;
+        Vector3 IModel.MinPosition => _minPosition;
+        Vector3 IModel.MaxPosition => _maxPosition;
 
         public Model(Scene scene)
         {
@@ -22,32 +23,50 @@ namespace Tutorial22
             if (_scene.MeshCount == 0)
                 throw new InvalidOperationException("No meshes found");
 
-            Mesh mesh = _scene.Meshes[0];
             List<Vertex> vertices = new();
             List<uint> indices = new();
 
-            for (int i = 0 ; i < mesh.VertexCount ; i++)
-            {
-                Vertex vertex = new();
-                vertex.Position = ToVector3(mesh.Vertices[i]);
-
-                if (mesh.HasTextureCoords(0))
-                    vertex.TextCoord = ToVector2(mesh.TextureCoordinateChannels[0][i]);
-
-                if (mesh.HasNormals)
-                    vertex.Normal = -ToVector3(mesh.Normals[i]);
-
-                vertices.Add(vertex);
-            }
-
-            for (int i = 0 ; i < mesh.FaceCount ; i++)
-            {
-                Face face = mesh.Faces[i];
-                indices.AddRange(face.Indices.Select(x => (uint)x).Reverse());
-            }
+            RecursiveLoadScene(_scene.RootNode, _scene, vertices, indices);
 
             _indices = indices.ToArray();
             _vertices = vertices.ToArray();
+            VertexHelper.CalculateMaxMinPosition(_vertices, ref _maxPosition, ref _minPosition);
+        }
+
+        void RecursiveLoadScene(Node node, Scene scene, List<Vertex> vertices, List<uint> indices)
+        {
+            for (int m = 0; m < node.MeshCount; m++)
+            {
+                Mesh mesh = scene.Meshes[node.MeshIndices[m]];
+                for(int i = 0; i < mesh.Vertices.Count; i++)
+                {
+                    Vertex vertex = new();
+                    vertex.Position = ToVector3(mesh.Vertices[i]);
+
+                    if (mesh.HasNormals)
+                        vertex.Normal = ToVector3(mesh.Normals[i]);
+
+                    if (mesh.HasTextureCoords(0))
+                        vertex.TextCoord = ToVector2(mesh.TextureCoordinateChannels[0][i]);
+
+                    vertices.Add(vertex);
+                }
+
+                foreach (Face face in mesh.Faces)
+                {
+                    if (face.IndexCount != 3)
+                        continue;
+
+                    indices.Add((uint) face.Indices[0]);
+                    indices.Add((uint) face.Indices[1]);
+                    indices.Add((uint) face.Indices[2]);
+                }
+            }
+
+            foreach (Node child in node.Children)
+            {
+                RecursiveLoadScene(child, scene, vertices, indices);
+            }
         }
 
         Vector3 ToVector3(Vector3D v3d)
@@ -64,5 +83,7 @@ namespace Tutorial22
         Vertex[] _vertices;
 
         readonly Scene _scene;
+        Vector3 _minPosition;
+        Vector3 _maxPosition;
     }
 }

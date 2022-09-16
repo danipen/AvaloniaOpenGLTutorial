@@ -1,3 +1,4 @@
+using System;
 using System.Numerics;
 
 namespace Tutorial22
@@ -24,6 +25,20 @@ namespace Tutorial22
 
             for (int i = 0; i < vertices.Length; i++)
                 vertices[i].Normal = Vector3.Normalize(vertices[i].Normal);
+        }
+
+        public static void CalculateMaxMinPosition(Vertex[] vertices, ref Vector3 maxPosition, ref Vector3 minPosition)
+        {
+            foreach (Vertex vertex in vertices)
+            {
+                minPosition.X = MathF.Min(minPosition.X, vertex.Position.X);
+                minPosition.Y = MathF.Min(minPosition.Y, vertex.Position.Y);
+                minPosition.Z = MathF.Min(minPosition.Z, vertex.Position.Z);
+
+                maxPosition.X = MathF.Max(maxPosition.X, vertex.Position.X);
+                maxPosition.Y = MathF.Max(maxPosition.Y, vertex.Position.Y);
+                maxPosition.Z = MathF.Max(maxPosition.Z, vertex.Position.Z);
+            }
         }
     }
 }

@@ -260,7 +260,7 @@ namespace Tutorial22
 
         public void ResetCamera()
         {
-            InitCamera();
+            _camera.ResetCamera();
         }
 
         public void ResetView()
@@ -271,7 +271,6 @@ namespace Tutorial22
         public OpenGlControl()
         {
             _camera = new Camera(this);
-            InitCamera();
             InitView();
             Focusable = true;
         }
@@ -302,11 +301,6 @@ namespace Tutorial22
                 CameraUpZProperty);
         }
 
-        void InitCamera()
-        {
-            _camera.ResetCamera();
-        }
-
         void InitView()
         {
             ScaleX = 1f;
@@ -315,7 +309,7 @@ namespace Tutorial22
             TranslateX = 0;
             TranslateY = 0;
             TranslateZ = 0;
-            RotateX = 0;
+            RotateX = Math.PI * 1.5;
             RotateY = 0;
             RotateZ = 0;
             FieldOfViewAngle = 60 * MathF.PI / 180;

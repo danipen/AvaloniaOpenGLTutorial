@@ -50,7 +50,6 @@ namespace Tutorial22
         public Camera(IChangedCallback changedCallback)
         {
             _changedCallback = changedCallback;
-            InitCamera();
         }
 
         public void ResetCamera()
@@ -105,7 +104,7 @@ namespace Tutorial22
             _isOnLeftEdge = false;
             _isOnUpperEdge = false;
         }
-        
+
         public void OnMouse(float x, float y)
         {
             float deltaX = x - _mousePosition.X;
@@ -179,8 +178,13 @@ namespace Tutorial22
             }
         }
 
-        internal void Init(float windowWidth, float windowHeight)
+        internal void Init(float windowWidth, float windowHeight, Vector3 maxPosition, Vector3 minPosition)
         {
+            _maxPosition = maxPosition;
+            _minPosition = minPosition;
+
+            InitCamera();
+
             SetWindowSize(windowWidth, windowHeight);
 
             Vector3 hTarget = Vector3.Normalize(new Vector3(CameraTarget.X, 0.0f, CameraTarget.Z));
@@ -243,13 +247,31 @@ namespace Tutorial22
             Vector3 oldTarget = _cameraTarget;
             Vector3 oldUp = _cameraUp;
 
-            _cameraPosition = new Vector3(0, 0, -3);
+            _cameraPosition = new Vector3(
+                CalculateCenter(_maxPosition.X, _minPosition.X),
+                CalculateCenter(_maxPosition.Y, _minPosition.Y),
+                CalculateZ(_maxPosition, _minPosition));
+
             _cameraTarget = new Vector3(0, 0, 1f);
             _cameraUp = new Vector3(0, 1, 0);
 
             _changedCallback.PositionChanged(oldPosition, _cameraPosition);
             _changedCallback.TargetChanged(oldTarget, _cameraTarget);
             _changedCallback.PositionChanged(oldUp, _cameraUp);
+        }
+
+        float CalculateZ(Vector3 maxPosition, Vector3 minPosition)
+        {
+            var width = maxPosition.X - minPosition.X;
+            var height = maxPosition.Y - minPosition.Y;
+
+            return -MathF.Max(width, height) * 2 + minPosition.Z;
+        }
+
+        static float CalculateCenter(float maxPosition, float minPosition)
+        {
+            float size = maxPosition - minPosition;
+            return minPosition + size / 2 ;
         }
 
         static float ToDegrees(float radians)
@@ -261,6 +283,9 @@ namespace Tutorial22
         {
             return degrees * MathF.PI / 180;
         }
+
+        Vector3 _maxPosition;
+        Vector3 _minPosition;
 
         Vector3 _cameraPosition;
         Vector3 _cameraTarget;

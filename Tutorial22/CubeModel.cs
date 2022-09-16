@@ -5,8 +5,10 @@ namespace Tutorial22
     internal class CubeModel : IModel
     {
         uint[] IModel.Indices => _indices;
-
         Vertex[] IModel.Vertices => _vertices;
+        Vector3 IModel.MinPosition => _minPosition;
+        Vector3 IModel.MaxPosition => _maxPosition;
+
         public void LoadMesh()
         {
             _vertices = new Vertex[]
@@ -157,9 +159,12 @@ namespace Tutorial22
             };
 
             VertexHelper.CalculateNormals(_indices, _vertices);
+            VertexHelper.CalculateMaxMinPosition(_vertices, ref _maxPosition, ref _minPosition);
         }
 
         Vertex[] _vertices;
         uint[] _indices;
+        Vector3 _minPosition = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        Vector3 _maxPosition = new Vector3(float.MinValue, float.MinValue, float.MinValue);
     }
 }

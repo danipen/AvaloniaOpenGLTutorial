@@ -17,5 +17,11 @@
       <EmbeddedResource Include="Content\bus.fbx" />
       <None Remove="Content\car.fbx" />
       <EmbeddedResource Include="Content\car.fbx" />
+      <None Remove="Content\helicopter.fbx" />
+      <EmbeddedResource Include="Content\helicopter.fbx" />
+      <None Remove="Content\integraleHF.fbx" />
+      <EmbeddedResource Include="Content\integraleHF.fbx" />
+      <None Remove="Content\coyote.glb" />
+      <EmbeddedResource Include="Content\coyote.glb" />
     </ItemGroup>
 </Project>

@@ -14,22 +14,38 @@ namespace Common
 
         public static Scene LoadBusModel()
         {
-            using (var imp = new AssimpContext())
-            {
-                Stream fileStream = LoadFile("bus.fbx");
-                return imp.ImportFileFromStream(fileStream);
-            }
+            return ImportFromResource("bus.fbx");
         }
 
         public static Scene LoadCarModel()
         {
-            using (var imp = new AssimpContext())
-            {
-                Stream fileStream = LoadFile("car.fbx");
-                return imp.ImportFileFromStream(fileStream);
-            }
+            return ImportFromResource("car.fbx");
         }
 
+        public static Scene LoadHelicopterModel()
+        {
+            return ImportFromResource("helicopter.fbx");
+        }
+
+        public static Scene LoadLanciaIntegraleModel()
+        {
+            return ImportFromResource("integraleHF.fbx");
+        }
+
+        public static Scene LoadCoyoteModel()
+        {
+            return ImportFromResource("coyote.glb");
+        }
+
+        static Scene ImportFromResource(string resourceName)
+        {
+            using (var imp = new AssimpContext())
+            {
+                Stream fileStream = LoadFile(resourceName);
+
+                return imp.ImportFileFromStream(fileStream, PostProcessSteps.Triangulate | PostProcessSteps.ForceGenerateNormals | PostProcessSteps.FlipWindingOrder);
+            }
+        }
 
         static WriteableBitmap LoadImage(string fileName)
         {

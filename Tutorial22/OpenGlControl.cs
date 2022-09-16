@@ -23,7 +23,7 @@ namespace Tutorial22
 
             gl.CheckError();
 
-            _model = new Model(ResourceLoader.LoadBusModel());
+            _model = new Model(ResourceLoader.LoadCoyoteModel());
             _model.LoadMesh();
 
             ConfigureShaders(gl);
@@ -32,7 +32,8 @@ namespace Tutorial22
 
             gl.CheckError();
 
-            _camera.Init((float)Bounds.Width, (float)Bounds.Height);
+            _camera.Init((float)Bounds.Width, (float)Bounds.Height, _model.MaxPosition, _model.MinPosition);
+
         }
 
         protected override void OnOpenGlDeinit(GlInterface gl, int fb)
@@ -228,7 +229,7 @@ namespace Tutorial22
                 {
                     vec4 ambientColor = vec4(gDirectionalLight.Color, 1) * gDirectionalLight.AmbientIntensity;
                                                                                     
-                    float diffuseFactor = dot(normalize(normal0), -gDirectionalLight.Direction);    
+                    float diffuseFactor = dot(normalize(normal0), gDirectionalLight.Direction);    
                                                                                                     
                     vec4 diffuseColor;                                                              
                                                                                                     
@@ -241,7 +242,7 @@ namespace Tutorial22
                         diffuseColor = vec4(0, 0, 0, 0);
                     }                                                                               
                                                                                                     
-                    fragColor = texture(gSampler, texCoord0.xy) *                                 
+                    fragColor = //texture(gSampler, texCoord0.xy) *                                 
                                 vec4((ambientColor + diffuseColor).xyz, 1);                                 
                 }
             ");
