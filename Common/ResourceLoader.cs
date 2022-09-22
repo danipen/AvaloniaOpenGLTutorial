@@ -43,7 +43,7 @@ namespace Common
             {
                 Stream fileStream = LoadFile(resourceName);
 
-                return imp.ImportFileFromStream(fileStream, PostProcessSteps.Triangulate | PostProcessSteps.ForceGenerateNormals | PostProcessSteps.FlipWindingOrder);
+                return imp.ImportFileFromStream(fileStream, PostProcessSteps.Triangulate | PostProcessSteps.GenerateSmoothNormals | PostProcessSteps.FlipWindingOrder | PostProcessSteps.JoinIdenticalVertices);
             }
         }
 
