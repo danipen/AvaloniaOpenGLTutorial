@@ -68,9 +68,9 @@ namespace Tutorial22
 
             var cameraSliderList = new List<Panel>()
             {
-                BuildSlider("Camera position X", -10000, 10000, OpenGlControl.CameraPositionXProperty),
-                BuildSlider("Camera position Y", -10000, 10000, OpenGlControl.CameraPositionYProperty),
-                BuildSlider("Camera position Z", -10000, 10000, OpenGlControl.CameraPositionZProperty),
+                BuildSlider("Camera position X", -100, 100, OpenGlControl.CameraPositionXProperty),
+                BuildSlider("Camera position Y", -100, 100, OpenGlControl.CameraPositionYProperty),
+                BuildSlider("Camera position Z", -100, 100, OpenGlControl.CameraPositionZProperty),
                 BuildSlider("Camera target X", -1, 1, OpenGlControl.CameraTargetXProperty),
                 BuildSlider("Camera target Y", -1, 1, OpenGlControl.CameraTargetYProperty),
                 BuildSlider("Camera target Z", -1, 1, OpenGlControl.CameraTargetZProperty),

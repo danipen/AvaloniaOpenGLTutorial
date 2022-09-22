@@ -265,7 +265,7 @@ namespace Tutorial22
             var width = maxPosition.X - minPosition.X;
             var height = maxPosition.Y - minPosition.Y;
 
-            return -MathF.Max(width, height) * 2 + minPosition.Z;
+            return (-MathF.Max(width, height) * 2 + minPosition.Z) * 5;
         }
 
         static float CalculateCenter(float maxPosition, float minPosition)
