@@ -111,4 +111,17 @@ public static class GlExtensions
 
         glTexParameterfDelegate(target, pName, value);
     }
+
+    public static unsafe void DrawElementsBaseVertex(this GlInterface glInterface, int mode, int count, int type, IntPtr indexOffsetBytes, int vertexOffset)
+    {
+        const string EntryPoint = "glDrawElementsBaseVertex";
+
+        IntPtr procAddress = glInterface.GetProcAddress(EntryPoint);
+
+        if (procAddress == IntPtr.Zero)
+            throw new ArgumentException("Entry point not found: " + EntryPoint);
+        var glDrawElementsBaseVertex = (delegate* unmanaged[Stdcall]<int,int,int,global::System.IntPtr, int,void>)procAddress;
+
+        glDrawElementsBaseVertex(mode, count, type, indexOffsetBytes, vertexOffset);
+    }
 }

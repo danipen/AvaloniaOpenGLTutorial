@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Avalonia.Input;
@@ -23,9 +24,22 @@ namespace Tutorial22
 
             gl.CheckError();
 
-            _model = new Model(ResourceLoader.LoadLanciaIntegraleModel());
+            IModel cube1 = new CubeModel();
+            cube1.LoadMesh();
+
+            IModel cube2 = new CubeModel();
+            cube2.LoadMesh();
+
+            Matrix4x4 translateTransform = Matrix4x4.CreateTranslation(3, 0, 0);
+            cube2.Meshes[0].Transform(translateTransform);
+
+            _model = new Model(ResourceLoader.LoadHelicopterModel());
             // _model = new CubeModel();
+            // _model = new MultiModel(cube2, cube1);
             _model.LoadMesh();
+
+            _vao = gl.GenVertexArray();
+            gl.BindVertexArray(_vao);
 
             ConfigureShaders(gl);
             CreateVertexBuffer(gl);
@@ -33,8 +47,14 @@ namespace Tutorial22
 
             gl.CheckError();
 
-            _camera.Init((float)Bounds.Width, (float)Bounds.Height, _model.MaxPosition, _model.MinPosition);
-            FarPlane = _model.MaxPosition.Z - _model.MinPosition.Z * 10;
+            var delta = _model.MaxPosition - _model.MinPosition;
+            var maxScale = Math.Max(Math.Max(delta.X, delta.Y), delta.Z);
+
+            _camera.Init((float)Bounds.Width, (float)Bounds.Height, _model.MaxPosition / maxScale, _model.MinPosition / maxScale);
+
+            ScaleX = 10 / maxScale;
+            ScaleY = 10 / maxScale;
+            ScaleZ = 10 / maxScale;
         }
 
         protected override void OnOpenGlDeinit(GlInterface gl, int fb)
@@ -47,7 +67,9 @@ namespace Tutorial22
             gl.UseProgram(0);
 
             gl.DeleteBuffer(_ibo);
-            gl.DeleteBuffer(_vbo);
+            gl.DeleteBuffer(_positionVBO);
+            gl.DeleteBuffer(_TexCoordVBO);
+            gl.DeleteBuffer(_NormalVBO);
             gl.DeleteVertexArray(_vao);
             gl.DeleteProgram(_shaderProgram);
             gl.DeleteShader(_fragmentShader);
@@ -87,6 +109,13 @@ namespace Tutorial22
             _texture.Bind(gl, GL_TEXTURE0);
         }
 
+        void BindAttributeLocations(GlInterface gl)
+        {
+            gl.BindAttribLocationString(_shaderProgram, PositionLocation, "position");
+            gl.BindAttribLocationString(_shaderProgram, TexCoordLocation, "texCoord");
+            gl.BindAttribLocationString(_shaderProgram, NormalLocation, "normal");
+        }
+
         void CreateFragmentShader(GlInterface gl)
         {
             _fragmentShader = gl.CreateShader(GL_FRAGMENT_SHADER);
@@ -101,21 +130,20 @@ namespace Tutorial22
             gl.AttachShader(_shaderProgram, _vertexShader);
         }
 
-        void BindAttributeLocations(GlInterface gl)
-        {
-            gl.BindAttribLocationString(_shaderProgram, PositionLocation, "position");
-            gl.BindAttribLocationString(_shaderProgram, TexCoordLocation, "texCoord");
-            gl.BindAttribLocationString(_shaderProgram, NormalLocation, "normal");
-        }
-
         void CreateIndexBuffer(GlInterface gl)
         {
             _ibo = gl.GenBuffer();
             gl.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
 
-            fixed (void* pIndicesData = _model.Indices)
-                gl.BufferData(GL_ELEMENT_ARRAY_BUFFER, new IntPtr(sizeof(uint) * _model.Indices.Length),
-                    new IntPtr(pIndicesData), GL_STATIC_DRAW);
+            uint[] indices = _model.Meshes.SelectMany(x => x.Indices).ToArray();
+            fixed (void* pIndicesData = indices)
+                gl.BufferData(
+                    GL_ELEMENT_ARRAY_BUFFER,
+                    new IntPtr(indices.Length * sizeof(uint)),
+                    new IntPtr(pIndicesData),
+                    GL_STATIC_DRAW);
+
+            gl.CheckError();
         }
 
         protected override void OnOpenGlRender(GlInterface gl, int fb)
@@ -150,10 +178,22 @@ namespace Tutorial22
             gl.Uniform3f(_gDirectionalLightDirectionLoc, 1f, 0f, 0f);
             gl.Uniform1f(_gDirectionalLightDiffuseIntensityLoc, 0.75f);
 
-            gl.DrawElements(GL_TRIANGLES, _model.Indices.Length, GL_UNSIGNED_INT, IntPtr.Zero);
+            gl.BindVertexArray(_vao);
+
+            int indexOffsetBytes = 0;
+            int vertexOffset = 0;
+            foreach (Mesh mesh in _model.Meshes)
+            {
+                gl.DrawElementsBaseVertex(GL_TRIANGLES, mesh.Indices.Length, GL_UNSIGNED_INT,  new IntPtr(indexOffsetBytes), vertexOffset);
+                indexOffsetBytes += mesh.Indices.Length * sizeof(uint);
+                vertexOffset += mesh.Vertices.Length;
+            }
+
             gl.CheckError();
 
             _camera.OnRender();
+
+            gl.BindVertexArray(0);
 
             if (_pressedKey == Key.None)
                 return;
@@ -164,31 +204,52 @@ namespace Tutorial22
 
         void CreateVertexBuffer(GlInterface gl)
         {
-            _vbo = gl.GenBuffer();
-            gl.BindBuffer(GL_ARRAY_BUFFER, _vbo);
+            Vector3[] positions = _model.Meshes.SelectMany(mesh => mesh.Vertices.Select(vertex => vertex.Position)).ToArray();
+            _positionVBO = SetAndEnableData(gl, positions, PositionLocation);
+            gl.CheckError();
 
-            fixed (void* pVertices = _model.Vertices)
-                gl.BufferData(GL_ARRAY_BUFFER, new IntPtr(sizeof(Vertex) * _model.Vertices.Length),
-                    new IntPtr(pVertices), GL_STATIC_DRAW);
+            Vector2[] texCoords = _model.Meshes.SelectMany(mesh => mesh.Vertices.Select(vertex => vertex.TextCoord)).ToArray();
+            _TexCoordVBO = SetAndEnableData(gl, texCoords, TexCoordLocation);
+            gl.CheckError();
 
-            _vao = gl.GenVertexArray();
-            gl.BindVertexArray(_vao);
-
-            gl.VertexAttribPointer(
-                PositionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), IntPtr.Zero);
-            gl.VertexAttribPointer(
-                TexCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), new IntPtr(sizeof(Vector3)));
-            gl.VertexAttribPointer(
-                NormalLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), new IntPtr(sizeof(Vector3) + sizeof(Vector2)));
-
-            gl.EnableVertexAttribArray(PositionLocation);
-            gl.EnableVertexAttribArray(TexCoordLocation);
-            gl.EnableVertexAttribArray(NormalLocation);
+            Vector3[] normals = _model.Meshes.SelectMany(mesh => mesh.Vertices.Select(vertex => vertex.Normal)).ToArray();
+            _NormalVBO = SetAndEnableData(gl, normals, NormalLocation);
+            gl.CheckError();
         }
 
-        const int PositionLocation = 0;
-        const int TexCoordLocation = 1;
-        const int NormalLocation = 2;
+        static int SetAndEnableData(GlInterface gl, Vector3[] data, int location)
+        {
+            fixed (void* pData = data)
+                return SetAndEnableData(gl, pData, location, data.Length * sizeof(Vector3), 3);
+        }
+
+        static int SetAndEnableData(GlInterface gl, Vector2[] data, int location)
+        {
+            fixed (void* pData = data)
+                return SetAndEnableData(gl, pData, location, data.Length * sizeof(Vector2), 2);
+        }
+
+        static int SetAndEnableData(GlInterface gl, void* pData, int location, int sizeBytes, int amountFloats)
+        {
+            int vbo = gl.GenBuffer();
+            gl.BindBuffer(GL_ARRAY_BUFFER, vbo);
+            gl.CheckError();
+
+            gl.BufferData(
+                GL_ARRAY_BUFFER,
+                new IntPtr(sizeBytes),
+                new IntPtr(pData),
+                GL_STATIC_DRAW);
+            gl.CheckError();
+
+            gl.VertexAttribPointer(location, amountFloats, GL_FLOAT, GL_FALSE, 0, IntPtr.Zero);
+            gl.CheckError();
+
+            gl.EnableVertexAttribArray(location);
+            gl.CheckError();
+
+            return vbo;
+        }
 
         string VertexShaderSource => GlExtensions.GetShader(GlVersion, false, @"
                 in vec3 position;
@@ -243,12 +304,14 @@ namespace Tutorial22
                         diffuseColor = vec4(0, 0, 0, 0);
                     }                                                                               
                                                                                                     
-                    fragColor = texture(gSampler, texCoord0.xy) *                                 
+                    fragColor = //texture(gSampler, texCoord0.xy) *                                 
                                 vec4((ambientColor + diffuseColor).xyz, 1);                                 
                 }
             ");
 
-        int _vbo;
+        int _positionVBO;
+        int _TexCoordVBO;
+        int _NormalVBO;
         int _vao;
         int _ibo;
         int _vertexShader;
@@ -266,5 +329,9 @@ namespace Tutorial22
         Texture _texture;
 
         readonly Pipeline _operations = new Pipeline();
+
+        const int PositionLocation = 0;
+        const int TexCoordLocation = 1;
+        const int NormalLocation = 2;
     }
 }
