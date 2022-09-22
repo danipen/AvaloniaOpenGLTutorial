@@ -4,14 +4,13 @@ namespace Tutorial22
 {
     internal class CubeModel : IModel
     {
-        uint[] IModel.Indices => _indices;
-        Vertex[] IModel.Vertices => _vertices;
+        Mesh[] IModel.Meshes => _meshes;
         Vector3 IModel.MinPosition => _minPosition;
         Vector3 IModel.MaxPosition => _maxPosition;
 
         public void LoadMesh()
         {
-            _vertices = new Vertex[]
+            var vertices = new Vertex[]
             {
                 // ----- Face 1 ----
                 new()
@@ -142,7 +141,7 @@ namespace Tutorial22
                 },
             };
 
-            _indices = new uint[]
+            var indices = new uint[]
             {
                 0, 1, 3,    // front face
                 3, 1, 2,    // front face
@@ -158,13 +157,23 @@ namespace Tutorial22
                 22, 21, 23, // bottom face
             };
 
-            VertexHelper.CalculateNormals(_indices, _vertices);
-            VertexHelper.CalculateMaxMinPosition(_vertices, ref _maxPosition, ref _minPosition);
+            _meshes = new[]
+            {
+                new Mesh()
+                {
+                    Indices = indices,
+                    Vertices = vertices,
+                },
+            };
+
+            VertexHelper.CalculateNormals(_meshes);
+            VertexHelper.CalculateMaxMinPosition(_meshes, ref _maxPosition, ref _minPosition);
         }
 
         Vertex[] _vertices;
         uint[] _indices;
         Vector3 _minPosition = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
         Vector3 _maxPosition = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+        Mesh[] _meshes;
     }
 }

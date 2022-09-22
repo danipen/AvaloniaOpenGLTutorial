@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Assimp;
+using Assimp.Configs;
 using Matrix4x4 = System.Numerics.Matrix4x4;
 
 namespace Tutorial22
 {
     internal class Model : IModel
     {
-        uint[] IModel.Indices => _indices;
-        Vertex[] IModel.Vertices => _vertices;
+        Mesh[] IModel.Meshes => _meshes;
         Vector3 IModel.MinPosition => _minPosition;
         Vector3 IModel.MaxPosition => _maxPosition;
 
@@ -24,53 +24,63 @@ namespace Tutorial22
             if (_scene.MeshCount == 0)
                 throw new InvalidOperationException("No meshes found");
 
-            List<Vertex> vertices = new();
-            List<uint> indices = new();
+            List<Mesh> meshes = new();
 
-            RecursiveLoadScene(_scene.RootNode, _scene, vertices, indices);
+            RecursiveLoadScene(_scene.RootNode, _scene, meshes);
 
-            _indices = indices.ToArray();
-            _vertices = vertices.ToArray();
-            VertexHelper.CalculateMaxMinPosition(_vertices, ref _maxPosition, ref _minPosition);
+            _meshes = meshes.ToArray();
+            VertexHelper.CalculateMaxMinPosition(_meshes, ref _maxPosition, ref _minPosition);
         }
 
-        void RecursiveLoadScene(Assimp.Node node, Assimp.Scene scene, List<Vertex> vertices, List<uint> indices)
+        void RecursiveLoadScene(Assimp.Node node, Assimp.Scene scene, List<Mesh> meshes)
         {
             Matrix4x4 transform = ToMatrix4x4(node.Transform);
             for (int m = 0; m < node.MeshCount; m++)
             {
-                Assimp.Mesh mesh = scene.Meshes[node.MeshIndices[m]];
-                for(int i = 0; i < mesh.Vertices.Count; i++)
-                {
-                    Vertex vertex = new();
-
-                    var position = ToVector3(mesh.Vertices[i]);
-                    vertex.Position =  Vector3.Transform(position, transform);
-
-                    if (mesh.HasNormals)
-                        vertex.Normal = ToVector3(mesh.Normals[i]);
-
-                    if (mesh.HasTextureCoords(0))
-                        vertex.TextCoord = ToVector2(mesh.TextureCoordinateChannels[0][i]);
-
-                    vertices.Add(vertex);
-                }
-
-                foreach (Assimp.Face face in mesh.Faces)
-                {
-                    if (face.IndexCount != 3)
-                        continue;
-
-                    indices.Add((uint) face.Indices[0]);
-                    indices.Add((uint) face.Indices[1]);
-                    indices.Add((uint) face.Indices[2]);
-                }
+                meshes.Add(ToMesh(scene.Meshes[node.MeshIndices[m]], transform));
             }
 
             foreach (Assimp.Node child in node.Children)
             {
-                RecursiveLoadScene(child, scene, vertices, indices);
+                RecursiveLoadScene(child, scene, meshes);
             }
+        }
+
+        Mesh ToMesh(Assimp.Mesh assimpMesh, Matrix4x4 transform)
+        {
+            List<Vertex> vertices = new();
+            List<uint> indices = new();
+            for(int i = 0; i < assimpMesh.Vertices.Count; i++)
+            {
+                Vertex vertex = new();
+
+                Vector3 position = ToVector3(assimpMesh.Vertices[i]);
+                vertex.Position =  Vector3.Transform(position, transform);
+
+                if (assimpMesh.HasNormals)
+                    vertex.Normal = ToVector3(assimpMesh.Normals[i]);
+
+                if (assimpMesh.HasTextureCoords(0))
+                    vertex.TextCoord = ToVector2(assimpMesh.TextureCoordinateChannels[0][i]);
+
+                vertices.Add(vertex);
+            }
+
+            foreach (Assimp.Face face in assimpMesh.Faces)
+            {
+                if (face.IndexCount != 3)
+                    continue;
+
+                indices.Add((uint) face.Indices[0]);
+                indices.Add((uint) face.Indices[1]);
+                indices.Add((uint) face.Indices[2]);
+            }
+
+            return new Mesh()
+            {
+                Indices = indices.ToArray(),
+                Vertices = vertices.ToArray(),
+            };
         }
 
         Matrix4x4 ToMatrix4x4(Assimp.Matrix4x4 m4x4)
@@ -98,5 +108,6 @@ namespace Tutorial22
         readonly Scene _scene;
         Vector3 _minPosition;
         Vector3 _maxPosition;
+        Mesh[] _meshes;
     }
 }
