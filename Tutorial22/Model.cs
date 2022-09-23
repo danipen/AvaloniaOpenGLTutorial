@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using Assimp;
 using Assimp.Configs;
+using Avalonia.Win32.Interop.Automation;
 using Matrix4x4 = System.Numerics.Matrix4x4;
 
 namespace Tutorial22
@@ -26,23 +27,23 @@ namespace Tutorial22
 
             List<Mesh> meshes = new();
 
-            RecursiveLoadScene(_scene.RootNode, _scene, meshes);
+            RecursiveLoadScene(_scene.RootNode, _scene, meshes, ToMatrix4x4(_scene.RootNode.Transform));
 
             _meshes = meshes.ToArray();
             VertexHelper.CalculateMaxMinPosition(_meshes, ref _maxPosition, ref _minPosition);
         }
 
-        void RecursiveLoadScene(Assimp.Node node, Assimp.Scene scene, List<Mesh> meshes)
+        void RecursiveLoadScene(Node node, Scene scene, List<Mesh> meshes, Matrix4x4 parentTransform)
         {
-            Matrix4x4 transform = ToMatrix4x4(node.Transform);
+            Matrix4x4 nodeTransform = ToMatrix4x4(node.Transform) * parentTransform;
             for (int m = 0; m < node.MeshCount; m++)
             {
-                meshes.Add(ToMesh(scene.Meshes[node.MeshIndices[m]], transform));
+                meshes.Add(ToMesh(scene.Meshes[node.MeshIndices[m]], nodeTransform));
             }
 
             foreach (Assimp.Node child in node.Children)
             {
-                RecursiveLoadScene(child, scene, meshes);
+                RecursiveLoadScene(child, scene, meshes, nodeTransform);
             }
         }
 
@@ -58,7 +59,7 @@ namespace Tutorial22
                 vertex.Position =  Vector3.Transform(position, transform);
 
                 if (assimpMesh.HasNormals)
-                    vertex.Normal = ToVector3(assimpMesh.Normals[i]);
+                    vertex.Normal = Vector3.TransformNormal(ToVector3(assimpMesh.Normals[i]), transform);
 
                 if (assimpMesh.HasTextureCoords(0))
                     vertex.TextCoord = ToVector2(assimpMesh.TextureCoordinateChannels[0][i]);
@@ -86,10 +87,10 @@ namespace Tutorial22
         Matrix4x4 ToMatrix4x4(Assimp.Matrix4x4 m4x4)
         {
             return new Matrix4x4(
-                m4x4.A1, m4x4.A2, m4x4.A3, m4x4.A4,
-                m4x4.B1, m4x4.B2, m4x4.B3, m4x4.B4,
-                m4x4.C1, m4x4.C2, m4x4.C3, m4x4.C4,
-                m4x4.D1, m4x4.D2, m4x4.D3, m4x4.D4);
+                m4x4.A1, m4x4.B1, m4x4.C1, m4x4.D1,
+                m4x4.A2, m4x4.B2, m4x4.C2, m4x4.D2,
+                m4x4.A3, m4x4.B3, m4x4.C3, m4x4.D3,
+                m4x4.A4, m4x4.B4, m4x4.C4, m4x4.D4);
         }
 
         Vector3 ToVector3(Assimp.Vector3D v3d)
