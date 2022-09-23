@@ -5,48 +5,50 @@ namespace Tutorial22
 {
     internal static class VertexHelper
     {
-        public static void CalculateNormals(Mesh[] meshes)
+        public static void CalculateNormals(Model model)
         {
-            foreach (Mesh mesh in meshes)
+            int normalCount = model.Normals.Count;
+            for (int i = 0; i < model.Positions.Count - normalCount; i++)
+                model.Normals.Add(default);
+
+            for (int i = 0; i < model.Indices.Count; i += 3)
             {
-                uint[] indices = mesh.Indices;
-                Vertex[] vertices = mesh.Vertices;
+                int index0 = (int)model.Indices[i];
+                int index1 = (int)model.Indices[i + 1];
+                int index2 = (int)model.Indices[i + 2];
 
-                for (int i = 0; i < indices.Length; i += 3)
-                {
-                    uint index0 = indices[i];
-                    uint index1 = indices[i + 1];
-                    uint index2 = indices[i + 2];
+                Vector3 v1 = model.Positions[index1] - model.Positions[index0];
+                Vector3 v2 = model.Positions[index2] - model.Positions[index0];
+                Vector3 normal = -Vector3.Cross(v1, v2);
+                normal = Vector3.Normalize(normal);
 
-                    Vector3 v1 = vertices[index1].Position - vertices[index0].Position;
-                    Vector3 v2 = vertices[index2].Position - vertices[index0].Position;
-                    Vector3 normal = -Vector3.Cross(v1, v2);
-                    normal = Vector3.Normalize(normal);
-
-                    vertices[index0].Normal += normal;
-                    vertices[index1].Normal += normal;
-                    vertices[index2].Normal += normal;
-                }
-
-                for (int i = 0; i < vertices.Length; i++)
-                    vertices[i].Normal = Vector3.Normalize(vertices[i].Normal);
+                model.Normals[index0] += normal;
+                model.Normals[index1] += normal;
+                model.Normals[index2] += normal;
             }
+
+            for (int i = 0; i < model.Normals.Count; i++)
+                model.Normals[i] = Vector3.Normalize(model.Normals[i]);
         }
 
-        public static void CalculateMaxMinPosition(Mesh[] meshes, ref Vector3 maxPosition, ref Vector3 minPosition)
+        public static void CalculateMaxMinPosition(Model model)
         {
-            foreach (Mesh mesh in meshes)
+            int meshOffset = 0;
+            foreach (Mesh mesh in model.Meshes)
             {
-                foreach (Vertex vertex in mesh.Vertices)
+                for (int i = 0; i < mesh.PositionsCount; i++)
                 {
-                    minPosition.X = MathF.Min(minPosition.X, vertex.Position.X);
-                    minPosition.Y = MathF.Min(minPosition.Y, vertex.Position.Y);
-                    minPosition.Z = MathF.Min(minPosition.Z, vertex.Position.Z);
+                    Vector3 position = Vector3.Transform(model.Positions[i + meshOffset], mesh.Transform);
+                    model.MinPosition.X = MathF.Min(model.MinPosition.X, position.X);
+                    model.MinPosition.Y = MathF.Min(model.MinPosition.Y, position.Y);
+                    model.MinPosition.Z = MathF.Min(model.MinPosition.Z, position.Z);
 
-                    maxPosition.X = MathF.Max(maxPosition.X, vertex.Position.X);
-                    maxPosition.Y = MathF.Max(maxPosition.Y, vertex.Position.Y);
-                    maxPosition.Z = MathF.Max(maxPosition.Z, vertex.Position.Z);
+                    model.MaxPosition.X = MathF.Max(model.MaxPosition.X, position.X);
+                    model.MaxPosition.Y = MathF.Max(model.MaxPosition.Y, position.Y);
+                    model.MaxPosition.Z = MathF.Max(model.MaxPosition.Z, position.Z);
                 }
+
+                meshOffset += mesh.PositionsCount;
             }
         }
     }

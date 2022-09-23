@@ -9,62 +9,53 @@ using Matrix4x4 = System.Numerics.Matrix4x4;
 
 namespace Tutorial22
 {
-    internal class Model : IModel
+    internal class ModelLoader : IModelLoader
     {
-        Mesh[] IModel.Meshes => _meshes;
-        Vector3 IModel.MinPosition => _minPosition;
-        Vector3 IModel.MaxPosition => _maxPosition;
+        Model IModelLoader.Model => _model;
 
-        public Model(Assimp.Scene scene)
+        public ModelLoader(Assimp.Scene scene)
         {
             _scene = scene;
         }
 
-        void IModel.LoadMesh()
+        void IModelLoader.LoadMesh()
         {
             if (_scene.MeshCount == 0)
                 throw new InvalidOperationException("No meshes found");
 
-            List<Mesh> meshes = new();
+            _model = new Model();
+            RecursiveLoadScene(_scene.RootNode, _scene, _model, ToMatrix4x4(_scene.RootNode.Transform));
 
-            RecursiveLoadScene(_scene.RootNode, _scene, meshes, ToMatrix4x4(_scene.RootNode.Transform));
-
-            _meshes = meshes.ToArray();
-            VertexHelper.CalculateMaxMinPosition(_meshes, ref _maxPosition, ref _minPosition);
+            VertexHelper.CalculateMaxMinPosition(_model);
         }
 
-        void RecursiveLoadScene(Node node, Scene scene, List<Mesh> meshes, Matrix4x4 parentTransform)
+        void RecursiveLoadScene(Node node, Scene scene, Model model, Matrix4x4 parentTransform)
         {
             Matrix4x4 nodeTransform = ToMatrix4x4(node.Transform) * parentTransform;
             for (int m = 0; m < node.MeshCount; m++)
             {
-                meshes.Add(ToMesh(scene.Meshes[node.MeshIndices[m]], nodeTransform));
+                Mesh mesh = ProcessMesh(scene.Meshes[node.MeshIndices[m]], model, nodeTransform);
+                model.Meshes.Add(mesh);
             }
 
             foreach (Assimp.Node child in node.Children)
             {
-                RecursiveLoadScene(child, scene, meshes, nodeTransform);
+                RecursiveLoadScene(child, scene, model, nodeTransform);
             }
         }
 
-        Mesh ToMesh(Assimp.Mesh assimpMesh, Matrix4x4 transform)
+        Mesh ProcessMesh(Assimp.Mesh assimpMesh, Model model, Matrix4x4 transform)
         {
-            List<Vertex> vertices = new();
-            List<uint> indices = new();
             for(int i = 0; i < assimpMesh.Vertices.Count; i++)
             {
-                Vertex vertex = new();
-
                 Vector3 position = ToVector3(assimpMesh.Vertices[i]);
-                vertex.Position =  Vector3.Transform(position, transform);
+                model.Positions.Add(position);
 
                 if (assimpMesh.HasNormals)
-                    vertex.Normal = Vector3.TransformNormal(ToVector3(assimpMesh.Normals[i]), transform);
+                    model.Normals.Add(ToVector3(assimpMesh.Normals[i]));
 
                 if (assimpMesh.HasTextureCoords(0))
-                    vertex.TextCoord = ToVector2(assimpMesh.TextureCoordinateChannels[0][i]);
-
-                vertices.Add(vertex);
+                    model.TexCoords.Add(ToVector2(assimpMesh.TextureCoordinateChannels[0][i]));
             }
 
             foreach (Assimp.Face face in assimpMesh.Faces)
@@ -72,15 +63,16 @@ namespace Tutorial22
                 if (face.IndexCount != 3)
                     continue;
 
-                indices.Add((uint) face.Indices[0]);
-                indices.Add((uint) face.Indices[1]);
-                indices.Add((uint) face.Indices[2]);
+                model.Indices.Add((uint) face.Indices[0]);
+                model.Indices.Add((uint) face.Indices[1]);
+                model.Indices.Add((uint) face.Indices[2]);
             }
 
             return new Mesh()
             {
-                Indices = indices.ToArray(),
-                Vertices = vertices.ToArray(),
+                IndicesCount = assimpMesh.Faces.Count * 3,
+                PositionsCount = assimpMesh.Vertices.Count,
+                Transform = transform,
             };
         }
 
@@ -103,12 +95,7 @@ namespace Tutorial22
             return new Vector2(v3d.X, v3d.Y);
         }
 
-        uint[] _indices;
-        Vertex[] _vertices;
-
         readonly Scene _scene;
-        Vector3 _minPosition;
-        Vector3 _maxPosition;
-        Mesh[] _meshes;
+        Model _model;
     }
 }

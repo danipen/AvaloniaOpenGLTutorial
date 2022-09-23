@@ -24,19 +24,19 @@ namespace Tutorial22
 
             gl.CheckError();
 
-            IModel cube1 = new CubeModel();
+            IModelLoader cube1 = new CubeModelLoader();
             cube1.LoadMesh();
 
-            IModel cube2 = new CubeModel();
+            IModelLoader cube2 = new CubeModelLoader();
             cube2.LoadMesh();
 
             Matrix4x4 translateTransform = Matrix4x4.CreateTranslation(3, 0, 0);
-            cube2.Meshes[0].Transform(translateTransform);
+            cube2.Model.Meshes[0].Transform = translateTransform;
 
-            _model = new Model(ResourceLoader.LoadHelicopterModel());
+            mModelLoader = new ModelLoader(ResourceLoader.LoadHelicopterModel());
             // _model = new CubeModel();
             // _model = new MultiModel(cube2, cube1);
-            _model.LoadMesh();
+            mModelLoader.LoadMesh();
 
             _vao = gl.GenVertexArray();
             gl.BindVertexArray(_vao);
@@ -47,10 +47,10 @@ namespace Tutorial22
 
             gl.CheckError();
 
-            var delta = _model.MaxPosition - _model.MinPosition;
+            var delta = mModelLoader.Model.MaxPosition - mModelLoader.Model.MinPosition;
             var maxScale = Math.Max(Math.Max(delta.X, delta.Y), delta.Z);
 
-            _camera.Init((float)Bounds.Width, (float)Bounds.Height, _model.MaxPosition / maxScale, _model.MinPosition / maxScale);
+            _camera.Init((float)Bounds.Width, (float)Bounds.Height, mModelLoader.Model.MaxPosition / maxScale, mModelLoader.Model.MinPosition / maxScale);
 
             ScaleX = 10 / maxScale;
             ScaleY = 10 / maxScale;
@@ -67,7 +67,7 @@ namespace Tutorial22
             gl.UseProgram(0);
 
             gl.DeleteBuffer(_ibo);
-            gl.DeleteBuffer(_positionVBO);
+            gl.DeleteBuffer(_positionsVBO);
             gl.DeleteBuffer(_TexCoordVBO);
             gl.DeleteBuffer(_NormalVBO);
             gl.DeleteVertexArray(_vao);
@@ -135,7 +135,7 @@ namespace Tutorial22
             _ibo = gl.GenBuffer();
             gl.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
 
-            uint[] indices = _model.Meshes.SelectMany(x => x.Indices).ToArray();
+            uint[] indices = mModelLoader.Model.Indices.ToArray();
             fixed (void* pIndicesData = indices)
                 gl.BufferData(
                     GL_ELEMENT_ARRAY_BUFFER,
@@ -170,7 +170,6 @@ namespace Tutorial22
             Matrix4x4 localTransformation = _operations.GetLocalTransformation();
             Matrix4x4 worldTransformation = _operations.GetWorldTransformation();
 
-            gl.UniformMatrix4fv(_gLocalTransformLoc, 1, false, &localTransformation);
             gl.UniformMatrix4fv(_gWorldTransformLoc, 1, false, &worldTransformation);
 
             gl.Uniform3f(_gDirectionalLightColorLoc, 1f, 1f, 1f);
@@ -182,11 +181,13 @@ namespace Tutorial22
 
             int indexOffsetBytes = 0;
             int vertexOffset = 0;
-            foreach (Mesh mesh in _model.Meshes)
+            foreach (Mesh mesh in mModelLoader.Model.Meshes)
             {
-                gl.DrawElementsBaseVertex(GL_TRIANGLES, mesh.Indices.Length, GL_UNSIGNED_INT,  new IntPtr(indexOffsetBytes), vertexOffset);
-                indexOffsetBytes += mesh.Indices.Length * sizeof(uint);
-                vertexOffset += mesh.Vertices.Length;
+                Matrix4x4 meshTransform = mesh.Transform * localTransformation;
+                gl.UniformMatrix4fv(_gLocalTransformLoc, 1, false, &meshTransform);
+                gl.DrawElementsBaseVertex(GL_TRIANGLES, mesh.IndicesCount, GL_UNSIGNED_INT,  new IntPtr(indexOffsetBytes), vertexOffset);
+                indexOffsetBytes += mesh.IndicesCount * sizeof(uint);
+                vertexOffset += mesh.PositionsCount;
             }
 
             gl.CheckError();
@@ -204,15 +205,15 @@ namespace Tutorial22
 
         void CreateVertexBuffer(GlInterface gl)
         {
-            Vector3[] positions = _model.Meshes.SelectMany(mesh => mesh.Vertices.Select(vertex => vertex.Position)).ToArray();
-            _positionVBO = SetAndEnableData(gl, positions, PositionLocation);
+            Vector3[] positions = mModelLoader.Model.Positions.ToArray();
+            _positionsVBO = SetAndEnableData(gl, positions, PositionLocation);
             gl.CheckError();
 
-            Vector2[] texCoords = _model.Meshes.SelectMany(mesh => mesh.Vertices.Select(vertex => vertex.TextCoord)).ToArray();
+            Vector2[] texCoords = mModelLoader.Model.TexCoords.ToArray();
             _TexCoordVBO = SetAndEnableData(gl, texCoords, TexCoordLocation);
             gl.CheckError();
 
-            Vector3[] normals = _model.Meshes.SelectMany(mesh => mesh.Vertices.Select(vertex => vertex.Normal)).ToArray();
+            Vector3[] normals = mModelLoader.Model.Normals.ToArray();
             _NormalVBO = SetAndEnableData(gl, normals, NormalLocation);
             gl.CheckError();
         }
@@ -309,7 +310,7 @@ namespace Tutorial22
                 }
             ");
 
-        int _positionVBO;
+        int _positionsVBO;
         int _TexCoordVBO;
         int _NormalVBO;
         int _vao;
@@ -325,7 +326,7 @@ namespace Tutorial22
         int _gDirectionalLightDirectionLoc;
         int _gDirectionalLightDiffuseIntensityLoc;
 
-        IModel _model;
+        IModelLoader mModelLoader;
         Texture _texture;
 
         readonly Pipeline _operations = new Pipeline();
