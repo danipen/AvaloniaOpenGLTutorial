@@ -33,10 +33,10 @@ namespace Tutorial22
             Matrix4x4 translateTransform = Matrix4x4.CreateTranslation(3, 0, 0);
             cube2.Model.Meshes[0].Transform = translateTransform;
 
-            mModelLoader = new ModelLoader(ResourceLoader.LoadHelicopterModel());
-            // _model = new CubeModel();
-            // _model = new MultiModel(cube2, cube1);
-            mModelLoader.LoadMesh();
+            _modelLoader = new ModelLoader(ResourceLoader.LoadCarModel());
+            // _modelLoader = new CubeModelLoader();
+            // _modelLoader = new MultiModelLoader(cube2, cube1);
+            _modelLoader.LoadMesh();
 
             _vao = gl.GenVertexArray();
             gl.BindVertexArray(_vao);
@@ -47,10 +47,13 @@ namespace Tutorial22
 
             gl.CheckError();
 
-            var delta = mModelLoader.Model.MaxPosition - mModelLoader.Model.MinPosition;
+            var delta = _modelLoader.Model.MaxPosition - _modelLoader.Model.MinPosition;
             var maxScale = Math.Max(Math.Max(delta.X, delta.Y), delta.Z);
 
-            _camera.Init((float)Bounds.Width, (float)Bounds.Height, mModelLoader.Model.MaxPosition / maxScale, mModelLoader.Model.MinPosition / maxScale);
+            _camera.Init((float)Bounds.Width, (float)Bounds.Height, _modelLoader.Model.MaxPosition / maxScale, _modelLoader.Model.MinPosition / maxScale);
+
+            if (maxScale == 0)
+                return;
 
             ScaleX = 10 / maxScale;
             ScaleY = 10 / maxScale;
@@ -94,11 +97,13 @@ namespace Tutorial22
 
             _gLocalTransformLoc = gl.GetUniformLocationString(_shaderProgram, "gLocalTransform");
             _gWorldTransformLoc = gl.GetUniformLocationString(_shaderProgram, "gWorldTransform");
+            _gCameraDirLoc = gl.GetUniformLocationString(_shaderProgram, "gCameraDir");
             _gSamplerLoc = gl.GetUniformLocationString(_shaderProgram, "gSampler");
             _gDirectionalLightColorLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.Color");
-            _gDirectionalLightAmbientIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.AmbientIntensity");
             _gDirectionalLightDirectionLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.Direction");
+            _gDirectionalLightAmbientIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.AmbientIntensity");
             _gDirectionalLightDiffuseIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.DiffuseIntensity");
+            _gDirectionalLightSpecularIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.SpecularIntensity");
             gl.CheckError();
 
             gl.Uniform1i(_gSamplerLoc, 0);
@@ -118,6 +123,7 @@ namespace Tutorial22
 
         void CreateFragmentShader(GlInterface gl)
         {
+            var source = VertexFragmentShaderSource;
             _fragmentShader = gl.CreateShader(GL_FRAGMENT_SHADER);
             Console.WriteLine(gl.CompileShaderAndGetError(_fragmentShader, VertexFragmentShaderSource));
             gl.AttachShader(_shaderProgram, _fragmentShader);
@@ -135,7 +141,7 @@ namespace Tutorial22
             _ibo = gl.GenBuffer();
             gl.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
 
-            uint[] indices = mModelLoader.Model.Indices.ToArray();
+            uint[] indices = _modelLoader.Model.Indices.ToArray();
             fixed (void* pIndicesData = indices)
                 gl.BufferData(
                     GL_ELEMENT_ARRAY_BUFFER,
@@ -148,7 +154,7 @@ namespace Tutorial22
 
         protected override void OnOpenGlRender(GlInterface gl, int fb)
         {
-            gl.ClearColor(0, 0, 0, 1);
+            gl.ClearColor(0.1f, 0.1f, 0.1f, 1);
             gl.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             gl.Enable(GL_DEPTH_TEST);
 
@@ -172,19 +178,24 @@ namespace Tutorial22
 
             gl.UniformMatrix4fv(_gWorldTransformLoc, 1, false, &worldTransformation);
 
-            gl.Uniform3f(_gDirectionalLightColorLoc, 1f, 1f, 1f);
-            gl.Uniform1f(_gDirectionalLightAmbientIntensityLoc, 0.4f);
-            gl.Uniform3f(_gDirectionalLightDirectionLoc, 1f, 0f, 0f);
+            gl.Uniform3f(_gDirectionalLightDirectionLoc, 1f, 0f, 0);
+            gl.Uniform1f(_gDirectionalLightAmbientIntensityLoc, 0.3f);
             gl.Uniform1f(_gDirectionalLightDiffuseIntensityLoc, 0.75f);
+            gl.Uniform1f(_gDirectionalLightSpecularIntensityLoc, 0.75f);
+
+            // gl.Uniform3f(_gDirectionalLightColorLoc, 1,1,1);
 
             gl.BindVertexArray(_vao);
 
             int indexOffsetBytes = 0;
             int vertexOffset = 0;
-            foreach (Mesh mesh in mModelLoader.Model.Meshes)
+            foreach (Mesh mesh in _modelLoader.Model.Meshes)
             {
                 Matrix4x4 meshTransform = mesh.Transform * localTransformation;
                 gl.UniformMatrix4fv(_gLocalTransformLoc, 1, false, &meshTransform);
+                gl.Uniform3f(_gDirectionalLightColorLoc, mesh.Material.ColorDiffuse.X, mesh.Material.ColorDiffuse.Y, mesh.Material.ColorDiffuse.Z);
+                gl.Uniform3f(_gCameraDirLoc, _camera.CameraTarget.X, _camera.CameraTarget.Y, _camera.CameraTarget.Z);
+
                 gl.DrawElementsBaseVertex(GL_TRIANGLES, mesh.IndicesCount, GL_UNSIGNED_INT,  new IntPtr(indexOffsetBytes), vertexOffset);
                 indexOffsetBytes += mesh.IndicesCount * sizeof(uint);
                 vertexOffset += mesh.PositionsCount;
@@ -205,15 +216,15 @@ namespace Tutorial22
 
         void CreateVertexBuffer(GlInterface gl)
         {
-            Vector3[] positions = mModelLoader.Model.Positions.ToArray();
+            Vector3[] positions = _modelLoader.Model.Positions.ToArray();
             _positionsVBO = SetAndEnableData(gl, positions, PositionLocation);
             gl.CheckError();
 
-            Vector2[] texCoords = mModelLoader.Model.TexCoords.ToArray();
+            Vector2[] texCoords = _modelLoader.Model.TexCoords.ToArray();
             _TexCoordVBO = SetAndEnableData(gl, texCoords, TexCoordLocation);
             gl.CheckError();
 
-            Vector3[] normals = mModelLoader.Model.Normals.ToArray();
+            Vector3[] normals = _modelLoader.Model.Normals.ToArray();
             _NormalVBO = SetAndEnableData(gl, normals, NormalLocation);
             gl.CheckError();
         }
@@ -280,33 +291,40 @@ namespace Tutorial22
                 struct DirectionalLight
                 {
                     vec3 Color;
-                    float AmbientIntensity;
                     vec3 Direction;
+                    float AmbientIntensity;
                     float DiffuseIntensity;
+                    float SpecularIntensity;
                 };
 
                 uniform DirectionalLight gDirectionalLight;
+                uniform vec3 gCameraDir;
                 uniform sampler2D gSampler;
 
                 void main()
                 {
-                    vec4 ambientColor = vec4(gDirectionalLight.Color, 1) * gDirectionalLight.AmbientIntensity;
+                    vec3 ambientColor = gDirectionalLight.Color * gDirectionalLight.AmbientIntensity;
                                                                                     
-                    float diffuseFactor = dot(normalize(normal0), gDirectionalLight.Direction);    
-                                                                                                    
-                    vec4 diffuseColor;                                                              
-                                                                                                    
-                    if (diffuseFactor > 0) {                                                        
-                        diffuseColor = vec4(gDirectionalLight.Color, 1.0f) *                        
-                                    gDirectionalLight.DiffuseIntensity *                         
-                                    diffuseFactor;                                               
-                    }                                                                               
-                    else {                                                                          
-                        diffuseColor = vec4(0, 0, 0, 0);
-                    }                                                                               
+                    float diffuseFactor = dot(normalize(normal0), gDirectionalLight.Direction);
+                    
+                    vec3 diffuseColor = vec3(0,0,0);
+                    if (diffuseFactor > 0)
+                        diffuseColor = gDirectionalLight.Color *                        
+                            gDirectionalLight.DiffuseIntensity *                         
+                            diffuseFactor;    
+
+                    vec3 toEye = normalize(vec3(0.0) - gCameraDir);    
+                    vec3 lightRef = reflect(gDirectionalLight.Direction, normalize(normal0)); 
+                    float specularFactor = pow(dot(-lightRef, toEye), 64.0f);  
+                    
+                    vec3 specularColor = vec3(0,0,0);
+                    if (specularFactor > 0)
+                        specularColor = gDirectionalLight.Color *
+                            gDirectionalLight.SpecularIntensity *                                                 
+                            specularFactor;
                                                                                                     
                     fragColor = //texture(gSampler, texCoord0.xy) *                                 
-                                vec4((ambientColor + diffuseColor).xyz, 1);                                 
+                                vec4(ambientColor + diffuseColor + specularColor, 1);                                 
                 }
             ");
 
@@ -320,13 +338,15 @@ namespace Tutorial22
         int _shaderProgram;
         int _gLocalTransformLoc;
         int _gWorldTransformLoc;
+        int _gCameraDirLoc;
         int _gSamplerLoc;
         int _gDirectionalLightColorLoc;
         int _gDirectionalLightAmbientIntensityLoc;
         int _gDirectionalLightDirectionLoc;
         int _gDirectionalLightDiffuseIntensityLoc;
+        int _gDirectionalLightSpecularIntensityLoc;
 
-        IModelLoader mModelLoader;
+        IModelLoader _modelLoader;
         Texture _texture;
 
         readonly Pipeline _operations = new Pipeline();

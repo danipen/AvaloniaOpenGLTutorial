@@ -23,5 +23,9 @@
       <EmbeddedResource Include="Content\integraleHF.fbx" />
       <None Remove="Content\coyote.glb" />
       <EmbeddedResource Include="Content\coyote.glb" />
+      <None Remove="Content\deathstar.fbx" />
+      <EmbeddedResource Include="Content\deathstar.fbx" />
+      <None Remove="Content\spheree.stl" />
+      <EmbeddedResource Include="Content\sphere.stl" />
     </ItemGroup>
 </Project>

@@ -1,11 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using Assimp;
-using Assimp.Configs;
-using Avalonia.Win32.Interop.Automation;
-using Matrix4x4 = System.Numerics.Matrix4x4;
 
 namespace Tutorial22
 {
@@ -22,29 +16,35 @@ namespace Tutorial22
         {
             if (_scene.MeshCount == 0)
                 throw new InvalidOperationException("No meshes found");
-
             _model = new Model();
             RecursiveLoadScene(_scene.RootNode, _scene, _model, ToMatrix4x4(_scene.RootNode.Transform));
-
             VertexHelper.CalculateMaxMinPosition(_model);
         }
 
-        void RecursiveLoadScene(Node node, Scene scene, Model model, Matrix4x4 parentTransform)
+        void RecursiveLoadScene(Assimp.Node node, Assimp.Scene scene, Model model, Matrix4x4 parentTransform)
         {
             Matrix4x4 nodeTransform = ToMatrix4x4(node.Transform) * parentTransform;
             for (int m = 0; m < node.MeshCount; m++)
             {
-                Mesh mesh = ProcessMesh(scene.Meshes[node.MeshIndices[m]], model, nodeTransform);
+                Mesh mesh = ProcessMesh(scene, scene.Meshes[node.MeshIndices[m]], model, nodeTransform);
                 model.Meshes.Add(mesh);
             }
-
             foreach (Assimp.Node child in node.Children)
             {
                 RecursiveLoadScene(child, scene, model, nodeTransform);
             }
         }
 
-        Mesh ProcessMesh(Assimp.Mesh assimpMesh, Model model, Matrix4x4 transform)
+        static Material ProcessMaterial(Assimp.Scene scene, Assimp.Mesh assimpMesh)
+        {
+            Assimp.Material assimpMaterial = scene.Materials[assimpMesh.MaterialIndex];
+            return new Material()
+            {
+                ColorDiffuse = ToVector4(assimpMaterial.ColorDiffuse),
+            };
+        }
+
+        Mesh ProcessMesh(Assimp.Scene scene, Assimp.Mesh assimpMesh, Model model, Matrix4x4 transform)
         {
             for(int i = 0; i < assimpMesh.Vertices.Count; i++)
             {
@@ -73,6 +73,7 @@ namespace Tutorial22
                 IndicesCount = assimpMesh.Faces.Count * 3,
                 PositionsCount = assimpMesh.Vertices.Count,
                 Transform = transform,
+                Material = ProcessMaterial(scene, assimpMesh),
             };
         }
 
@@ -85,17 +86,22 @@ namespace Tutorial22
                 m4x4.A4, m4x4.B4, m4x4.C4, m4x4.D4);
         }
 
-        Vector3 ToVector3(Assimp.Vector3D v3d)
-        {
-            return new Vector3(v3d.X, v3d.Y, v3d.Z);
-        }
-
         Vector2 ToVector2(Assimp.Vector3D v3d)
         {
             return new Vector2(v3d.X, v3d.Y);
         }
 
-        readonly Scene _scene;
+        Vector3 ToVector3(Assimp.Vector3D v3d)
+        {
+            return new Vector3(v3d.X, v3d.Y, v3d.Z);
+        }
+
+        static Vector4 ToVector4(Assimp.Color4D color4d)
+        {
+            return new Vector4(color4d.R, color4d.G, color4d.B, color4d.A);
+        }
+
+        readonly Assimp.Scene _scene;
         Model _model;
     }
 }

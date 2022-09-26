@@ -32,6 +32,16 @@ namespace Common
             return ImportFromResource("integraleHF.fbx");
         }
 
+        public static Scene LoadDeathStarModel()
+        {
+            return ImportFromResource("deathstar.fbx");
+        }
+
+        public static Scene LoadSphereModel()
+        {
+            return ImportFromResource("sphere.stl");
+        }
+
         public static Scene LoadCoyoteModel()
         {
             return ImportFromResource("coyote.glb");
