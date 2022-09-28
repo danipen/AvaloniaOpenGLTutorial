@@ -31,7 +31,6 @@
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="fragment.shader" />
-    <EmbeddedResource Include="vertex.shader" />
+    <EmbeddedResource Include="Shaders\*.glsl" />
   </ItemGroup>
 </Project>

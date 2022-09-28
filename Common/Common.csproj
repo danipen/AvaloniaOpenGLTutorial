@@ -11,21 +11,6 @@
         <PackageReference Include="Avalonia" Version="11.0.0-preview1" />
     </ItemGroup>
     <ItemGroup>
-      <None Remove="Content\test.png" />
-      <EmbeddedResource Include="Content\test.png" />
-      <None Remove="Content\bus.fbx" />
-      <EmbeddedResource Include="Content\bus.fbx" />
-      <None Remove="Content\car.fbx" />
-      <EmbeddedResource Include="Content\car.fbx" />
-      <None Remove="Content\helicopter.fbx" />
-      <EmbeddedResource Include="Content\helicopter.fbx" />
-      <None Remove="Content\integraleHF.fbx" />
-      <EmbeddedResource Include="Content\integraleHF.fbx" />
-      <None Remove="Content\coyote.glb" />
-      <EmbeddedResource Include="Content\coyote.glb" />
-      <None Remove="Content\deathstar.fbx" />
-      <EmbeddedResource Include="Content\deathstar.fbx" />
-      <None Remove="Content\spheree.stl" />
-      <EmbeddedResource Include="Content\sphere.stl" />
+      <EmbeddedResource Include="Content\*" />
     </ItemGroup>
 </Project>

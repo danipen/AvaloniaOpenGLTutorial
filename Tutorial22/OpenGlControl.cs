@@ -267,13 +267,13 @@ namespace Tutorial22
             GlExtensions.GetShader(
                 GlVersion,
                 false,
-                ResourceLoader.LoadVertexShader(nameof(Tutorial22)));
+                ResourceLoader.LoadVertexShader(nameof(Tutorial22) + ".Shaders"));
 
         string FragmentShaderSource =>
             GlExtensions.GetShader(
                 GlVersion,
                 true,
-                ResourceLoader.LoadFragmentShader(nameof(Tutorial22)));
+                ResourceLoader.LoadFragmentShader(nameof(Tutorial22) + ".Shaders"));
 
         int _positionsVBO;
         int _TexCoordVBO;

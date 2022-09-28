@@ -49,10 +49,9 @@ namespace Common
 
         public static string LoadFragmentShader(string resourceLocation)
         {
-            using Stream fileStream = typeof(ResourceLoader)
-                .GetTypeInfo()
-                .Assembly
-                .GetManifestResourceStream(resourceLocation + "fragment.shader")!;
+            using Stream fileStream = Assembly.
+                GetCallingAssembly().
+                GetManifestResourceStream(resourceLocation + ".fragment.glsl")!;
 
             using StreamReader reader = new StreamReader(fileStream);
 
@@ -61,10 +60,9 @@ namespace Common
 
         public static string LoadVertexShader(string resourceLocation)
         {
-            using Stream fileStream = typeof(ResourceLoader)
-                .GetTypeInfo()
-                .Assembly
-                .GetManifestResourceStream(resourceLocation + "fragment.shader")!;
+            using Stream fileStream = Assembly.
+                GetCallingAssembly().
+                GetManifestResourceStream(resourceLocation + ".vertex.glsl")!;
 
             using StreamReader reader = new StreamReader(fileStream);
 
