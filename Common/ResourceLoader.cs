@@ -47,6 +47,30 @@ namespace Common
             return ImportFromResource("coyote.glb");
         }
 
+        public static string LoadFragmentShader(string resourceLocation)
+        {
+            using Stream fileStream = typeof(ResourceLoader)
+                .GetTypeInfo()
+                .Assembly
+                .GetManifestResourceStream(resourceLocation + "fragment.shader")!;
+
+            using StreamReader reader = new StreamReader(fileStream);
+
+            return reader.ReadToEnd();
+        }
+
+        public static string LoadVertexShader(string resourceLocation)
+        {
+            using Stream fileStream = typeof(ResourceLoader)
+                .GetTypeInfo()
+                .Assembly
+                .GetManifestResourceStream(resourceLocation + "fragment.shader")!;
+
+            using StreamReader reader = new StreamReader(fileStream);
+
+            return reader.ReadToEnd();
+        }
+
         static Scene ImportFromResource(string resourceName)
         {
             using (var imp = new AssimpContext())
@@ -76,5 +100,6 @@ namespace Common
         }
 
         const string ContentPrefix = "Common.Content.";
+
     }
 }

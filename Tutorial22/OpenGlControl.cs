@@ -123,9 +123,9 @@ namespace Tutorial22
 
         void CreateFragmentShader(GlInterface gl)
         {
-            var source = VertexFragmentShaderSource;
+            var source = FragmentShaderSource;
             _fragmentShader = gl.CreateShader(GL_FRAGMENT_SHADER);
-            Console.WriteLine(gl.CompileShaderAndGetError(_fragmentShader, VertexFragmentShaderSource));
+            Console.WriteLine(gl.CompileShaderAndGetError(_fragmentShader, FragmentShaderSource));
             gl.AttachShader(_shaderProgram, _fragmentShader);
         }
 
@@ -263,70 +263,17 @@ namespace Tutorial22
             return vbo;
         }
 
-        string VertexShaderSource => GlExtensions.GetShader(GlVersion, false, @"
-                in vec3 position;
-                in vec2 texCoord;
-                in vec3 normal;
+        string VertexShaderSource =>
+            GlExtensions.GetShader(
+                GlVersion,
+                false,
+                ResourceLoader.LoadVertexShader(nameof(Tutorial22)));
 
-                uniform mat4 gLocalTransform;
-                uniform mat4 gWorldTransform;
-
-                out vec2 texCoord0;
-                out vec3 normal0;
-
-                void main()
-                {
-                    gl_Position = gLocalTransform * vec4(position, 1.0);
-                    texCoord0 = texCoord;
-                    normal0 = (gWorldTransform * vec4(normal, 0.0)).xyz;
-                }
-            ");
-
-        string VertexFragmentShaderSource => GlExtensions.GetShader(GlVersion, true, @"
-                in vec2 texCoord0;
-                in vec3 normal0;
-
-                out vec4 fragColor;
-
-                struct DirectionalLight
-                {
-                    vec3 Color;
-                    vec3 Direction;
-                    float AmbientIntensity;
-                    float DiffuseIntensity;
-                    float SpecularIntensity;
-                };
-
-                uniform DirectionalLight gDirectionalLight;
-                uniform vec3 gCameraDir;
-                uniform sampler2D gSampler;
-
-                void main()
-                {
-                    vec3 ambientColor = gDirectionalLight.Color * gDirectionalLight.AmbientIntensity;
-                                                                                    
-                    float diffuseFactor = dot(normalize(normal0), gDirectionalLight.Direction);
-                    
-                    vec3 diffuseColor = vec3(0,0,0);
-                    if (diffuseFactor > 0)
-                        diffuseColor = gDirectionalLight.Color *                        
-                            gDirectionalLight.DiffuseIntensity *                         
-                            diffuseFactor;    
-
-                    vec3 toEye = normalize(vec3(0.0) - gCameraDir);    
-                    vec3 lightRef = reflect(gDirectionalLight.Direction, normalize(normal0)); 
-                    float specularFactor = pow(dot(-lightRef, toEye), 64.0f);  
-                    
-                    vec3 specularColor = vec3(0,0,0);
-                    if (specularFactor > 0)
-                        specularColor = gDirectionalLight.Color *
-                            gDirectionalLight.SpecularIntensity *                                                 
-                            specularFactor;
-                                                                                                    
-                    fragColor = //texture(gSampler, texCoord0.xy) *                                 
-                                vec4(ambientColor + diffuseColor + specularColor, 1);                                 
-                }
-            ");
+        string FragmentShaderSource =>
+            GlExtensions.GetShader(
+                GlVersion,
+                true,
+                ResourceLoader.LoadFragmentShader(nameof(Tutorial22)));
 
         int _positionsVBO;
         int _TexCoordVBO;

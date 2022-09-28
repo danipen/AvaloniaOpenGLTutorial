@@ -30,4 +30,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="fragment.shader" />
+    <EmbeddedResource Include="vertex.shader" />
+  </ItemGroup>
 </Project>
