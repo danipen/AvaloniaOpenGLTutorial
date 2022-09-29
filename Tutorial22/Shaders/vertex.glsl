@@ -11,8 +11,10 @@ out vec3 normal0;
 
 void main()
 {
-    gl_Position = gLocalTransform * gMeshTransform * vec4(position, 1.0);
     texCoord0 = texCoord;
+
+    gl_Position = gLocalTransform * gMeshTransform * vec4(position, 1.0);
+
     mat3 norm_matrix = transpose(inverse(mat3(gWorldTransform * gMeshTransform)));
     normal0 = normalize(norm_matrix * normal);
 }
