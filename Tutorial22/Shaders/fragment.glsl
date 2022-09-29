@@ -39,7 +39,7 @@ void main()
         vec3 lightRef = reflect(gDirectionalLight.Direction, normal0);
         float specularFactor = dot(-lightRef, toEye);
 
-        specularColor = gMaterial.SpecularColor * pow(specularFactor, gMaterial.Shininess) * gMaterial.ShininessStrength;
+        specularColor = gMaterial.SpecularColor * gMaterial.ShininessStrength * pow(specularFactor, gMaterial.Shininess);
     }
 
     vec3 materialColor = gMaterial.AmbientColor + diffuseColor + specularColor;

@@ -359,8 +359,8 @@ namespace Tutorial22
 
         void InitLight()
         {
-            LightDirX = 0.5f;
-            LightDirY = 0.5f;
+            LightDirX = -1f;
+            LightDirY = 1f;
             LightDirZ = -0.5f;
             LightIntensity = 0.2f;
             LightColorRed = 1;
