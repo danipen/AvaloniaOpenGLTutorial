@@ -258,6 +258,90 @@ namespace Tutorial22
             set => SetValue(CameraUpZProperty, value);
         }
 
+        public static readonly DirectProperty<OpenGlControl, double> LightDirXProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
+                nameof(LightDirX),
+                o => o.LightDirX,
+                (o, v) => o.LightDirX = v);
+
+        public double LightDirX
+        {
+            get => _lightDirX;
+            set => SetAndRaise(LightDirXProperty, ref _lightDirX, value);
+        }
+
+        public static readonly DirectProperty<OpenGlControl, double> LightDirYProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
+                nameof(LightDirY),
+                o => o.LightDirY,
+                (o, v) => o.LightDirY = v);
+
+        public double LightDirY
+        {
+            get => _lightDirY;
+            set => SetAndRaise(LightDirYProperty, ref _lightDirY, value);
+        }
+
+        public static readonly DirectProperty<OpenGlControl, double> LightDirZProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
+                nameof(LightDirZ),
+                o => o.LightDirZ,
+                (o, v) => o.LightDirZ = v);
+
+        public double LightDirZ
+        {
+            get => _lightDirZ;
+            set => SetAndRaise(LightDirZProperty, ref _lightDirZ, value);
+        }
+
+        public static readonly DirectProperty<OpenGlControl, double> LightIntensityProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
+                nameof(LightIntensity),
+                o => o.LightIntensity,
+                (o, v) => o.LightIntensity = v);
+
+        public double LightIntensity
+        {
+            get => _lightIntensity;
+            set => SetAndRaise(LightIntensityProperty, ref _lightIntensity, value);
+        }
+
+        public static readonly DirectProperty<OpenGlControl, double> LightColorRedProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
+                nameof(LightColorRed),
+                o => o.LightColorRed,
+                (o, v) => o.LightColorRed = v);
+
+        public double LightColorRed
+        {
+            get => _lightColorRed;
+            set => SetAndRaise(LightColorRedProperty, ref _lightColorRed, value);
+        }
+
+        public static readonly DirectProperty<OpenGlControl, double> LightColorGreenProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
+                nameof(LightColorGreen),
+                o => o.LightColorGreen,
+                (o, v) => o.LightColorGreen = v);
+
+        public double LightColorGreen
+        {
+            get => _lightColorGreen;
+            set => SetAndRaise(LightColorGreenProperty, ref _lightColorGreen, value);
+        }
+
+        public static readonly DirectProperty<OpenGlControl, double> LightColorBlueProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
+                nameof(LightColorBlue),
+                o => o.LightColorBlue,
+                (o, v) => o.LightColorBlue = v);
+
+        public double LightColorBlue
+        {
+            get => _lightColorBlue;
+            set => SetAndRaise(LightColorBlueProperty, ref _lightColorBlue, value);
+        }
+
         public void ResetCamera()
         {
             _camera.ResetCamera();
@@ -268,10 +352,27 @@ namespace Tutorial22
             InitView();
         }
 
+        public void ResetLight()
+        {
+            InitLight();
+        }
+
+        void InitLight()
+        {
+            LightDirX = 0.5f;
+            LightDirY = 0.5f;
+            LightDirZ = -0.5f;
+            LightIntensity = 0.2f;
+            LightColorRed = 1;
+            LightColorGreen = 1;
+            LightColorBlue = 1;
+        }
+
         public OpenGlControl()
         {
             _camera = new Camera(this);
             InitView();
+            InitLight();
             Focusable = true;
         }
 
@@ -298,7 +399,14 @@ namespace Tutorial22
                 CameraTargetZProperty,
                 CameraUpXProperty,
                 CameraUpYProperty,
-                CameraUpZProperty);
+                CameraUpZProperty,
+                LightDirXProperty,
+                LightDirYProperty,
+                LightDirZProperty,
+                LightIntensityProperty,
+                LightColorRedProperty,
+                LightColorGreenProperty,
+                LightColorBlueProperty);
         }
 
         void InitView()
@@ -309,9 +417,9 @@ namespace Tutorial22
             TranslateX = 0;
             TranslateY = 0;
             TranslateZ = 0;
-            RotateX = 0;
-            RotateY = 0;
-            RotateZ = 0;
+            RotateX = Math.PI * 2;
+            RotateY = Math.PI * 2;
+            RotateZ = Math.PI * 2;
             FieldOfViewAngle = 60 * MathF.PI / 180;
             NearPlane = 0.01f;
             FarPlane = 1000;
@@ -329,6 +437,14 @@ namespace Tutorial22
         double _fieldOfView;
         double _nearPlane;
         double _farPlane;
+
+        double _lightDirX;
+        double _lightDirY;
+        double _lightDirZ;
+        double _lightIntensity;
+        double _lightColorRed;
+        double _lightColorGreen;
+        double _lightColorBlue;
 
         readonly Camera _camera;
     }

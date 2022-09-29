@@ -28,7 +28,7 @@ namespace Tutorial22
             gl.DeleteTexture(_textureBuffer);
         }
 
-        public unsafe void Load(GlInterface gl)
+        public void Load(GlInterface gl)
         {
             _textureBuffer = gl.GenTexture();
             gl.CheckError();
