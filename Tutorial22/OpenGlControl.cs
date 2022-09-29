@@ -1,7 +1,6 @@
 using System;
-using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices;
+
 using Avalonia.Input;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
@@ -33,7 +32,7 @@ namespace Tutorial22
             Matrix4x4 translateTransform = Matrix4x4.CreateTranslation(3, 0, 0);
             cube2.Model.Meshes[0].Transform = translateTransform;
 
-            _modelLoader = new ModelLoader(ResourceLoader.LoadCarModel());
+            _modelLoader = new ModelLoader(ResourceLoader.LoadLanciaIntegraleModel());
             // _modelLoader = new CubeModelLoader();
             // _modelLoader = new MultiModelLoader(cube2, cube1);
             _modelLoader.LoadMesh();
@@ -97,13 +96,21 @@ namespace Tutorial22
 
             _gLocalTransformLoc = gl.GetUniformLocationString(_shaderProgram, "gLocalTransform");
             _gWorldTransformLoc = gl.GetUniformLocationString(_shaderProgram, "gWorldTransform");
+            _gMeshTransformLoc = gl.GetUniformLocationString(_shaderProgram, "gMeshTransform");
             _gCameraDirLoc = gl.GetUniformLocationString(_shaderProgram, "gCameraDir");
             _gSamplerLoc = gl.GetUniformLocationString(_shaderProgram, "gSampler");
+            gl.CheckError();
+
             _gDirectionalLightColorLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.Color");
             _gDirectionalLightDirectionLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.Direction");
-            _gDirectionalLightAmbientIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.AmbientIntensity");
-            _gDirectionalLightDiffuseIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.DiffuseIntensity");
-            _gDirectionalLightSpecularIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.SpecularIntensity");
+            _gDirectionalLightIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.Intensity");
+            gl.CheckError();
+
+            _gMaterialAmbientColorLoc = gl.GetUniformLocationString(_shaderProgram, "gMaterial.AmbientColor");
+            _gMaterialDiffuseColorLoc = gl.GetUniformLocationString(_shaderProgram, "gMaterial.DiffuseColor");
+            _gMaterialSpecularColorLoc = gl.GetUniformLocationString(_shaderProgram, "gMaterial.SpecularColor");
+            _gMaterialShininessLoc = gl.GetUniformLocationString(_shaderProgram, "gMaterial.Shininess");
+            _gMaterialShininessStrengthLoc = gl.GetUniformLocationString(_shaderProgram, "gMaterial.ShininessStrength");
             gl.CheckError();
 
             gl.Uniform1i(_gSamplerLoc, 0);
@@ -177,13 +184,13 @@ namespace Tutorial22
             Matrix4x4 worldTransformation = _operations.GetWorldTransformation();
 
             gl.UniformMatrix4fv(_gWorldTransformLoc, 1, false, &worldTransformation);
+            gl.UniformMatrix4fv(_gLocalTransformLoc, 1, false, &localTransformation);
 
-            gl.Uniform3f(_gDirectionalLightDirectionLoc, 1f, 0f, 0);
-            gl.Uniform1f(_gDirectionalLightAmbientIntensityLoc, 0.3f);
-            gl.Uniform1f(_gDirectionalLightDiffuseIntensityLoc, 0.75f);
-            gl.Uniform1f(_gDirectionalLightSpecularIntensityLoc, 0.75f);
+            gl.Uniform3f(_gDirectionalLightDirectionLoc, (float)LightDirX, (float)LightDirY, (float)LightDirZ);
+            gl.Uniform1f(_gDirectionalLightIntensityLoc, (float)LightIntensity);
+            gl.Uniform3f(_gDirectionalLightColorLoc, (float) LightColorRed, (float) LightColorGreen, (float) LightColorBlue);
 
-            // gl.Uniform3f(_gDirectionalLightColorLoc, 1,1,1);
+            gl.Uniform3f(_gCameraDirLoc, _camera.CameraTarget.X, _camera.CameraTarget.Y, _camera.CameraTarget.Z);
 
             gl.BindVertexArray(_vao);
 
@@ -191,10 +198,15 @@ namespace Tutorial22
             int vertexOffset = 0;
             foreach (Mesh mesh in _modelLoader.Model.Meshes)
             {
-                Matrix4x4 meshTransform = mesh.Transform * localTransformation;
-                gl.UniformMatrix4fv(_gLocalTransformLoc, 1, false, &meshTransform);
-                gl.Uniform3f(_gDirectionalLightColorLoc, mesh.Material.ColorDiffuse.X, mesh.Material.ColorDiffuse.Y, mesh.Material.ColorDiffuse.Z);
-                gl.Uniform3f(_gCameraDirLoc, _camera.CameraTarget.X, _camera.CameraTarget.Y, _camera.CameraTarget.Z);
+                Matrix4x4 meshTransformation = mesh.Transform;
+                gl.UniformMatrix4fv(_gMeshTransformLoc, 1, false, &meshTransformation);
+
+                gl.Uniform3f(_gMaterialAmbientColorLoc, mesh.Material.ColorAmbient.X, mesh.Material.ColorAmbient.Y, mesh.Material.ColorAmbient.Z);
+                gl.Uniform3f(_gMaterialDiffuseColorLoc, mesh.Material.ColorDiffuse.X, mesh.Material.ColorDiffuse.Y, mesh.Material.ColorDiffuse.Z);
+                gl.Uniform3f(_gMaterialSpecularColorLoc, mesh.Material.ColorSpecular.X, mesh.Material.ColorSpecular.Y, mesh.Material.ColorSpecular.Z);
+
+                gl.Uniform1f(_gMaterialShininessLoc, mesh.Material.Shininess);
+                gl.Uniform1f(_gMaterialShininessStrengthLoc, mesh.Material.ShininessStrength);
 
                 gl.DrawElementsBaseVertex(GL_TRIANGLES, mesh.IndicesCount, GL_UNSIGNED_INT,  new IntPtr(indexOffsetBytes), vertexOffset);
                 indexOffsetBytes += mesh.IndicesCount * sizeof(uint);
@@ -285,13 +297,17 @@ namespace Tutorial22
         int _shaderProgram;
         int _gLocalTransformLoc;
         int _gWorldTransformLoc;
+        int _gMeshTransformLoc;
         int _gCameraDirLoc;
         int _gSamplerLoc;
+        int _gMaterialShininessLoc;
+        int _gMaterialShininessStrengthLoc;
         int _gDirectionalLightColorLoc;
-        int _gDirectionalLightAmbientIntensityLoc;
+        int _gDirectionalLightIntensityLoc;
         int _gDirectionalLightDirectionLoc;
-        int _gDirectionalLightDiffuseIntensityLoc;
-        int _gDirectionalLightSpecularIntensityLoc;
+        int _gMaterialAmbientColorLoc;
+        int _gMaterialDiffuseColorLoc;
+        int _gMaterialSpecularColorLoc;
 
         IModelLoader _modelLoader;
         Texture _texture;

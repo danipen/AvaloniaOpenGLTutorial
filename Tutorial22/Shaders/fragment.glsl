@@ -7,37 +7,45 @@ struct DirectionalLight
 {
     vec3 Color;
     vec3 Direction;
-    float AmbientIntensity;
-    float DiffuseIntensity;
-    float SpecularIntensity;
+    float Intensity;
+};
+
+struct Material
+{
+    vec3 AmbientColor;
+    vec3 DiffuseColor;
+    vec3 SpecularColor;
+    float Shininess;
+    float ShininessStrength;
 };
 
 uniform DirectionalLight gDirectionalLight;
+uniform Material gMaterial;
 uniform vec3 gCameraDir;
 uniform sampler2D gSampler;
 
 void main()
 {
-    vec3 ambientColor = gDirectionalLight.Color * gDirectionalLight.AmbientIntensity;
-
-    float diffuseFactor = dot(normalize(normal0), gDirectionalLight.Direction);
+    float diffuseFactor = dot(normal0, gDirectionalLight.Direction);
 
     vec3 diffuseColor = vec3(0,0,0);
     if (diffuseFactor > 0)
-        diffuseColor = gDirectionalLight.Color *
-            gDirectionalLight.DiffuseIntensity *
-            diffuseFactor;
-
-    vec3 toEye = normalize(vec3(0.0) - gCameraDir);
-    vec3 lightRef = reflect(gDirectionalLight.Direction, normalize(normal0));
-    float specularFactor = pow(dot(-lightRef, toEye), 64.0f);
+        diffuseColor = gMaterial.DiffuseColor * diffuseFactor;
 
     vec3 specularColor = vec3(0,0,0);
-    if (specularFactor > 0)
-        specularColor = gDirectionalLight.Color *
-            gDirectionalLight.SpecularIntensity *
-            specularFactor;
+    if (gMaterial.Shininess > 0)
+    {
+        vec3 toEye = normalize(vec3(0.0) - gCameraDir);
+        vec3 lightRef = reflect(gDirectionalLight.Direction, normal0);
+        float specularFactor = dot(-lightRef, toEye);
 
-    fragColor = //texture(gSampler, texCoord0.xy) *
-                vec4(ambientColor + diffuseColor + specularColor, 1);
+        specularColor = gMaterial.SpecularColor * pow(specularFactor, gMaterial.Shininess) * gMaterial.ShininessStrength;
+    }
+
+    vec3 materialColor = gMaterial.AmbientColor + diffuseColor + specularColor;
+    vec3 globalLighting = (gMaterial.AmbientColor + gMaterial.DiffuseColor + gMaterial.SpecularColor) * gDirectionalLight.Intensity;
+
+    fragColor = texture(gSampler, texCoord0.xy) *
+                vec4(gDirectionalLight.Color, 1) *
+                vec4(materialColor + globalLighting, 1);
 }

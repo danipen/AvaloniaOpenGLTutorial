@@ -1,5 +1,7 @@
 using System;
 using System.Numerics;
+using Assimp;
+using Matrix4x4 = System.Numerics.Matrix4x4;
 
 namespace Tutorial22
 {
@@ -41,6 +43,10 @@ namespace Tutorial22
             return new Material()
             {
                 ColorDiffuse = ToVector4(assimpMaterial.ColorDiffuse),
+                ColorAmbient = ToVector4(assimpMaterial.ColorAmbient),
+                ColorSpecular = ToVector4(assimpMaterial.ColorSpecular),
+                Shininess = assimpMaterial.Shininess,
+                ShininessStrength = assimpMaterial.ShininessStrength,
             };
         }
 
