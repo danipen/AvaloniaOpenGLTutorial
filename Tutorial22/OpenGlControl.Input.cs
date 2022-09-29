@@ -18,7 +18,7 @@ namespace Tutorial22
 
             if (ProcessInputKey(e.Key))
                 e.Handled = true;
-            
+
             InvalidateVisual();
         }
 
@@ -37,14 +37,20 @@ namespace Tutorial22
         {
             base.OnPointerMoved(e);
             Point p = e.GetPosition(this);
-            
-            _camera.OnMouse((float)Bounds.Width - (float)p.X, (float)p.Y);
+
+            // _camera.OnMouse((float)Bounds.Width - (float)p.X, (float)p.Y);
+        }
+
+        protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
+        {
+            base.OnPointerWheelChanged(e);
+            _camera.CameraPosition = _camera.CameraPosition with { Z = (float)(_camera.CameraPosition.Z + e.Delta.Y) };
         }
 
         protected override void OnPointerExited(PointerEventArgs e)
         {
             base.OnPointerExited(e);
-            
+
             _camera.OnMouseExited();
         }
 
@@ -121,9 +127,9 @@ namespace Tutorial22
 
             return false;
         }
-        
+
         Key _pressedKey = Key.None;
-        
+
         const float POSITION_STEP_AMOUNT = 0.05f;
     }
 }
