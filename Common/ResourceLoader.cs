@@ -39,7 +39,7 @@ namespace Common
 
         public static Scene LoadSphereModel()
         {
-            return ImportFromResource("sphere.stl");
+            return ImportFromResource("sphere.fbx");
         }
 
         public static Scene LoadCoyoteModel()
