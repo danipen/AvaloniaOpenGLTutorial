@@ -27,23 +27,31 @@ namespace Tutorial22
 
             StackPanel viewControls = BuildViewControls(_myControl);
             StackPanel cameraControls = BuildCameraControls(_myControl);
+            StackPanel lightControls = BuildLightControls(_myControl);
 
             var viewPanelScroll = new ScrollViewer
             {
-                Content = viewControls
+                Content = viewControls,
             };
 
             var cameraPanelScroll = new ScrollViewer
             {
-                Content = cameraControls
+                Content = cameraControls,
             };
 
+            var lightPanelScroll = new ScrollViewer
+            {
+                Content = lightControls,
+                Height = 200,
+            };
 
             DockPanel.SetDock(viewPanelScroll, Dock.Left);
             DockPanel.SetDock(cameraPanelScroll, Dock.Right);
+            DockPanel.SetDock(lightPanelScroll, Dock.Bottom);
 
             panel.Children.Add(viewPanelScroll);
             panel.Children.Add(cameraPanelScroll);
+            panel.Children.Add(lightPanelScroll);
             panel.Children.Add(_myControl);
 
             Content = panel;
@@ -54,7 +62,43 @@ namespace Tutorial22
             }, DispatcherPriority.Input - 1);
 
             Width = 1500;
-            Height = 750;
+            Height = 850;
+        }
+
+        StackPanel BuildLightControls(OpenGlControl openGlControl)
+        {
+            StackPanel lightControls = new StackPanel()
+            {
+                Spacing = 10,
+                Orientation = Orientation.Vertical,
+                Margin = new Thickness(30, 20),
+            };
+
+            var lightSliderList = new List<Panel>()
+            {
+                BuildSlider("Light direction X", -1, 1, OpenGlControl.LightDirXProperty),
+                BuildSlider("Light direction Y", -1, 1, OpenGlControl.LightDirYProperty),
+                BuildSlider("Light direction Z", -1, 1, OpenGlControl.LightDirZProperty),
+                BuildSlider("Light intensity", 0, 1, OpenGlControl.LightIntensityProperty),
+                BuildSlider("Light color red", 0, 1, OpenGlControl.LightColorRedProperty),
+                BuildSlider("Light color green", 0, 1, OpenGlControl.LightColorGreenProperty),
+                BuildSlider("Light color blue", 0, 1, OpenGlControl.LightColorBlueProperty),
+            };
+
+            Button resetLightButton = new Button
+            {
+                Content = "Reset"
+            };
+
+            resetLightButton.Click += (_, _) =>
+            {
+                _myControl.ResetLight();
+            };
+
+            lightControls.Children.Add(resetLightButton);
+            lightControls.Children.AddRange(lightSliderList);
+
+            return lightControls;
         }
 
         StackPanel BuildCameraControls(OpenGlControl openGlControl)
@@ -112,9 +156,9 @@ namespace Tutorial22
                 BuildSlider("Translate X", -2, 2, OpenGlControl.TranslateXProperty),
                 BuildSlider("Translate Y", -2, 2, OpenGlControl.TranslateYProperty),
                 BuildSlider("Translate Z", -4, 4, OpenGlControl.TranslateZProperty),
-                BuildSlider("Rotate X", 0, 2 * MathF.PI, OpenGlControl.RotateXProperty),
-                BuildSlider("Rotate Y", 0, 2 * MathF.PI, OpenGlControl.RotateYProperty),
-                BuildSlider("Rotate Z", 0, 2 * MathF.PI, OpenGlControl.RotateZProperty),
+                BuildSlider("Rotate X", 0, 4 * MathF.PI, OpenGlControl.RotateXProperty),
+                BuildSlider("Rotate Y", 0, 4 * MathF.PI, OpenGlControl.RotateYProperty),
+                BuildSlider("Rotate Z", 0, 4 * MathF.PI, OpenGlControl.RotateZProperty),
                 BuildSlider("Field of View", 0.1, MathF.PI  - 0.1f, OpenGlControl.FieldOfViewAngleProperty, true),
                 BuildSlider("Near Clipping Plane", 0.01, 10, OpenGlControl.NearPlaneProperty),
                 BuildSlider("Far Clipping Plane", 10.1, 10000, OpenGlControl.FarPlaneProperty)
