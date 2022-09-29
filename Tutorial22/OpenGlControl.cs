@@ -32,7 +32,7 @@ namespace Tutorial22
             Matrix4x4 translateTransform = Matrix4x4.CreateTranslation(3, 0, 0);
             cube2.Model.Meshes[0].Transform = translateTransform;
 
-            _modelLoader = new ModelLoader(ResourceLoader.LoadLanciaIntegraleModel());
+            _modelLoader = new ModelLoader(ResourceLoader.LoadCarModel());
             // _modelLoader = new CubeModelLoader();
             // _modelLoader = new MultiModelLoader(cube2, cube1);
             _modelLoader.LoadMesh();
@@ -103,7 +103,10 @@ namespace Tutorial22
 
             _gDirectionalLightColorLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.Color");
             _gDirectionalLightDirectionLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.Direction");
-            _gDirectionalLightIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.Intensity");
+            _gDirectionalLightGlobalIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.GlobalIntensity");
+            _gDirectionalLightAmbientIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.AmbientIntensity");
+            _gDirectionalLightDiffuseIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.DiffuseIntensity");
+            _gDirectionalLightSpecularIntensityLoc = gl.GetUniformLocationString(_shaderProgram, "gDirectionalLight.SpecularIntensity");
             gl.CheckError();
 
             _gMaterialAmbientColorLoc = gl.GetUniformLocationString(_shaderProgram, "gMaterial.AmbientColor");
@@ -187,7 +190,10 @@ namespace Tutorial22
             gl.UniformMatrix4fv(_gLocalTransformLoc, 1, false, &localTransformation);
 
             gl.Uniform3f(_gDirectionalLightDirectionLoc, (float)LightDirX, (float)LightDirY, (float)LightDirZ);
-            gl.Uniform1f(_gDirectionalLightIntensityLoc, (float)LightIntensity);
+            gl.Uniform1f(_gDirectionalLightGlobalIntensityLoc, (float)LightGlobalIntensity);
+            gl.Uniform1f(_gDirectionalLightAmbientIntensityLoc, (float)LightAmbientIntensity);
+            gl.Uniform1f(_gDirectionalLightDiffuseIntensityLoc, (float)LightDiffuseIntensity);
+            gl.Uniform1f(_gDirectionalLightSpecularIntensityLoc, (float)LightSpecularIntensity);
             gl.Uniform3f(_gDirectionalLightColorLoc, (float) LightColorRed, (float) LightColorGreen, (float) LightColorBlue);
 
             gl.Uniform3f(_gCameraDirLoc, _camera.CameraTarget.X, _camera.CameraTarget.Y, _camera.CameraTarget.Z);
@@ -303,8 +309,11 @@ namespace Tutorial22
         int _gMaterialShininessLoc;
         int _gMaterialShininessStrengthLoc;
         int _gDirectionalLightColorLoc;
-        int _gDirectionalLightIntensityLoc;
+        int _gDirectionalLightGlobalIntensityLoc;
         int _gDirectionalLightDirectionLoc;
+        int _gDirectionalLightAmbientIntensityLoc;
+        int _gDirectionalLightDiffuseIntensityLoc;
+        int _gDirectionalLightSpecularIntensityLoc;
         int _gMaterialAmbientColorLoc;
         int _gMaterialDiffuseColorLoc;
         int _gMaterialSpecularColorLoc;

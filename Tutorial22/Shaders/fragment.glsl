@@ -7,7 +7,10 @@ struct DirectionalLight
 {
     vec3 Color;
     vec3 Direction;
-    float Intensity;
+    float GlobalIntensity;
+    float AmbientIntensity;
+    float SpecularIntensity;
+    float DiffuseIntensity;
 };
 
 struct Material
@@ -42,10 +45,13 @@ void main()
         specularColor = gMaterial.SpecularColor * gMaterial.ShininessStrength * pow(specularFactor, gMaterial.Shininess);
     }
 
-    vec3 materialColor = gMaterial.AmbientColor + diffuseColor + specularColor;
-    vec3 globalLighting = (gMaterial.AmbientColor + gMaterial.DiffuseColor + gMaterial.SpecularColor) * gDirectionalLight.Intensity;
+    vec3 materialLighting = gMaterial.AmbientColor * gDirectionalLight.AmbientIntensity +
+                         diffuseColor * gDirectionalLight.DiffuseIntensity +
+                         specularColor * gDirectionalLight.SpecularIntensity;
 
-    fragColor = texture(gSampler, texCoord0.xy) *
+    vec3 globalLighting = (gMaterial.AmbientColor + gMaterial.DiffuseColor + gMaterial.SpecularColor) * gDirectionalLight.GlobalIntensity;
+
+    fragColor = //texture(gSampler, texCoord0.xy) *
                 vec4(gDirectionalLight.Color, 1) *
-                vec4(materialColor + globalLighting, 1);
+                vec4(materialLighting + globalLighting, 1);
 }

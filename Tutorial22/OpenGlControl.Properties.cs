@@ -294,16 +294,52 @@ namespace Tutorial22
             set => SetAndRaise(LightDirZProperty, ref _lightDirZ, value);
         }
 
-        public static readonly DirectProperty<OpenGlControl, double> LightIntensityProperty =
+        public static readonly DirectProperty<OpenGlControl, double> LightGlobalIntensityProperty =
             AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
-                nameof(LightIntensity),
-                o => o.LightIntensity,
-                (o, v) => o.LightIntensity = v);
+                nameof(LightGlobalIntensity),
+                o => o.LightGlobalIntensity,
+                (o, v) => o.LightGlobalIntensity = v);
 
-        public double LightIntensity
+        public double LightGlobalIntensity
         {
-            get => _lightIntensity;
-            set => SetAndRaise(LightIntensityProperty, ref _lightIntensity, value);
+            get => _lightGlobalIntensity;
+            set => SetAndRaise(LightGlobalIntensityProperty, ref _lightGlobalIntensity, value);
+        }
+
+        public static readonly DirectProperty<OpenGlControl, double> LightAmbientIntensityProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
+                nameof(LightAmbientIntensity),
+                o => o.LightAmbientIntensity,
+                (o, v) => o.LightAmbientIntensity = v);
+
+        public double LightAmbientIntensity
+        {
+            get => _lightAmbientIntensity;
+            set => SetAndRaise(LightAmbientIntensityProperty, ref _lightAmbientIntensity, value);
+        }
+
+        public static readonly DirectProperty<OpenGlControl, double> LightDiffuseIntensityProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
+                nameof(LightDiffuseIntensity),
+                o => o.LightDiffuseIntensity,
+                (o, v) => o.LightDiffuseIntensity = v);
+
+        public double LightDiffuseIntensity
+        {
+            get => _lightDiffuseIntensity;
+            set => SetAndRaise(LightDiffuseIntensityProperty, ref _lightDiffuseIntensity, value);
+        }
+
+        public static readonly DirectProperty<OpenGlControl, double> LightSpecularIntensityProperty =
+            AvaloniaProperty.RegisterDirect<OpenGlControl, double>(
+                nameof(LightSpecularIntensity),
+                o => o.LightSpecularIntensity,
+                (o, v) => o.LightSpecularIntensity = v);
+
+        public double LightSpecularIntensity
+        {
+            get => _lightSpecularIntensity;
+            set => SetAndRaise(LightSpecularIntensityProperty, ref _lightSpecularIntensity, value);
         }
 
         public static readonly DirectProperty<OpenGlControl, double> LightColorRedProperty =
@@ -362,7 +398,10 @@ namespace Tutorial22
             LightDirX = -1f;
             LightDirY = 1f;
             LightDirZ = -0.5f;
-            LightIntensity = 0.2f;
+            LightGlobalIntensity = 0.2f;
+            LightAmbientIntensity = 1f;
+            LightDiffuseIntensity = 1f;
+            LightSpecularIntensity = 1f;
             LightColorRed = 1;
             LightColorGreen = 1;
             LightColorBlue = 1;
@@ -403,7 +442,10 @@ namespace Tutorial22
                 LightDirXProperty,
                 LightDirYProperty,
                 LightDirZProperty,
-                LightIntensityProperty,
+                LightGlobalIntensityProperty,
+                LightAmbientIntensityProperty,
+                LightDiffuseIntensityProperty,
+                LightSpecularIntensityProperty,
                 LightColorRedProperty,
                 LightColorGreenProperty,
                 LightColorBlueProperty);
@@ -441,7 +483,10 @@ namespace Tutorial22
         double _lightDirX;
         double _lightDirY;
         double _lightDirZ;
-        double _lightIntensity;
+        double _lightGlobalIntensity;
+        double _lightAmbientIntensity;
+        double _lightDiffuseIntensity;
+        double _lightSpecularIntensity;
         double _lightColorRed;
         double _lightColorGreen;
         double _lightColorBlue;
