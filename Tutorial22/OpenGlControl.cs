@@ -32,7 +32,7 @@ namespace Tutorial22
             Matrix4x4 translateTransform = Matrix4x4.CreateTranslation(3, 0, 0);
             cube2.Model.Meshes[0].Transform = translateTransform;
 
-            _modelLoader = new ModelLoader(ResourceLoader.LoadCarModel());
+            _modelLoader = new ModelLoader(ResourceLoader.LoadLanciaIntegraleModel());
             // _modelLoader = new CubeModelLoader();
             // _modelLoader = new MultiModelLoader(cube2, cube1);
             _modelLoader.LoadMesh();
@@ -189,7 +189,7 @@ namespace Tutorial22
             gl.UniformMatrix4fv(_gWorldTransformLoc, 1, false, &worldTransformation);
             gl.UniformMatrix4fv(_gLocalTransformLoc, 1, false, &localTransformation);
 
-            gl.Uniform3f(_gDirectionalLightDirectionLoc, (float)LightDirX, (float)LightDirY, (float)LightDirZ);
+            gl.Uniform3f(_gDirectionalLightDirectionLoc, (float)LightDirX, -(float)LightDirY, -(float)LightDirZ);
             gl.Uniform1f(_gDirectionalLightGlobalIntensityLoc, (float)LightGlobalIntensity);
             gl.Uniform1f(_gDirectionalLightAmbientIntensityLoc, (float)LightAmbientIntensity);
             gl.Uniform1f(_gDirectionalLightDiffuseIntensityLoc, (float)LightDiffuseIntensity);
